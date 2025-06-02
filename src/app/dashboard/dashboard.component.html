@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+        <a href="#" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </div>
+          <i class="fas fa-angle-right"></i>
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-user"></i>
+          Manage Users
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-book"></i>
+          Subject Mappings
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-file-alt"></i>
+          Evaluation Form
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-calendar-alt"></i>
+          Evaluation Schedule
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+        <div class="p-4 mt-16">
+          <button (click)="Logout()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Left: Dashboard + Search -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Dashboard</h1>
+
+          </div>
+        
+          <!-- Right: Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              src="https://via.placeholder.com/40"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+      
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+            <img src="/student.png" alt="" class="w-8 h-8 mx-auto" />
+            <div class="font-bold border-l-2 border-gray-200">Students<br>1029</div>
+          </div>
+          <div class= "grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+            <img src="/teacher.png" alt="" class="w-8 h-8 mx-auto" />
+            <div class="font-bold border-l-2 border-gray-200" >Teachers<br>23</div>
+          </div>
+          <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+                <div class="text-2xl">✅</div>
+                <div class="font-bold border-l-2 border-gray-200" >Completion<br>95%</div>
+            
+          </div>
+          <div class="grid grid-cols-2  gap-3 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]  ">
+            <div class="text-2xl">⏳</div>
+            <div class="font-bold border-l-2 border-gray-200">Time Remaining<br>4D</div>
+          </div>
+          
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-6">
+          <div class="bg-white p-4 rounded shadow text-center">
+            <div class="font-bold">Total Evaluation</div>
+            <div class="grid grid-cols-2 mt-4 ">
+              <img src="/tot.png" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
+              <div class="text-2xl lg:mr-10">1025</div>
+            </div>
+          </div>
+          
+          
+          <div class="bg-white p-4 rounded shadow text-center">
+            <div class="font-bold">Average Score</div>
+            <div class="grid grid-cols-2 mt-4">
+              <img src="/rating.jpg" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
+              <div class="text-2xl lg:mr-10">8.5</div>
+            </div>
+          </div>
+          
+          <div class="bg-white p-4 rounded shadow text-center">
+            <div class="font-bold">Unsubmitted</div>
+            <div class="grid grid-cols-2 gap-1 mt-4">
+              <img src="/unsub.png" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
+              <div class="text-2xl lg:mr-10">123</div>
+            </div>
+          </div>
+          
+          <div class="bg-white p-4 rounded shadow text-center cursor-pointer md:text-lg">
+            <div class="font-bold text-sm">Create Form</div>
+            <img src="/form.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center cursor-pointer">
+            <div class="font-bold text-sm">Set Schedule</div>
+            <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center cursor-pointer">
+            <div class="font-bold text-sm">Add Account</div>
+            <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+          </div>
+        </div>
+      
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+         
+          <div class="flex flex-col gap-2">
+            <div class="bg-white p-3 rounded shadow h-64">
+              <div class="flex items-center justify-between mb-8">
+                <h2 class="font-bold text-sm">Ranked Categories</h2>
+                <p class="text-xs text-gray-500">All the data in percentage (%)</p>
+              </div>
+
+              <div class="flex flex-col lg:flex-row justify-center items-start space-y-4 lg:space-y-0 lg:space-x-4">
+                <!-- LEFT: Labels -->
+                <div class="flex flex-col space-y-4 w-full lg:w-1/3 ">
+                  <div *ngFor="let label of barChartData.labels let i = index" class="flex items-center space-x-2">
+                    <div class="w-5 h-5 rounded-full mb-3" [ngStyle]="{ 'background-color': getBackgroundColor(i) }"></div>
+                    <div class="text-sm text-gray-700 font-bold">
+                      {{ label }}
+                      <div *ngIf="i === 0; else secblock" class="text-sm text-gray-700 font-normal">
+                        1st Highest Rank
+                      </div>
+                      <ng-template #secblock>
+                        <div *ngIf="i == 1; else terdblock" class="text-sm text-gray-700 font-normal">2nd Highest Rank</div>
+                      </ng-template>
+              
+                      <ng-template #terdblock>
+                        <div class="text-sm text-gray-700 font-normal">3rd Highest Rank</div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- RIGHT: Chart -->
+                <div class="lg:w-[400px] flex justify-center items-center">
+                  <canvas baseChart
+                          [data]="barChartData"
+                          [options]="barChartOptions"
+                          [type]="barChartType"
+                          [plugins]="barChartPlugins">
+                  </canvas>
+                </div>
+            
+              </div>
+              
+              
+            </div>
+      
+            <!-- Insights -->
+            <div class="bg-gray-100 p-2 rounded flex items-start gap-2 shadow text-xs ">
+              <span class="text-xl">🤓</span>
+              <div>
+                <p class="font-semibold">Insights by Nerd AI</p>
+                <p>Most improved: English Department</p>
+                <p>Highest marks for ‘Respectfulness’</p>
+              </div>
+            </div>
+      
+            <div class="bg-gray-100 p-2 rounded flex items-start gap-2 shadow text-xs ">
+              <span class="text-xl">🤓</span>
+              <div>
+                <p class="font-semibold">Insights by Nerd AI</p>
+                <p>Most improved: English Department</p>
+                <p>Highest marks for ‘Respectfulness’</p> 
+              </div>
+            </div>
+          </div>
+      
+          <!-- Right Column: Top Scorer with same height as chart section -->
+          <div class="bg-white p-3 rounded shadow flex flex-col justify-between text-xs h-72">
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="font-bold">Top Scorer</h2>
+              <select class="text-xs border rounded-2xl p-1 bg-gray-100">
+                <option>2018 - 2019</option>
+                <option>2019 - 2020</option>
+                <option>2020 - 2021</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-3 gap-2 h-60">
+              <div class="bg-red-700 text-white p-2 rounded text-center">
+                <img src="https://via.placeholder.com/40" class="mx-auto rounded-full mb-1" />
+                <p>Jane Cooper</p>
+                <p class="text-yellow-300 font-bold text-sm">99.99%</p>
+                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">1st</p>
+              </div>
+              <div class="bg-red-700 text-white p-2 rounded text-center">
+                <img src="https://via.placeholder.com/40" class="mx-auto rounded-full mb-1" />
+                <p>Eleanor Pena</p>
+                <p class="text-yellow-300 font-bold text-sm">99.76%</p>
+                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">2nd</p>
+              </div>
+              <div class="bg-red-700 text-white p-2 rounded text-center">
+                <img src="https://via.placeholder.com/40" class="mx-auto rounded-full mb-1" />
+                <p>Devon Lane</p>
+                <p class="text-yellow-300 font-bold text-sm">99.50%</p>
+                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">3rd</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    
+    </div>
+  </body>
+</html>
