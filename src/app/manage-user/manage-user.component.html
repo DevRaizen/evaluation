@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+        <a href="#" class="flex items-center justify-between  hover:bg-white/10 px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </div>
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2  text-black rounded bg-yellow-400">
+          <i class="fas fa-user"></i>
+          Manage Users
+          <i class="fas fa-angle-right"></i>
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-book"></i>
+          Subject Mappings
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-file-alt"></i>
+          Evaluation Form
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-calendar-alt"></i>
+          Evaluation Schedule
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </a>
+        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+        <div class="p-4 mt-16">
+          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Dashboard -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Manage User</h1>
+
+          </div>
+        
+          <!-- Right Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              src="https://via.placeholder.com/40"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center space-x-4">
+            <div class="relative right ">
+                <span class="text-xl font-semibold ">Search</span>
+            </div>
+            <button (click)="AopenModal()" class="bg-[#F1C428] rounded-md h-8 p-2 font-semibold">
+                <i class="fa-solid fa-plus"></i>
+                Add Account
+            </button>
+        </div>
+
+        <div>
+            <form class="space-y-6">
+                <div class= "grid md:grid-cols-4 lg:grid-cols-4 grid-cols-2 gap-4">
+                    <input type="text" placeholder="Name" class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    <input type="text" placeholder="ID Number" class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                     <fieldset class="fieldset">
+                    <select class="select">
+                        <option disabled selected>Role</option>
+                        <option>Student</option>
+                        <option>Teacher</option>
+                    </select>
+                    </fieldset>
+                     <fieldset class="fieldset">
+                    <select class="select">
+                        <option disabled selected>Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                    </fieldset>
+                </div>
+                
+            </form>
+        </div>
+
+        <div class="overflow-x-auto p-4">
+            <div class="max-w-full overflow-x-auto">
+                <table class="min-w-full border border-grey-500 text-sm text-left">
+                    <thead class="bg-white">
+                    <tr class="text-gray-700 border-b grey-blue-500">
+                        <th class="px-4 py-2">User</th>
+                        <th class="px-4 py-2">School ID</th>
+                        <th class="px-4 py-2">Email Address</th>
+                        <th class="px-4 py-2">Role</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50 lg:text-sm text-xs">
+                        <td class="px-4 py-2 flex items-center gap-2 whitespace-nowrap max-w-[200px] overflow-hidden text-ellipsis">
+                            <img src="https://i.pravatar.cc/30" class="w-8 h-8 rounded-full" />
+                            <span class="font-semibold truncate" title="Balaji Nant">Balaji Nant</span>
+                        </td>
+                        <!-- School ID -->
+                        <td class="px-4 py-2 max-w-[120px] truncate" title="15310350">15310350</td>
+                        <!-- Email Address -->
+                        <td class="px-4 py-2 max-w-[180px] truncate" title="balajigmail.com">balajigmail.com</td>
+                        <!-- Role -->
+                        <td class="px-4 py-2 max-w-[100px] truncate" title="Student">Student</td>
+                        <!-- Status -->
+                        <td class="px-4 py-2">
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
+                        </td>
+                       <td class="px-4 py-2 text-gray-600 text-center">
+                          <div class="flex flex-wrap gap-2 items-center justify-center">
+                            <button (click)="EopenModal()" class="text-[#35353A] text-xl" title="Edit">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-[#35353A] text-xl" title="Delete">
+                              <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button title="View">
+                              <img src="/show.png" alt="View" class="h-6 w-6 inline-block" />
+                            </button>
+                          </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+ 
+      </main>
+    
+    </div>
+  </body>
+
+</html>
+
+<!--Modal-->
+<!-- Add Account Modal -->
+<div *ngIf="AisModalOpen" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center px-2">
+  <div class="bg-white rounded-lg shadow-lg w-[90%] md:w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="bg-[#8C2224] px-6 py-4 rounded-t-lg flex justify-between items-center">
+      <h2 class="text-white text-lg font-semibold">Add Account</h2>
+      <button (click)="AcloseModal()">
+        <i class="fas fa-times text-white text-lg"></i>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <div class="p-6 bg-gray-50">
+      <form class="space-y-4">
+        <label class="block text-sm font-medium text-gray-400 mb-1">Basic Information</label>
+        <!-- Row 1: Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="relative">
+              <input type="text" placeholder="First Name" class="w-full pl-12 p-2 border rounded" />
+              <div class="absolute left-3 top-2.5 flex items-center space-x-1 text-gray-400">
+                <i class="fas fa-user"></i>
+                <div class="h-5 border-l border-gray-300 ml-2"></div>
+              </div>
+            </div>
+          <input type="text" placeholder="Middle Name" class="w-full p-2 border rounded" />
+          <input type="text" placeholder="Last Name" class="w-full p-2 border rounded" />
+        </div>
+        <!-- Row 2: Email & Phone -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Email -->
+      <div class="relative">
+        <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+        <input type="email" placeholder="example@gmail.com" class="w-full pl-14 p-2 border rounded" />
+        <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+          <i class="fas fa-envelope"></i>
+          <div class="h-5 border-l border-gray-300 mx-2"></div>
+        </div>
+      </div>
+  <!-- Phone Number -->
+      <div class="relative">
+          <label class="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
+          <input type="text" placeholder="Normal" class="w-full pl-14 p-2 border rounded" />
+          <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+            <i class="fas fa-phone"></i>
+            <div class="h-5 border-l border-gray-300 mx-2"></div>
+          </div>
+        </div>
+      </div>
+              <!-- Row 3: ID, Role, Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div class="relative">
+            <label class="block text-sm font-medium text-gray-400 mb-1">Student Id</label>
+            <input type="text" placeholder="XXX" class="w-full pl-14 p-2 border rounded" />
+            <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+              <i class="fas fa-id-card"></i>
+              <div class="h-5 border-l border-gray-300 mx-2"></div>
+            </div>
+          </div>
+          <div class="relative">
+              <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
+                <i class="fas fa-user"></i>
+                <label>Role</label>
+                </div>
+                <select class="w-full p-2 border rounded">
+                <option>Student</option>
+                <option>Teacher</option>
+                <option>Admin</option>
+              </select>
+          </div>
+          <div class="relative">
+              <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
+                <i class="fas fa-check-circle"></i>
+                <label>Status</label>
+                </div>
+                <select class="w-full p-2 border rounded">
+                <option>Normal</option>
+                <option>Inactive</option>
+              </select>
+          </div>
+        </div>
+        <!-- Row 4: Grade Level & Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Grade Level</label>
+            <select class="w-full p-2 border rounded">
+            <option disabled selected>Grade Level</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+          </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Section</label>
+            <input type="text" placeholder="St. Peter" class="w-full p-2 border rounded" />
+          </div>
+          
+        </div>
+        <!-- Row 5: Password -->
+        <div>
+            <label class="text-sm font-semibold text-gray-400  tracking-wide">Password</label>
+            <div class="relative mt-1">
+              <input name="password" [(ngModel)]="Password" #password="ngModel" required class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" [type]="showPassword ? 'text' : 'password'" placeholder="***********" />
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <img src="/padlock.png" alt="Logo" class="inline-block mb-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
+              </div>
+              <div class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-right: 3px; margin-top: 10px;"></span>
+                 <button
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    >
+                    <img
+                        [src]="showPassword ? '/hidden.png' : '/eye.png'"
+                        alt="Toggle Password"
+                        class="inline-block mb-1 w-6 h-6"
+                    />
+                    </button>
+              </div>
+            </div>
+              <div *ngIf="password.invalid && password.touched" class="text-red-500 text-sm mt-1">
+                Password is required.
+              </div>
+              <div *ngIf="conpassword.valid && password.valid && conPassword !== Password" class="text-red-500 text-sm mt-1">
+                Passwords do not match.
+              </div>
+          </div>
+        <!-- Row 6: Confirm Password -->
+         <div>
+            <label class="text-sm font-semibold text-gray-400  tracking-wide">Confirm Password</label>
+            <div class="relative mt-1">
+              <input name="conpassword" [(ngModel)]="conPassword" #conpassword="ngModel" required class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" [type]="showconPassword ? 'text' : 'password'" placeholder="***********" />
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <img src="/padlock.png" alt="Logo" class="inline-block mb-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
+              </div>
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-right: 3px; margin-top: 10px;"></span>
+                 <button
+                    type="button"
+                    (click)="toggleconPasswordVisibility()"
+                    >
+                    <img
+                        [src]="showconPassword ? '/hidden.png' : '/eye.png'"
+                        alt="Toggle Password"
+                        class="inline-block mb-1 w-6 h-6"
+                    />
+                    </button>
+              </div>
+            </div>
+            <div *ngIf="conpassword.invalid && conpassword.touched" class="text-red-500 text-sm mt-1">
+                  Password is required.
+              </div>
+              <div *ngIf="conpassword.valid && password.valid && conPassword !== Password" class="text-red-500 text-sm mt-1">
+                Passwords do not match.
+              </div>
+          </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 bg-gray-100 flex justify-end gap-2 rounded-b-lg">
+      <button (click)="AcloseModal()" class="bg-white px-4 py-0 rounded border hover:bg-gray-200">Cancel</button>
+      <button type="submit" class="bg-[#F1C428] hover:bg-yellow-500 text-black px-4 py-0 rounded">Add Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div *ngIf="EisModalOpen" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center px-2">
+  <div class="bg-white rounded-lg shadow-lg w-[90%] md:w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <!-- Modal Header -->
+    <div class="bg-[#8C2224] px-6 py-4 rounded-t-lg flex justify-between items-center">
+      <h2 class="text-white text-lg font-semibold">Edit Account</h2>
+      <button (click)="EcloseModal()">
+        <i class="fas fa-times text-white text-lg"></i>
+      </button>
+    </div>
+    <!-- Modal Body -->
+    <div class="p-6 bg-gray-50">
+      <form class="space-y-4">
+        <label class="block text-sm font-medium text-gray-400 mb-1">Basic Information</label>
+        <!-- Row 1: Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="relative">
+              <input type="text" placeholder="First Name" class="w-full pl-12 p-2 border rounded" />
+              <div class="absolute left-3 top-2.5 flex items-center space-x-1 text-gray-400">
+                <i class="fas fa-user"></i>
+                <div class="h-5 border-l border-gray-300 ml-2"></div>
+              </div>
+            </div>
+          <input type="text" placeholder="Middle Name" class="w-full p-2 border rounded" />
+          <input type="text" placeholder="Last Name" class="w-full p-2 border rounded" />
+        </div>
+        <!-- Row 2: Email & Phone -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Email -->
+      <div class="relative">
+        <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+        <input type="email" placeholder="example@gmail.com" class="w-full pl-14 p-2 border rounded" />
+        <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+          <i class="fas fa-envelope"></i>
+          <div class="h-5 border-l border-gray-300 mx-2"></div>
+        </div>
+      </div>
+  <!-- Phone Number -->
+      <div class="relative">
+          <label class="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
+          <input type="text" placeholder="Normal" class="w-full pl-14 p-2 border rounded" />
+          <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+            <i class="fas fa-phone"></i>
+            <div class="h-5 border-l border-gray-300 mx-2"></div>
+          </div>
+        </div>
+      </div>
+              <!-- Row 3: ID, Role, Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div class="relative">
+            <label class="block text-sm font-medium text-gray-400 mb-1">Student Id</label>
+            <input type="text" placeholder="XXX" class="w-full pl-14 p-2 border rounded" />
+            <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
+              <i class="fas fa-id-card"></i>
+              <div class="h-5 border-l border-gray-300 mx-2"></div>
+            </div>
+          </div>
+          <div class="relative">
+              <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
+                <i class="fas fa-user"></i>
+                <label>Role</label>
+                </div>
+                <select class="w-full p-2 border rounded">
+                <option>Student</option>
+                <option>Teacher</option>
+                <option>Admin</option>
+              </select>
+          </div>
+          <div class="relative">
+              <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
+                <i class="fas fa-check-circle"></i>
+                <label>Status</label>
+                </div>
+                <select class="w-full p-2 border rounded">
+                <option>Normal</option>
+                <option>Inactive</option>
+              </select>
+          </div>
+        </div>
+        <!-- Row 4: Grade Level & Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Grade Level</label>
+            <select class="w-full p-2 border rounded">
+            <option disabled selected>Grade Level</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+          </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Section</label>
+            <input type="text" placeholder="St. Peter" class="w-full p-2 border rounded" />
+          </div>
+          
+        </div>
+        <!-- Row 5: Password -->
+        <div>
+            <label class="text-sm font-semibold text-gray-400  tracking-wide">Password</label>
+            <div class="relative mt-1">
+              <input name="password" [(ngModel)]="Password" #password="ngModel" required class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" [type]="showPassword ? 'text' : 'password'" placeholder="***********" />
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <img src="/padlock.png" alt="Logo" class="inline-block mb-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
+              </div>
+              <div class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-right: 3px; margin-top: 10px;"></span>
+                 <button
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    >
+                    <img
+                        [src]="showPassword ? '/hidden.png' : '/eye.png'"
+                        alt="Toggle Password"
+                        class="inline-block mb-1 w-6 h-6"
+                    />
+                    </button>
+              </div>
+            </div>
+              <div *ngIf="password.invalid && password.touched" class="text-red-500 text-sm mt-1">
+                Password is required.
+              </div>
+              <div *ngIf="conpassword.valid && password.valid && conPassword !== Password" class="text-red-500 text-sm mt-1">
+                Passwords do not match.
+              </div>
+          </div>
+        <!-- Row 6: Confirm Password -->
+         <div>
+            <label class="text-sm font-semibold text-gray-400  tracking-wide">Confirm Password</label>
+            <div class="relative mt-1">
+              <input name="conpassword" [(ngModel)]="conPassword" #conpassword="ngModel" required class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" [type]="showconPassword ? 'text' : 'password'" placeholder="***********" />
+              <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <img src="/padlock.png" alt="Logo" class="inline-block mb-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
+              </div>
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
+                <span style="border: 1px solid #CFD9E0; display: inline;margin-right: 3px; margin-top: 10px;"></span>
+                 <button
+                    type="button"
+                    (click)="toggleconPasswordVisibility()"
+                    >
+                    <img
+                        [src]="showconPassword ? '/hidden.png' : '/eye.png'"
+                        alt="Toggle Password"
+                        class="inline-block mb-1 w-6 h-6"
+                    />
+                    </button>
+              </div>
+            </div>
+            <div *ngIf="conpassword.invalid && conpassword.touched" class="text-red-500 text-sm mt-1">
+                  Password is required.
+              </div>
+              <div *ngIf="conpassword.valid && password.valid && conPassword !== Password" class="text-red-500 text-sm mt-1">
+                Passwords do not match.
+              </div>
+          </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="px-6 py-4 bg-gray-100 flex justify-end gap-2 rounded-b-lg">
+      <button (click)="EcloseModal()" class="bg-white px-4 py-0 rounded border hover:bg-gray-200">Cancel</button>
+      <button type="submit" class="bg-[#F1C428] hover:bg-yellow-500 text-black px-4 py- 0 rounded">Add Account</button>
+    </div>
+  </div>
+</div>

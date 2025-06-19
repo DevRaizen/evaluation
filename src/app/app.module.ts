@@ -10,6 +10,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NgChartsModule } from 'ng2-charts';
 import { RegisterComponent } from './register/register.component';
 import { VerificationComponent } from './verification/verification.component';
+import { ManageUserComponent } from './manage-user/manage-user.component';
+import { StudentViewComponent } from './student-view/student-view.component';
+import { TeacherViewComponent } from './teacher-view/teacher-view.component';
+import { SubjectMapComponent } from './subject-map/subject-map.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +22,11 @@ import { VerificationComponent } from './verification/verification.component';
     LoginComponent,
     DashboardComponent,
     RegisterComponent,
-    VerificationComponent
+    VerificationComponent,
+    ManageUserComponent,
+    StudentViewComponent,
+    TeacherViewComponent,
+    SubjectMapComponent
   ],
   imports: [
     BrowserModule,    

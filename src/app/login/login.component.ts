@@ -28,6 +28,10 @@ export class LoginComponent {
    }
   }
   
+  goToReg() {
+  this.router.navigate(['/user']);
+}
+
   ngOnInit() {
     
   }

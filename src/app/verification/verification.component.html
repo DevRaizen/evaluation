@@ -17,16 +17,21 @@
         <h2 class="text-3xl font-bold text-gray-900 mb-0 text-center">Verify Your Email</h2>
         <div class="flex flex-col justify-center items-center p-8 m-0">
         <img src="/verification.png" alt="Logo" class="w-[60%] ml-4">
-        <p class=" text-center mt-4 text-sm max-w-xs">Please enter the 6-digit code that was sent to example&commat;gmail.com</p>
+        <p class=" text-center mt-4 text-sm max-w-xs">Please enter the 6-digit code that was sent to {{Email}}</p>
         </div>
-        <form action="#" class="space-y-4">
+        <form #otpForm="ngForm" (ngSubmit)="verifyOtp()" action="#" class="space-y-4">
            <div class="flex justify-center gap-4">
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"  #otp1Ref type="text"inputmode="numeric" />
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"  #otp2Ref type="text" inputmode="numeric" />
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"   #otp3Ref type="text" inputmode="numeric" />
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"   #otp4Ref type="text" inputmode="numeric" />
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"   #otp5Ref type="text" inputmode="numeric" />
-            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center"   #otp6Ref type="text" inputmode="numeric" />
+            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp1" [(ngModel)]="Otp1" #otp1 type="text"  inputmode="numeric" [ngClass]="{'border-red-500 shake': submitted && !Otp1}" (input)="moveFocus(Otp1, otp2)"/>
+            <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp2" [(ngModel)]="Otp2" #otp2 type="text"  inputmode="numeric" [ngClass]="{'border-red-500 shake': submitted && !Otp2}" (input)="moveFocus(Otp2, otp3) " (keydown.backspace)="$event.preventDefault();
+              !Otp2 ? otp1.focus() : (Otp2 = '');" />
+                      <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp3" [(ngModel)]="Otp3" #otp3 type="text" inputmode="numeric"  [ngClass]="{'border-red-500 shake': submitted && !Otp3}" (input)="moveFocus(Otp3, otp4)" (keydown.backspace)="$event.preventDefault();
+              !Otp3 ? otp2.focus() : (Otp3 = '');"/>
+                      <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp4" [(ngModel)]="Otp4" #otp4 type="text" inputmode="numeric"  [ngClass]="{'border-red-500 shake': submitted && !Otp4}"(input)="moveFocus(Otp4, otp5)" (keydown.backspace)="$event.preventDefault();
+              !Otp4 ? otp3.focus() : (Otp4 = '');"/>
+                      <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp5" [(ngModel)]="Otp5" #otp5 type="text" inputmode="numeric"  [ngClass]="{'border-red-500 shake': submitted && !Otp5}" (input)="moveFocus(Otp5, otp6)" (keydown.backspace)="$event.preventDefault();
+              !Otp5 ? otp4.focus() : (Otp5 = '');"/>
+                      <input  maxlength="1" class=" w-8 h-8 rounded-md shadow-lg text-center border" name="otp6" [(ngModel)]="Otp6"  #otp6 type="text" inputmode="numeric" [ngClass]="{'border-red-500 shake': submitted && !Otp6}" (keydown.backspace)="$event.preventDefault();
+              !Otp6 ? otp5.focus() : (Otp6 = '');"/>
             </div>
 
             <div class="space-y-2">
@@ -40,7 +45,8 @@
               <div class="flex-grow border-t border-gray-400"></div>
             </div>
 
-            <button class="w-full bg-[#8C2224] text-white py-2 rounded-lg font-semibold">
+            <button type="
+            button" class="w-full bg-[#8C2224] text-white py-2 rounded-lg font-semibold" >
               Back to Login Page
             </button>
           </div>
