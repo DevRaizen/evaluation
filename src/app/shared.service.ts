@@ -22,7 +22,7 @@ export class SharedService {
   }
 
   sendUserInfoToDB() {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php'; // <- create this PHP file
+  const url = 'http://localhost/teacher-evaluation-backend/api.php'; 
   const userData = {
     action: 'register',
     fname: this.Fname,

@@ -15,12 +15,36 @@
     public barChartType: ChartType = 'bar';
     public barChartPlugins = [];
 
+    constructor(private apiService: ApiService, private router: Router) {
 
+    }
     openSidebar() {
       this.isSidebarOpen = true;
     }
     closeSidebar() {
       this.isSidebarOpen = false;
+    }
+
+    goToDashboard(){
+      this.router.navigate(['/dashboard']);
+    }
+    goToManageUser() {
+      this.router.navigate(['/manage-user']);
+    }
+    goToSubjectMap() {
+      this.router.navigate(['/subject-map']);
+    }
+    goToEvalForm() {
+      this.router.navigate(['/eval-form']);
+    }
+    goToEvalSched() {
+      this.router.navigate(['/eval-sced']);
+    }
+    goToGenReport() {
+      this.router.navigate(['/gen-report']);
+    }
+    goToSettings() {
+      this.router.navigate(['/settings']);
     }
 
     public barChartOptions: ChartOptions = {
@@ -77,7 +101,6 @@
 
     menuOpen: boolean = false;
     user: any | null = null;
-  constructor(private apiService: ApiService, private router: Router) {}
 
     ngOnInit(): void {
      /* this.user = localStorage.getItem('userid');

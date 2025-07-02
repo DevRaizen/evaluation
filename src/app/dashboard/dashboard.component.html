@@ -43,34 +43,35 @@
 
     <!-- Navigation -->
     <nav class="mt-4 px-4 space-y-2">
-        <a href="#" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+        <a (click)="goToDashboard()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
           <div class="flex items-center gap-2">
             <i class="fas fa-home"></i>
             Dashboard
           </div>
           <i class="fas fa-angle-right"></i>
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        
+        <a (click)="goToManageUser()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-user"></i>
           Manage Users
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToSubjectMap()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-book"></i>
           Subject Mappings
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToEvalForm()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-file-alt"></i>
           Evaluation Form
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToEvalSched()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-calendar-alt"></i>
           Evaluation Schedule
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToGenReport()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-chart-bar"></i>
           Generate Report
         </a>
-        <a href="#" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-cog"></i>
           Settings
         </a>

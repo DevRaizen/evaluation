@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Chart } from 'chart.js/auto';
 
@@ -10,23 +11,42 @@ import { Chart } from 'chart.js/auto';
 })
 export class TeacherViewComponent implements OnInit{
 
-  constructor(){
-   
-  }
- isSidebarOpen = false;
-    public barChartPlugins = [];
-
-    openSidebar() {
+  constructor(private router: Router){}
+  isSidebarOpen = false;
+  public barChartPlugins = [];
+  openSidebar() {
       this.isSidebarOpen = true;
     }
-    closeSidebar() {
+  closeSidebar() {
       this.isSidebarOpen = false;
     }
 
-     ngOnInit(): void {
+  ngOnInit(): void {
     this.renderChart();
     this.renderRatingChart();
   }
+  
+  goToDashboard(){
+        this.router.navigate(['/dashboard']);
+    }
+  goToManageUser() {
+        this.router.navigate(['/manage-user']);
+    }
+  goToSubjectMap() {
+        this.router.navigate(['/subject-map']);
+    }
+  goToEvalForm() {
+        this.router.navigate(['/eval-form']);
+    }
+  goToEvalSched() {
+        this.router.navigate(['/eval-sced']);
+    }
+  goToGenReport() {
+        this.router.navigate(['/gen-report']);
+    }
+  goToSettings() {
+        this.router.navigate(['/settings']);
+    }
 
   renderChart() {
     const ctx = document.getElementById('performanceChart') as HTMLCanvasElement;

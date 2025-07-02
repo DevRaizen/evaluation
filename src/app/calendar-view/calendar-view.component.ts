@@ -1,36 +1,41 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 @Component({
-  selector: 'app-student-view',
+  selector: 'app-calendar-view',
   standalone: false,
-  templateUrl: './student-view.component.html',
-  styleUrl: './student-view.component.css'
+  templateUrl: './calendar-view.component.html',
+  styleUrl: './calendar-view.component.css'
 })
-export class StudentViewComponent {
-  isSidebarOpen = false;
-  imagePreview: string | ArrayBuffer | null = null;
-
-  constructor(private router: Router){}
-
-  onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagePreview = reader.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
+export class CalendarViewComponent {
+    isSidebarOpen = false;
+    calendarOptions = {
+      plugins: [dayGridPlugin],
+      initialView: 'dayGridMonth',
+      events: [
+        {
+          title: 'Midyear Eval 2025 Start Date',
+          date: '2025-06-01',
+          color: '#00BFA6',
+        },
+        {
+          title: 'Midyear Eval 2025 End Date',
+          date: '2025-06-05',
+          color: '#00BFA6',
+        }
+      ]
+    };
+    
+    constructor(private router: Router){}
     openSidebar() {
       this.isSidebarOpen = true;
     }
     closeSidebar() {
       this.isSidebarOpen = false;
     }
-    
+
     goToDashboard(){
         this.router.navigate(['/dashboard']);
       }
@@ -52,4 +57,5 @@ export class StudentViewComponent {
     goToSettings() {
         this.router.navigate(['/settings']);
       }
+
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subject-map',
@@ -8,16 +9,8 @@ import { Component } from '@angular/core';
 })
 export class SubjectMapComponent {
     isSidebarOpen = false;
-
-    openSidebar() {
-      this.isSidebarOpen = true;
-    }
-    closeSidebar() {
-      this.isSidebarOpen = false;
-    }
-
     showModal = false;
-  searchTerm = '';
+    searchTerm = '';
 
   // Mock Data - Replace with real data from service
   assignments = [
@@ -41,13 +34,44 @@ export class SubjectMapComponent {
     }
   ];
 
-  openModal() {
-    this.showModal = true;
-  }
+    constructor(private router: Router){}
+    openSidebar() {
+        this.isSidebarOpen = true;
+    }
+    closeSidebar() {
+        this.isSidebarOpen = false;
+    }
 
-  closeModal() {
-    this.showModal = false;
-  }
+    openModal() {
+      this.showModal = true;
+    }
+
+    closeModal() {
+      this.showModal = false;
+    }
+
+  // Router
+    goToDashboard(){
+        this.router.navigate(['/dashboard']);
+      }
+    goToManageUser() {
+        this.router.navigate(['/manage-user']);
+      }
+    goToSubjectMap() {
+        this.router.navigate(['/subject-map']);
+      }
+    goToEvalForm() {
+        this.router.navigate(['/eval-form']);
+      }
+    goToEvalSched() {
+        this.router.navigate(['/eval-sced']);
+      }
+    goToGenReport() {
+        this.router.navigate(['/gen-report']);
+      }
+    goToSettings() {
+        this.router.navigate(['/settings']);
+      }
 
   filteredAssignments() {
     return this.assignments.filter(a =>

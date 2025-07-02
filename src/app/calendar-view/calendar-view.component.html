@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+        <a  (click)="goToDashboard()" class="flex items-center justify-between hover:bg-white/10  px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </div>
+        </a>
+        <a (click)="goToManageUser()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-user"></i>
+          Manage Users
+        </a>
+        <a (click)="goToSubjectMap()" class="flex items-center gap-2 px-3 py-2  hover:bg-white/10 rounded">
+          <i class="fas fa-book"></i>
+          Subject Mappings
+        </a>
+         <a (click)="goToEvalForm()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-file-alt"></i>
+          Evaluation Form
+        </a>
+         <a (click)="goToEvalSched()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-calendar-alt"></i>
+            Evaluation Schedule
+          </div>
+          <i class="fas fa-angle-right"></i>
+        </a>
+        <a (click)="goToGenReport()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </a>
+        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+        <div class="p-4 mt-16">
+          <button  class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Left: Dashboard + Search -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Evaluation Schedule</h1>
+
+          </div>
+        
+          <!-- Right: Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              src="https://via.placeholder.com/40"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+        
+        <div class="p-4 bg-white rounded shadow-lg">
+            <h2 class="text-xl font-bold mb-4">Calendar View</h2>
+            <div class="w-full h-[530px] overflow-auto">
+                <full-calendar [options]="calendarOptions"></full-calendar>
+            </div>
+        </div>
+
+      </main>
+    
+    </div>
+  </body>
+</html>

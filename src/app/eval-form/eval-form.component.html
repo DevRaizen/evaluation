@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+        <a (click)="goToDashboard()" class="flex items-center justify-between hover:bg-white/10  px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </div>
+        </a>
+        <a (click)="goToManageUser()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-user"></i>
+          Manage Users
+        </a>
+        <a (click)="goToSubjectMap()" class="flex items-center gap-2 px-3 py-2  hover:bg-white/10 rounded">
+          <i class="fas fa-book"></i>
+          Subject Mappings
+        </a>
+          <a (click)="goToEvalForm()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-file-alt"></i>
+            Evaluation Form
+          </div>
+          <i class="fas fa-angle-right"></i>
+        </a>
+        <a (click)="goToEvalSched()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-calendar-alt"></i>
+          Evaluation Schedule
+        </a>
+        <a (click)="goToGenReport()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </a>
+        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+        <div class="p-4 mt-16">
+          <button  class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Left: Dashboard + Search -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Evaluation Form</h1>
+
+          </div>
+        
+          <!-- Right: Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              src="https://via.placeholder.com/40"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+      
+        <!-- Manage Forms -->
+        <section class="bg-white p-6 rounded shadow">
+          <div class="flex justify-between items-center mb-4">
+            <select class="border px-3 py-2 rounded w-1/2">
+              <option>Questionnaire #1</option>
+              <!-- Add more options dynamically -->
+            </select>
+            <div class="space-x-2">
+              <button class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">+ Add Form</button>
+              <button (click)="openCategoryModal()" class="bg-gray-300 px-4 py-2 rounded">Manage Categories</button>
+            </div>
+          </div>
+            <table class="min-w-full text-sm border">
+            <thead class="bg-gray-100 text-left">
+                <tr>
+                <th class="px-4 py-2 w-1/4 border">Category</th>
+                <th class="px-4 py-2 border">Questions</th>
+                <th class="px-4 py-2 w-1/4 border">Question Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let group of questions">
+                <ng-container *ngFor="let q of group.list; let i = index">
+                    <tr class="border-b">
+                    <!-- Category Dropdown (only on first row) -->
+                    <td *ngIf="i === 0" [attr.rowspan]="group.list.length" class="px-4 py-2 align-top border">
+                        <select [(ngModel)]="group.category" class=" rounded px-2 py-1 w-full hover:border">
+                        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                        </select>
+                    </td>
+                    <!-- Question Text -->
+                    <td class="px-4 py-2 border">
+                        <input [(ngModel)]="q.text" type="text" class="hover:border rounded px-2 py-1 w-full" />
+                    </td>
+                    <!-- Question Type Dropdown -->
+                    <td class="px-4 py-2 border">
+                        <select [(ngModel)]="q.type" class="hover:border rounded px-2 py-1 w-full">
+                        <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
+                        </select>
+                    </td>
+                    </tr>
+                </ng-container>
+                </ng-container>
+                <!-- Show Add Question Form -->
+                    <tr *ngIf="showAddForm">
+                    <td class="px-4 py-2 border" colspan="3">
+                        <div class="flex flex-col md:flex-row gap-2">
+                        <select [(ngModel)]="newQuestion.category" class="border px-2 py-1 rounded w-full md:w-1/3">
+                            <option value="" disabled selected>Select Category</option>
+                            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                        </select>
+                        <input [(ngModel)]="newQuestion.text" placeholder="Enter your question" class="border px-2 py-1 rounded w-full md:w-1/2" />
+                        <select [(ngModel)]="newQuestion.type" class="border px-2 py-1 rounded w-full md:w-1/4">
+                            <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
+                        </select>
+                        <button (click)="addNewQuestion()" class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">Add</button>
+                        <button (click)="cancelAdd()" class="bg-gray-300 px-4 py-1 rounded hover:bg-gray-400">Cancel</button>
+                        </div>
+                    </td>
+                    </tr>
+                    <!-- + Add Question Button -->
+                    <tr *ngIf="!showAddForm">
+                    <td colspan="3" class="px-4 py-2 text-center text-blue-500 cursor-pointer hover:underline"
+                        (click)="showAddForm = true">
+                        + Add a new question
+                    </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="flex justify-end mt-4 space-x-2">
+                <button class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+                <button class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">Preview</button>
+            </div>
+        </section>
+      </main>
+    
+    </div>
+  </body>
+</html>
+
+<!-- Category Modal -->
+<div *ngIf="showCategoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-[500px] rounded-lg shadow-lg">
+    <div class="bg-red-800 text-white px-6 py-3 rounded-t-lg flex justify-between items-center">
+      <h2 class="text-lg font-semibold">Manage Categories</h2>
+      <button (click)="cancelAddCat()" class="text-white text-xl font-bold">&times;</button>
+    </div>
+
+    <table class="min-w-full text-sm ">
+    <div class="p-6 space-y-3 overflow-y-auto">
+      <tr *ngFor="let cat of categories; let i = index; trackBy: trackByIndex " class="border flex items-center gap-2 px-4 py-2">
+        <input [(ngModel)]="categories[i]" [readonly]="!editMode[i]"  #categoryInput  (ngModelChange)="onCategoryChange(i, $event)" class=" rounded px-3 py-1 w-full" />
+        <button (click)="editCategory(i,categoryInput)" class="text-gray-500 border-r px-2">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button (click)="deleteCategory(i)" class="text-gray-500">
+          <i class="fas fa-trash"></i>
+        </button>
+      </tr>
+
+      <!-- Add Category Input -->
+      <div class="flex items-center gap-2">
+        <input [(ngModel)]="newCategory" placeholder="Input Category Name here..." class="border rounded px-3 py-1 w-full" />
+        <button (click)="addCategory()" class="text-gray-500">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    </table>
+    <div class="px-6 py-4 flex justify-between">
+      <button (click)="cancelAddCat()" class="bg-gray-200 px-4 py-2 rounded">Cancel</button>
+      <button (click)="saveCategories()" class="bg-yellow-500 text-white px-4 py-2 rounded">Save Changes</button>
+    </div>
+  </div>
+</div>

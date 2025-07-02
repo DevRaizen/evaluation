@@ -2,20 +2,15 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-manage-user',
+  selector: 'app-settings',
   standalone: false,
-  templateUrl: './manage-user.component.html',
-  styleUrl: './manage-user.component.css'
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.css'
 })
-export class ManageUserComponent {
+export class SettingsComponent {
     isSidebarOpen = false;
-    showPassword = false;
-    showconPassword = false;
-    Password?: string;
-    conPassword?: string;
-    AisModalOpen = false;
-    EisModalOpen = false;
-    
+    selected = 'weekly'; 
+
     constructor(private router: Router){}
     openSidebar() {
       this.isSidebarOpen = true;
@@ -23,32 +18,7 @@ export class ManageUserComponent {
     closeSidebar() {
       this.isSidebarOpen = false;
     }
-
-    AopenModal() {
-      this.AisModalOpen = true;
-    }
-
-    AcloseModal() {
-      this.AisModalOpen = false;
-  }
-   EopenModal() {
-      this.EisModalOpen = true;
-    }
-
-    EcloseModal() {
-      this.EisModalOpen = false;
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-    
-  }
-  toggleconPasswordVisibility(): void {
-    this.showconPassword = !this.showconPassword;
-    
-  }
-
-  // Router
+    // Router
       goToDashboard(){
         this.router.navigate(['/dashboard']);
       }
@@ -70,6 +40,5 @@ export class ManageUserComponent {
       goToSettings() {
         this.router.navigate(['/settings']);
       }
-
 
 }

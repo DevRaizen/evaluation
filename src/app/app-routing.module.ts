@@ -9,6 +9,11 @@ import { ManageUserComponent } from './manage-user/manage-user.component';
 import { StudentViewComponent } from './student-view/student-view.component';
 import { TeacherViewComponent } from './teacher-view/teacher-view.component';
 import { SubjectMapComponent } from './subject-map/subject-map.component';
+import { EvalFormComponent } from './eval-form/eval-form.component';
+import { EvalScedComponent } from './eval-sced/eval-sced.component';
+import { CalendarViewComponent } from './calendar-view/calendar-view.component';
+import { GenReportComponent } from './gen-report/gen-report.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'user', pathMatch: 'full' }, // Redirect to login on load
@@ -20,7 +25,12 @@ const routes: Routes = [
   { path: 'manage-user', component: ManageUserComponent },
   { path: 'student-view', component: StudentViewComponent },
   { path: 'teacher-view', component: TeacherViewComponent },
-   { path: 'subject-map', component: SubjectMapComponent },
+  { path: 'subject-map', component: SubjectMapComponent },
+  { path: 'eval-form', component: EvalFormComponent },
+  { path: 'eval-sced', component: EvalScedComponent },
+  { path: 'calendar-view', component: CalendarViewComponent },
+  { path: 'gen-report', component: GenReportComponent },
+  { path: 'settings', component: SettingsComponent },
 ];
 
 

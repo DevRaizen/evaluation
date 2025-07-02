@@ -14,6 +14,13 @@ import { ManageUserComponent } from './manage-user/manage-user.component';
 import { StudentViewComponent } from './student-view/student-view.component';
 import { TeacherViewComponent } from './teacher-view/teacher-view.component';
 import { SubjectMapComponent } from './subject-map/subject-map.component';
+import { EvalFormComponent } from './eval-form/eval-form.component';
+import { EvalScedComponent } from './eval-sced/eval-sced.component';
+import { CalendarViewComponent } from './calendar-view/calendar-view.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import { GenReportComponent } from './gen-report/gen-report.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -26,14 +33,20 @@ import { SubjectMapComponent } from './subject-map/subject-map.component';
     ManageUserComponent,
     StudentViewComponent,
     TeacherViewComponent,
-    SubjectMapComponent
+    SubjectMapComponent,
+    EvalFormComponent,
+    EvalScedComponent,
+    CalendarViewComponent,
+    GenReportComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,    
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgChartsModule
+    NgChartsModule,
+    FullCalendarModule,
   ],
   providers: [],
   bootstrap: [AppComponent] 

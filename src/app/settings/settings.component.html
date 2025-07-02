@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+        <a (click)="goToDashboard()" class="flex items-center justify-between hover:bg-white/10 px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-home"></i>
+            Dashboard
+          </div>
+        </a>
+        <a (click)="goToManageUser()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-user"></i>
+          Manage Users
+        </a>
+        <a (click)="goToSubjectMap()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-book"></i>
+          Subject Mappings
+        </a>
+        <a (click)="goToEvalForm()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-file-alt"></i>
+          Evaluation Form
+        </a>
+        <a (click)="goToEvalSched()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-calendar-alt"></i>
+          Evaluation Schedule
+        </a>
+        <a (click)="goToGenReport()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-chart-bar"></i>
+          Generate Report
+        </a>
+        <a (click)="goToSettings()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas facog"></i>
+            Settings
+          </div>
+          <i class="fas fa-angle-right"></i>
+        </a>
+      </nav>
+        <div class="p-4 mt-16">
+          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Left: Dashboard + Search -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Settings</h1>
+
+          </div>
+        
+          <!-- Right: Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              src="https://via.placeholder.com/40"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 bg py-4 space-x-4">
+            <!-- left -->
+            <div>
+                <div class="bg-white rounded shadow mb-4 p-2 px-6">
+                    <h1 class="text-xl font-bold">School Settings</h1>
+                    <hr class="mt-2">
+                    <div class="flex justify-between pt-4 pb-2">
+                        <p class="text-lg">Set as Active School Year</p>
+                         <label class="relative inline-block w-14 h-8 ">
+                            <input type="checkbox" class="sr-only peer"  >
+                            <div
+                            class="w-full h-full bg-gray-300 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"
+                            ></div>
+                            <div
+                            class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transform transition-transform duration-300"
+                            ></div>
+                        </label>
+                    </div>
+                    <div class="mb-2">
+                        <select class="border border-gray-300 rounded px-3 py-2 w-full ">
+                            <option>2024-2025</option>
+                            <option>2023-2024</option>
+                        </select>
+                        <i class="fas fa-angle-bottommm"></i>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button class="bg-yellow-400 rounded-lg p-2">Add New School Year</button>
+                        <button class="bg-yellow-400 rounded-lg p-2">Archive School Year</button>
+                    </div>
+                </div>
+                 <div class="bg-white rounded shadow p-2 px-6">
+                    <h1 class="text-xl font-bold">Evaluation Configuration</h1>
+                    <hr class="mt-2">
+                    <div class="grid grid-rows-5">
+                        <div class="flex justify-between p-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Minimum completetion ratee to generate report</label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>100%</option>
+                                <option>80%</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between p-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Questionaire</label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>100%</option>
+                                <option>80%</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between p-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Start Date</label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>1 Month</option>
+                                <option>2 Months</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between p-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Default End Date</label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>1 Month</option>
+                                <option>2 Months</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-between p-2 ">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Release </label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>Immediately</option>
+                                <option>80%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- right -->
+            <div>
+                <div class="bg-white rounded shadow mb-4 p-2 px-6 h-44">
+                    <h1 class="text-xl font-bold">Account Management</h1>
+                    <hr class="mt-2">
+                    <div class="grid grid-rows-3 space-y-2">
+                        <div class="flex justify-between">
+                            <label class="text-lg">Name</label>
+                            <label class="text-lg text-gray-600">Admin1</label>
+                        </div>
+                        <div class="flex justify-between">
+                            <label class="text-lg">Email</label>
+                            <div>
+                                <input type="text" value="Sh*******gmaiil.com" >
+                                <button class="bg-yellow-500 rounded-lg px-2 ml-2">Change</button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <label class="text-lg">Password</label>
+                            <div>
+                                <input type="text" value="************" >
+                                <button class="bg-yellow-500 rounded-lg px-2 ml-2">Change</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                 <div class="bg-white rounded shadow mb-4 h-40 p-2 px-6">
+                    <h1 class="text-xl font-bold">Notification Settings</h1>
+                    <hr class="mt-2">
+                <div class="grid grid-rows-2 space-y-2">
+                        <div >
+                            <label class="text-lg">Enable email reminders</label>
+                        </div>
+                        <div class="flex justify-between">
+                            <label class="text-lg">Set reminder frequency</label>
+                            <div class="inline-flex rounded-lg shadow overflow-hidden border border-gray-300">
+                                <button
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
+                                    [class.bg-yellow-400]="selected === 'weekly'"
+                                    (click)="selected = 'weekly'"
+                                >
+                                    Weekly
+                                </button>
+                                <button
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
+                                    [class.bg-yellow-400]="selected === 'monthly'"
+                                    (click)="selected = 'monthly'"
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
+                                    [class.bg-yellow-400]="selected === 'custom'"
+                                    (click)="selected = 'custom'"
+                                >
+                                    Custom
+                                </button>
+                            </div>
+                        </div>   
+                    </div>
+                </div>
+
+                <div class="bg-white rounded shadow h-40 p-2 px-6">
+                    <h1 class="text-xl font-bold">Security</h1>
+                    <hr class="mt-2">
+                    <div class="flex justify-between p-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Set Log Out Timer</label>
+                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
+                                <option>1 Month</option>
+                                <option>2 Months</option>
+                            </select>
+                    </div>
+                    <div class="flex justify-between p-2">
+                        <p class="text-sm">Two Factor Authentication</p>
+                         <label class="relative inline-block w-14 h-8 ">
+                            <input type="checkbox" class="sr-only peer"  >
+                            <div
+                            class="w-full h-full bg-gray-300 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"
+                            ></div>
+                            <div
+                            class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transform transition-transform duration-300"
+                            ></div>
+                        </label>
+                    </div>
+                    
+                </div>
+                 
+                <div class="grid grid-cols-2 gap-4 mt-2">
+                    <button class="bg-white rounded p-2">Download Activity Logs</button>
+                    <button class="bg-yellow-500 rounded p-2">Save Changes</button>
+                </div>
+            </div>
+        </div>
+        
+      </main>
+    
+    </div>
+  </body>
+</html>
