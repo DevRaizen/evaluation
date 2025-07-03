@@ -14,6 +14,7 @@ import { EvalScedComponent } from './eval-sced/eval-sced.component';
 import { CalendarViewComponent } from './calendar-view/calendar-view.component';
 import { GenReportComponent } from './gen-report/gen-report.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TdashboardComponent } from './tdashboard/tdashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'user', pathMatch: 'full' }, // Redirect to login on load
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'calendar-view', component: CalendarViewComponent },
   { path: 'gen-report', component: GenReportComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'tdashboard', component: TdashboardComponent},
 ];
 
 
