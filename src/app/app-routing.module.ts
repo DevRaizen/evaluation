@@ -15,6 +15,7 @@ import { CalendarViewComponent } from './calendar-view/calendar-view.component';
 import { GenReportComponent } from './gen-report/gen-report.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TdashboardComponent } from './tdashboard/tdashboard.component';
+import { TsubjectMapComponent } from './tsubject-map/tsubject-map.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'user', pathMatch: 'full' }, // Redirect to login on load
@@ -33,8 +34,8 @@ const routes: Routes = [
   { path: 'gen-report', component: GenReportComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'tdashboard', component: TdashboardComponent},
+  { path: 'tsubject-map', component: TsubjectMapComponent},
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

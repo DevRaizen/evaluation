@@ -22,6 +22,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { GenReportComponent } from './gen-report/gen-report.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TdashboardComponent } from './tdashboard/tdashboard.component';
+import { TsubjectMapComponent } from './tsubject-map/tsubject-map.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { TdashboardComponent } from './tdashboard/tdashboard.component';
     CalendarViewComponent,
     GenReportComponent,
     SettingsComponent,
-    TdashboardComponent
+    TdashboardComponent,
+    TsubjectMapComponent
   ],
   imports: [
     BrowserModule,    

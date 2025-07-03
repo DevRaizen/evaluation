@@ -44,14 +44,14 @@
     <!-- Navigation -->
     <nav class="mt-4 px-4 space-y-2">
        
-         <a  class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+         <a (click)="goToDashboard()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
           <div class="flex items-center gap-2">
             <i class="fas fa-user"></i>
             Dashboard
           </div>
           <i class="fas fa-angle-right"></i>
         </a>
-        <a  class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToSubjectMap()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
           <i class="fas fa-book"></i>
           Subject Mappings
         </a>
@@ -91,7 +91,7 @@
               🔔
             </div>
             <img
-               [src]="imagePreview || '/assets/teacher.png'"  
+              [src]="imagePreview || '/assets/teacher.png'"  
               alt="Profile"
               class="w-10 h-10 rounded-full object-cover cursor-pointer"
             />

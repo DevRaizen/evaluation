@@ -42,10 +42,10 @@ export class TdashboardComponent{
 
 
   goToDashboard(){
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/tdashboard']);
     }
   goToSubjectMap() {
-        this.router.navigate(['/subject-map']);
+        this.router.navigate(['/tsubject-map']);
     }
   goToSettings() {
         this.router.navigate(['/settings']);
