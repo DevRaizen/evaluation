@@ -23,6 +23,9 @@ import { GenReportComponent } from './gen-report/gen-report.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TdashboardComponent } from './tdashboard/tdashboard.component';
 import { TsubjectMapComponent } from './tsubject-map/tsubject-map.component';
+import { TsettingsComponent } from './tsettings/tsettings.component';
+import { StdashboardComponent } from './stdashboard/stdashboard.component';
+import { StevalFormComponent } from './steval-form/steval-form.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +45,10 @@ import { TsubjectMapComponent } from './tsubject-map/tsubject-map.component';
     GenReportComponent,
     SettingsComponent,
     TdashboardComponent,
-    TsubjectMapComponent
+    TsubjectMapComponent,
+    TsettingsComponent,
+    StdashboardComponent,
+    StevalFormComponent
   ],
   imports: [
     BrowserModule,    

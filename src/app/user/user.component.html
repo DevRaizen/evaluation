@@ -53,7 +53,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="text-sm  text-gray-700 tracking-wide ">Grade Level</label>
-              <select name="grade" [(ngModel)]="Grade" #grade="ngModel" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+              <select name="grade" [(ngModel)]="Grade" #grade="ngModel" (ngModelChange)="onGradeChange()" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
                 <option value="">Select Grade</option>
                 <option value="7">7</option>
                 <option value="8">8</option>
@@ -69,9 +69,7 @@
               <label class="text-sm  text-gray-700 tracking-wide ">Section</label>
               <select name="section" [(ngModel)]="Section" #section="ngModel" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
                 <option value="">Select Section</option>
-                <option value="St. Peter">St. Peter</option>
-                <option value="St. Paul">St. Paul</option>
-                <option value="St. John">St. John</option>
+               <option *ngFor="let sec of getSectionsForGrade()" [value]="sec">{{ sec }}</option>
               </select>
               <div *ngIf="section.invalid && section.touched" class="text-red-500 text-sm mt-1">
                   Please Select Section.
@@ -153,3 +151,21 @@
 
 </body>
 </html>
+
+<div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚠️ Warning</h3>
+      <button (click)="errorMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
+      <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>

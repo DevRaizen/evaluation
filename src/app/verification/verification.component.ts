@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   styleUrl: './verification.component.css'
 })
 export class VerificationComponent {
+errorMessage?: string;
 Email?: string;
 Otp1?: string;
 Otp2?: string;
@@ -21,7 +22,7 @@ Otp6?: string;
 submitted: boolean = false;
 
 constructor(private sharedService:SharedService, private router:Router){
-  this.Email = this.sharedService.Email;
+  this.Email = this.sharedService.Student.Email;
 }
 
 moveFocus(value?: string, nextInput?: any) {
@@ -45,7 +46,7 @@ verifyOtp() {
   }
 
   if (enteredCode === storedCode) {
-    alert('✅ Code verified!');
+    this.errorMessage = "✅ Code verified!";
     this.sharedService.sendUserInfoToDB().subscribe({
       next: (res)=>{
         alert('✅ User data saved to database!');
@@ -58,7 +59,7 @@ verifyOtp() {
     });
     this.router.navigate(['/success']); // or next step
   } else {
-    alert('❌ Code mismatch!');
+    this.errorMessage = "❌ Code does not Match";
   }
 }
 }

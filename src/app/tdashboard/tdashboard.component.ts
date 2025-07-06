@@ -48,7 +48,7 @@ export class TdashboardComponent{
         this.router.navigate(['/tsubject-map']);
     }
   goToSettings() {
-        this.router.navigate(['/settings']);
+        this.router.navigate(['/tsettings']);
     }
 
   renderChart() {

@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
   styleUrl: './user.component.css'
 })
 export class UserComponent {
+  errorMessage?: string;
   Fname = '';
   Mname = '';
   Lname = '';
@@ -19,12 +20,27 @@ export class UserComponent {
   Grade = '';
   Section = '';
   PhoneNumber = ''
-
+  allSections: { [key: string]: string[] } = {
+  '7': ['St. Peter', 'St. Paul'],
+  '8': ['St. John', 'St. Agnes'],
+  '9': ['St. Therese', 'St. Monica'],
+  '10': ['St. Joseph', 'St. Veronica']
+};
   
   constructor(private sharedService:SharedService,private router:Router,private location:Location){
 
   }
-  
+
+
+getSectionsForGrade(): string[] {
+  return this.allSections[this.Grade] || [];
+}
+onGradeChange() {
+  const availableSections = this.getSectionsForGrade();
+  if (!availableSections.includes(this.Section)) {
+    this.Section = ""; // reset section if not valid for selected grade
+  }
+}
   goToLogin() {
   this.router.navigate(['/login']);
 }
@@ -38,17 +54,24 @@ export class UserComponent {
       return;
     }
 
-    // Pass form data to SharedService
-    this.sharedService.Fname = this.Fname;
-    this.sharedService.Mname = this.Mname;
-    this.sharedService.Lname = this.Lname;
-    this.sharedService.StudId = this.StudId;
-    this.sharedService.Grade = this.Grade;
-    this.sharedService.Section = this.Section;
-    this.sharedService.PhoneNumber = this.PhoneNumber;
-
     
+this.sharedService.checkStudIdExists(this.StudId).subscribe(response => {
+  if (response.exists) {
+    this.errorMessage = "Student ID already exists!";
+  }else{
+      
+    this.sharedService.Student.Fname = this.Fname;
+    this.sharedService.Student.Mname = this.Mname;
+    this.sharedService.Student.Lname = this.Lname;
+    this.sharedService.Student.StudId = this.StudId;
+    this.sharedService.Student.Grade = this.Grade;
+    this.sharedService.Student.Section = this.Section;
+    this.sharedService.Student.PhoneNumber = this.PhoneNumber;
+
     this.router.navigate(['/register']);  
+  }
+});
+ 
 
   }
 

@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-100">
+  
+  <div class="flex flex-col md:flex-row min-h-screen ">
+  
+    <div class="block bg-[#8C2224]">
+      <div class="md:hidden p-4 w-fit">
+        <button (click)="openSidebar()" class="text-white bg-[#8C2224] p-2 rounded flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block h-5 w-5 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+<!-- Sidebar -->
+  <aside 
+    class="w-60 min-h-screen bg-[#8C2224] text-white flex flex-col justify-between fixed z-50 transition-transform duration-300 ease-in-out md:static "
+    [ngClass]="{
+      'translate-x-0': isSidebarOpen,
+      '-translate-x-full': !isSidebarOpen,
+      'md:translate-x-0': true
+    }"
+  > 
+  <div>
+    <!-- Logo -->
+    <button (click)="closeSidebar()" class="text-white text-lg  lg:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>      
+    </button> <!-- Close button -->
+    <div class="p-10 pt-4 border-b border-white/20 text-center">
+      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="mt-4 px-4 space-y-2">
+         <a (click)="goToDashboard()" class="flex items-center justify-between hover:bg-white/10 px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-user"></i>
+            Dashboard
+          </div>
+        </a>
+            <a (click)="goToDashboard()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-file-alt"></i>
+            Evaluation Form
+          </div>
+          <i class="fas fa-angle-right"></i>
+        </a>
+        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+        <div class="p-4 mt-52">
+          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+            Log Out
+          </button>
+        </div>
+      </div>
+    </aside>
+
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 space-y-3 text-sm">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
+          <!-- Dashboard -->
+          <div class="flex items-center space-x-4">
+            <!-- Dashboard Title -->
+            <h1 class="text-xl font-semibold">Evaluation</h1>
+
+          </div>
+        
+          <!-- Right Icons -->
+          <div class="flex items-center space-x-4">
+            <!-- Message Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              ✉️
+            </div>
+            <!-- Notification Icon -->
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
+              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+              🔔
+            </div>
+            <img
+              [src]="imagePreview || '/teacher.png'"  
+              alt="Profile"
+              class="w-10 h-10 rounded-full object-cover cursor-pointer"
+            />
+          </div>
+        </div>
+        
+    <div class=" py-2 space-y-6 text-sm">
+    <!-- Profile + Progress -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <!-- Profile Info -->
+        <div class="flex items-center space-x-4 bg-white p-2 rounded shadow w-full h-28">
+        <img src="/teacher.png" class="w-20 h-20 rounded-full object-cover" />
+        <div>
+            <h2 class="text-4xl font-semibold">Vin Bautista</h2>
+            <p class="text-gray-500 text-2xl">English</p>
+        </div>
+        </div>
+
+        <!-- Progress Box -->
+        <div class="bg-white border shadow  p-4 rounded w-full md:w-96">
+        <p class="text-sm mb-2">
+            🧠 Consider running a teacher workshop on clearer assignment instructions.
+        </p>
+        <div class="text-sm font-medium text-gray-700 mb-1">
+            Progress:{{currentQuestion}} out of {{questions.length}} Questions
+        </div>
+        <div class="w-full bg-gray-200 rounded h-2">
+            <div class="bg-yellow-400 h-2 rounded" [style.width.%]="(currentQuestion / questions.length) * 100"></div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Directions -->
+    <p class="text-sm text-gray-700 bg-white py-4 rounded shadow">
+        <span class="font-semibold">Direction:</span>
+        Evaluate your subject teachers objectively using the following descriptors as 4 being the highest score and 1 being the lowest.
+    </p>
+<div class="overflow-x-auto">
+  <div class="rounded-lg shadow-sm bg-white border border-gray-300">
+    <table class="min-w-full text-sm border-collapse">
+      <thead class="bg-gray-100">
+        <tr class="text-gray-700">
+          <th class="border border-gray-300 p-3 text-left text-lg font-semibold w-[60%]">Respect</th>
+          <th class="border border-gray-300 p-3 text-center">4</th>
+          <th class="border border-gray-300 p-3 text-center">3</th>
+          <th class="border border-gray-300 p-3 text-center">2</th>
+          <th class="border border-gray-300 p-3 text-center">1</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let question of paginatedQuestions; let i = index">
+          <td class="border border-gray-300 p-3 text-gray-800">
+            {{ question.text }} 
+          </td>
+
+          <!-- Likert-type question -->
+          <ng-container *ngIf="question.type === 'likert'">
+            <td *ngFor="let score of [4, 3, 2, 1]" class="border border-gray-300 text-center">
+              <input type="radio" name="q{{ (currentPage - 1) * questionsPerPage + i }}" [value]="score" 
+                       (change)="onAnswer()"
+                      [(ngModel)]="answers[(currentPage - 1) * questionsPerPage + i]" 
+                      class="accent-[#6A1321] h-5 w-5" />
+            </td>
+          
+          </ng-container>
+
+          <!-- Comment-type question -->
+          <ng-container *ngIf="question.type === 'comment'">
+            <td class="border border-gray-300 text-center" colspan="4">
+              <input
+                type="text"
+                placeholder="Write your comment..."
+                 [(ngModel)]="answers[(currentPage - 1) * questionsPerPage + i]"
+                  (change)="onAnswer()"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
+              />
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+   <div class="flex justify-between pt-4">
+    <button
+      class="bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+    >
+      Previous
+    </button>
+
+    <button
+     *ngIf="currentPage != totalPages"
+      class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50 "
+      (click)="nextPage()"
+      [disabled]="currentPage * questionsPerPage >= questions.length"
+    >
+      Next
+    </button>
+
+    <button 
+  *ngIf="currentPage === totalPages" 
+  (click)="submitAnswers()" 
+  class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50"
+>
+  Submit
+</button>
+  </div>
+</div>
+ 
+      </main>
+    
+    </div>
+  </body>
+</html>
+
+
