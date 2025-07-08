@@ -20,6 +20,7 @@ export class UserComponent {
   Grade = '';
   Section = '';
   PhoneNumber = ''
+  
   allSections: { [key: string]: string[] } = {
   '7': ['St. Peter', 'St. Paul'],
   '8': ['St. John', 'St. Agnes'],
@@ -38,7 +39,7 @@ getSectionsForGrade(): string[] {
 onGradeChange() {
   const availableSections = this.getSectionsForGrade();
   if (!availableSections.includes(this.Section)) {
-    this.Section = ""; // reset section if not valid for selected grade
+    this.Section = ""; 
   }
 }
   goToLogin() {

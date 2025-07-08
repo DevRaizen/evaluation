@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SharedService {
+  defaultAvatar = "/user.png";
  Student: {
   Fname?: string;
   Mname?: string;
@@ -106,6 +107,21 @@ logout() {
   return this.http.post<any>(url, data);
 }
 
+getStudentCount() {
+  const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
+  const data = {
+    action: 'count_students'
+  };
+  return this.http.post<any>(url, data);
+}
+
+getTeacherCount() {
+  const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
+  const data = {
+    action: 'count_teachers'
+  };
+  return this.http.post<any>(url, data);
+}
 
 }
 

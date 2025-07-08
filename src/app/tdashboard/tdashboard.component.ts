@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Chart } from 'chart.js/auto';
+import { SharedService } from '../shared.service';
 
 @Component({
   selector: 'app-tdashboard',
@@ -11,7 +12,11 @@ import { Chart } from 'chart.js/auto';
 })
 export class TdashboardComponent{
 
-  constructor(private router: Router){}
+  avatar?: any;
+
+  constructor(private router: Router, private sharedService: SharedService){
+    this.avatar = this.sharedService.defaultAvatar;
+  }
   isSidebarOpen = false;
   imagePreview: string | ArrayBuffer | null = null;
   responseCount = 1230;

@@ -1,8 +1,9 @@
-  import { Component, HostListener } from '@angular/core';
+  import { Component, HostListener, OnInit } from '@angular/core';
   import { ApiService } from '../api.service';
   import { Router } from '@angular/router';
   import { ChartOptions, ChartType, ChartData } from 'chart.js';
   import { Chart } from 'chart.js/auto';
+import { SharedService } from '../shared.service';
 
   @Component({
     selector: 'app-dashboard',
@@ -10,14 +11,33 @@
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
   })
-  export class DashboardComponent {
+  export class DashboardComponent implements OnInit {
+    avatar?: any;
+    studentcount: any = 0;
+    teachercount: any = 0;
     isSidebarOpen = false;
     public barChartType: ChartType = 'bar';
     public barChartPlugins = [];
 
-    constructor(private apiService: ApiService, private router: Router) {
-
+    constructor(private sharedService: SharedService, private router: Router) {
+      this.avatar = this.sharedService.defaultAvatar;
+     
     }
+
+    ngOnInit(){
+        this.sharedService.getStudentCount().subscribe(res => {
+         if(res.status === 'success'){
+          this.studentcount = res.count;
+         }
+      });
+
+        this.sharedService.getTeacherCount().subscribe(res => {
+         if(res.status === 'success'){
+          this.teachercount = res.count;
+         }
+      });
+      }
+
     openSidebar() {
       this.isSidebarOpen = true;
     }
@@ -102,18 +122,6 @@
     menuOpen: boolean = false;
     user: any | null = null;
 
-    ngOnInit(): void {
-     /* this.user = localStorage.getItem('userid');
-      
-      if (!this.user) {
-        
-        this.router.navigate(['/login']);
-      }else{
-        this.router.navigate(['/dashboard']);
-      }
-        */
-    }
-
     toggleMenu()  
     {
     if(this.menuOpen == true){
@@ -123,18 +131,6 @@
     }
     };
 
-    Logout() {
-      this.apiService.logoutUser().subscribe(
-        (response) => {
-          alert(response.message);  
-          localStorage.removeItem('user');  
-          this.router.navigate(['/login']);  
-        },
-        (error) => {
-          console.error('Logout failed:', error);
-        }
-      );
-    }
     
    
   }

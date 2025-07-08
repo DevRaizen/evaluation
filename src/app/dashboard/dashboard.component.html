@@ -77,7 +77,7 @@
         </a>
       </nav>
         <div class="p-4 mt-16">
-          <button (click)="Logout()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+          <button  class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
             Log Out
           </button>
         </div>
@@ -109,7 +109,7 @@
               🔔
             </div>
             <img
-              src="https://via.placeholder.com/40"  
+              [src]="avatar"  
               alt="Profile"
               class="w-10 h-10 rounded-full object-cover cursor-pointer"
             />
@@ -119,11 +119,11 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
             <img src="/student.png" alt="" class="w-8 h-8 mx-auto" />
-            <div class="font-bold border-l-2 border-gray-200">Students<br>1029</div>
+            <div class="font-bold border-l-2 border-gray-200">Students<br>{{studentcount}}</div>
           </div>
           <div class= "grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
             <img src="/teacher.png" alt="" class="w-8 h-8 mx-auto" />
-            <div class="font-bold border-l-2 border-gray-200" >Teachers<br>23</div>
+            <div class="font-bold border-l-2 border-gray-200" >Teachers<br>{{teachercount}}</div>
           </div>
           <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
                 <div class="text-2xl">✅</div>
