@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class SharedService {
   defaultAvatar = "/user.png";
+
  Student: {
   Fname?: string;
   Mname?: string;
@@ -24,7 +25,7 @@ Admin: {
   Fname?: string;
   Mname?: string;
   Lname?: string;
-  AdminID?: number;
+  AdminID?: string;
   AccID?: number;
   Email?: string;
   Password?: string;
@@ -42,6 +43,41 @@ Teacher: {
   UserType?: string;
 } = {};
 
+CurrentAdmin: {
+  Fname?: string;
+  Mname?: string;
+  Lname?: string;
+  AdminID?: string;
+  AccID?: number;
+  Email?: string;
+  Password?: string;
+  UserType?: string;
+} = {};
+
+ CurrentStudent: {
+  Fname?: string;
+  Mname?: string;
+  Lname?: string;
+  StudId?: string;
+  Grade?: string;
+  AccID?: number;
+  Section?: string;
+  PhoneNumber?: string;
+  Email?: string;
+  Password?: string;
+  UserType?: string;
+} = {};
+
+CurrentTeacher: {
+  TeacherID?: string;
+  AccID?: number;
+  Fname?: string;
+  Mname?: string;
+  Lname?: string;
+  Email?: string;
+  Password?: string;
+  UserType?: string;
+} = {};
 
   constructor(private http: HttpClient) { }
 
@@ -66,6 +102,37 @@ Teacher: {
   };
   return this.http.post(url, userData);
 }
+
+sendAdminInfoToDB() {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
+  const adminData = {
+    action: 'register_admin',
+    fname: this.Admin.Fname,
+    mname: this.Admin.Mname,
+    lname: this.Admin.Lname,
+    adminid: this.Admin.AdminID,
+    email: this.Admin.Email,
+    password: this.Admin.Password,
+    usertype: this.Admin.UserType
+  };
+  return this.http.post(url, adminData);
+}
+
+sendTeacherInfoToDB() {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
+  const teacherData = {
+    action: 'register_teacher',
+    fname: this.Teacher.Fname,
+    mname: this.Teacher.Mname,
+    lname: this.Teacher.Lname,
+    teacherid: this.Teacher.TeacherID,
+    email: this.Teacher.Email,
+    password: this.Teacher.Password,
+    usertype: this.Teacher.UserType
+  };
+  return this.http.post(url, teacherData);
+}
+
 
 loginUser(email: string, password: string, rememberme: boolean) {
   const url = 'http://localhost/teacher-evaluation-backend/api.php';
@@ -121,6 +188,14 @@ getTeacherCount() {
     action: 'count_teachers'
   };
   return this.http.post<any>(url, data);
+}
+
+getAccount(){
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+    const data = {
+    action: 'getUserAccount'
+  };
+  return this.http.post<any>(url,data);
 }
 
 }

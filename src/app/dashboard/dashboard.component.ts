@@ -21,7 +21,40 @@ import { SharedService } from '../shared.service';
 
     constructor(private sharedService: SharedService, private router: Router) {
       this.avatar = this.sharedService.defaultAvatar;
-     
+       const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              const userType = parsedUser.UserType;
+
+              switch (userType) {
+                case 'student':
+                  this.sharedService.CurrentStudent = parsedUser;
+                  this.router.navigate(['/stdashboard']);
+                  break;
+                case 'admin':
+                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.router.navigate(['/dashboard']);
+                  break;
+                case 'teacher':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
+                  break;
+                default:
+            
+                  this.router.navigate(['/login']);
+                  break;
+              }
+
+            } catch (e) {
+              console.error('Error parsing user from storage:', e);
+              this.router.navigate(['/login']);
+            }
+          } else {
+            // No user found
+            this.router.navigate(['/login']);
+          }
     }
 
     ngOnInit(){

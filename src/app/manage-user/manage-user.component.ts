@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SharedService } from '../shared.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-user',
@@ -7,7 +9,9 @@ import { Router } from '@angular/router';
   templateUrl: './manage-user.component.html',
   styleUrl: './manage-user.component.css'
 })
-export class ManageUserComponent {
+export class ManageUserComponent implements OnInit{
+    errorMessage = "";
+    avatar?: any;
     isSidebarOpen = false;
     showPassword = false;
     showconPassword = false;
@@ -15,8 +19,76 @@ export class ManageUserComponent {
     conPassword?: string;
     AisModalOpen = false;
     EisModalOpen = false;
-    
-    constructor(private router: Router){}
+    userAccount: any[] = [];
+    searchFilters = {
+    name: '',
+    id: '',
+    role: '',
+    status: ''
+  };
+    newAccount = {
+    fname: '',
+    mname: '',
+    lname: '',
+    email: '',
+    phone: '',
+    id: '',
+    role: '',
+    gradeLevel: '',
+    section: '',
+    password: '',
+  };
+
+
+  
+    constructor(private sharedService: SharedService ,private router: Router){
+      this.avatar = this.sharedService.defaultAvatar;
+
+       const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              const userType = parsedUser.UserType;
+
+              switch (userType) {
+                case 'student':
+                  this.sharedService.CurrentStudent = parsedUser;
+                  this.router.navigate(['/stdashboard']);
+                  break;
+                case 'admin':
+                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.router.navigate(['/manageuser']);
+                  break;
+                case 'teacher':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
+                  break;
+                default:
+            
+                  this.router.navigate(['/login']);
+                  break;
+              }
+
+            } catch (e) {
+              console.error('Error parsing user from storage:', e);
+              this.router.navigate(['/login']);
+            }
+          } else {
+            // No user found
+            this.router.navigate(['/login']);
+          }
+    }
+
+    ngOnInit(): void {
+      this.sharedService.getAccount().subscribe(res => {
+        if(res.status === "success"){
+          this.userAccount = res.account;
+        }
+      });
+
+    }
+
     openSidebar() {
       this.isSidebarOpen = true;
     }
@@ -71,5 +143,160 @@ export class ManageUserComponent {
         this.router.navigate(['/settings']);
       }
 
+      filteredAccounts(): any[] {
+        return this.userAccount.filter(user => {
+          const fullName = `${user.Fname} ${user.Mname} ${user.Lname}`.toLowerCase();
+      
+
+          return (
+            fullName.includes(this.searchFilters.name.toLowerCase()) &&
+            user.ID.toLowerCase().includes(this.searchFilters.id.toLowerCase()) &&
+            (this.searchFilters.role ? user.role.toLowerCase() === this.searchFilters.role.toLowerCase() : true) &&
+            (this.searchFilters.status ? user.status.toLowerCase() === this.searchFilters.status.toLowerCase() : true)
+          );
+        });
+      }
+
+  allSections: { [key: string]: string[] } = {
+  '7': ['St. Peter', 'St. Paul'],
+  '8': ['St. John', 'St. Agnes'],
+  '9': ['St. Therese', 'St. Monica'],
+  '10': ['St. Joseph', 'St. Veronica']
+};
+
+getSectionsForGrade(): string[] {
+  return this.allSections[this.newAccount.gradeLevel] || [];
+}
+
+onGradeChange() {
+  const availableSections = this.getSectionsForGrade();
+  if (!availableSections.includes(this.newAccount.section)) {
+    this.newAccount.section = '';
+  }
+}
+
+get gradeLevels(): string[] {
+  return Object.keys(this.allSections);
+}
+
+ onSubmit(form: NgForm) {
+    if (form.invalid) {
+      Object.values(form.controls).forEach(control => {
+        control.markAsTouched();
+      });
+      return;
+    }
+
+    this.sharedService.checkStudIdExists(this.newAccount.id).subscribe(response => {
+  if (response.exists) {
+    this.errorMessage = "Student ID already exists!";
+  }else{
+    const email = this.newAccount.email?.trim().toLowerCase();
+      const isGmail = email?.endsWith('@gmail.com');
+      const passwordMatch = this.Password === this.conPassword;
+      const passwordLengthOk = this.Password!.length >= 8;
+
+      if (!isGmail) {
+        this.errorMessage = 'Only @gmail.com addresses are allowed.';
+        return;
+      }
+
+       if (!passwordMatch) {
+        this.errorMessage = 'Passwords do not match.';
+        return;
+      }
+
+      if (!passwordLengthOk) {
+        this.errorMessage = 'Password must be at least 8 characters.';
+        return;
+      }
+
+      if(this.newAccount.role === "student" && !this.newAccount.id.startsWith("s")){
+        this.errorMessage = "ID of the Students start with letter s";
+        return 
+      }
+
+      if(this.newAccount.role === "Teacher" && !this.newAccount.id.startsWith("T")){
+        this.errorMessage = "ID of the Students start with letter T";
+        return 
+      }
+
+      if(this.newAccount.role === "Admin" && !this.newAccount.id.startsWith("A")){
+        this.errorMessage = "ID of the Students start with letter A";
+        return 
+      }
+
+      this.sharedService.checkEmailExists(this.newAccount.email!).subscribe(response => {
+          if (response.exists) {
+          this.errorMessage = "Email already exists!";
+          }else
+              {
+                if (this.newAccount.role === 'student') {
+                  this.sharedService.Student = {
+                  Fname: this.newAccount.fname,
+                  Mname: this.newAccount.mname,
+                  Lname: this.newAccount.lname,
+                  StudId: this.newAccount.id,
+                  Grade: this.newAccount.gradeLevel,
+                  Section: this.newAccount.section,
+                  PhoneNumber: this.newAccount.phone,
+                  Email: this.newAccount.email,
+                  Password: this.Password
+                  };
+                    this.sharedService.sendUserInfoToDB().subscribe({
+                    next: (res)=>{
+                          this.errorMessage = "Student registered successfully"
+                          this.AisModalOpen = false;
+                    },
+                    error: (err)=>{
+                          this.errorMessage = "Database Error"
+                    }
+                  }); // You may add success/error logic here
+                } else if (this.newAccount.role === 'Teacher') {
+                  this.sharedService.Teacher = {
+                  Fname: this.newAccount.fname,
+                  Mname: this.newAccount.mname,
+                  Lname: this.newAccount.lname,
+                  TeacherID: this.newAccount.id,
+                  Email: this.newAccount.email,
+                  Password: this.Password,
+                  UserType: "Teacher"
+                  };
+                  this.sharedService.sendTeacherInfoToDB().subscribe({
+                    next: (res)=>{
+                          this.errorMessage = "Teacher registered successfully"
+                          this.AisModalOpen = false;
+                    },
+                    error: (err)=>{
+                          this.errorMessage = "Database Error"
+                    }
+                  }); 
+                } else if (this.newAccount.role === 'Admin') {
+                  this.sharedService.Admin = {
+                  Fname: this.newAccount.fname,
+                  Mname: this.newAccount.mname,
+                  Lname: this.newAccount.lname,
+                  AdminID: this.newAccount.id,
+                  Email: this.newAccount.email,
+                  Password: this.Password,
+                  UserType: "Admin"
+                  };
+                  this.sharedService.sendAdminInfoToDB().subscribe({
+                    next: (res)=>{
+                          this.errorMessage = "Admin registered successfully"
+                          this.AisModalOpen = false;
+                    },
+                    error: (err)=>{
+                           this.errorMessage = "Database Error"
+                    }
+                  }); 
+                }
+              }
+              });
+        
+  }
+});
+ 
+}
 
 }

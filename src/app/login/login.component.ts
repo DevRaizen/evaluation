@@ -36,8 +36,9 @@ export class LoginComponent {
                   this.router.navigate(['/stdashboard']);
                   break;
                 case 'admin':
-                  this.sharedService.Admin = parsedUser;
+                  this.sharedService.CurrentAdmin = parsedUser;
                   this.router.navigate(['/dashboard']);
+                  console.log(this.sharedService.CurrentAdmin)
                   break;
                 case 'teacher':
                   this.sharedService.Teacher = parsedUser;
