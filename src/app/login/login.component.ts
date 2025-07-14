@@ -31,16 +31,16 @@ export class LoginComponent {
               const userType = parsedUser.UserType;
 
               switch (userType) {
-                case 'student':
+                case 'Student':
                   this.sharedService.Student = parsedUser;
                   this.router.navigate(['/stdashboard']);
                   break;
-                case 'admin':
+                case 'Admin':
                   this.sharedService.CurrentAdmin = parsedUser;
                   this.router.navigate(['/dashboard']);
                   console.log(this.sharedService.CurrentAdmin)
                   break;
-                case 'teacher':
+                case 'Teacher':
                   this.sharedService.Teacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   break;
@@ -87,14 +87,14 @@ export class LoginComponent {
                     sessionStorage.setItem('user', JSON.stringify(response.accountInfo));
                   }
 
-                  if (userType === 'student') {
+                  if (userType === 'Student') {
                     this.sharedService.Student = userData;
                     this.router.navigate(['/stdashboard']);
                     
-                  } else if (userType === 'admin') {
+                  } else if (userType === 'Admin') {
                     this.sharedService.Admin = userData;
                     this.router.navigate(['/dashboard']);
-                  } else if (userType === 'teacher') {
+                  } else if (userType === 'Teacher') {
                     this.sharedService.Teacher = userData;
                     this.router.navigate(['/tdashboard']);
                   }

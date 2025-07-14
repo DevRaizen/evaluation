@@ -182,10 +182,10 @@
                         </td>
                        <td class=" py-2 text-gray-600 text-center">
                           <div class="flex flex-wrap gap-2 items-center justify-center">
-                            <button (click)="EopenModal()" class="text-[#35353A] text-xl" title="Edit">
+                            <button (click)="editUser(user)" class="text-[#35353A] text-xl" title="Edit">
                               <i class="fas fa-edit"></i>
                             </button>
-                            <button class="text-[#35353A] text-xl" title="Delete">
+                            <button  class="text-[#35353A] text-xl" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </button>
                             <button title="View">
@@ -279,7 +279,8 @@
               <!-- Row 3: ID, Role, Status -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
          <div class="relative">
-            <label class="block text-sm font-medium text-gray-400 mb-1">ID Number</label>
+            <label *ngIf="newAccount.role === 'Student'" class="block text-sm font-medium text-gray-400 mb-1">Student ID</label>
+            <label *ngIf="newAccount.role === 'Teacher'" class="block text-sm font-medium text-gray-400 mb-1">Teacher ID</label>
             <input type="text" name="id" [(ngModel)]="newAccount.id" #id="ngModel"  required placeholder="XXX" class="w-full pl-14 p-2 border rounded" />
             <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
               <i class="fas fa-id-card"></i>
@@ -296,7 +297,7 @@
                 </div>
                 <select type="text" name="role" [(ngModel)]="newAccount.role" #role="ngModel" required class="w-full p-2 border rounded">
                 <option value="" selected>Select Role</option>
-                <option value="student">Student</option>
+                <option value="Student">Student</option>
                 <option value="Teacher" >Teacher</option>
                 <option  value="Admin">Admin</option>
               </select>
@@ -307,10 +308,10 @@
          
         </div>
         <!-- Row 4: Grade Level & Section -->
-        <div *ngIf="newAccount.role === 'student'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div *ngIf="newAccount.role === 'Student'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1">Grade Level</label>
-            <select name="gradeLevel" [(ngModel)]="newAccount.gradeLevel" #gradeLevel="ngModel"  (change)="onGradeChange()" required  class="w-full p-2 border rounded">
+            <select name="gradeLevel" [(ngModel)]="newAccount.gradeLevel" #gradeLevel="ngModel" (change)="onGradeChange(newAccount,'gradeLevel')" required  class="w-full p-2 border rounded">
             <option disabled selected value="">Grade Level</option>
            <option *ngFor="let grade of gradeLevels" [value]="grade">{{ grade }}</option>
           </select>
@@ -322,7 +323,7 @@
             <label class="block text-sm font-medium text-gray-400 mb-1">Section</label>
             <select name="section" [(ngModel)]="newAccount.section" #section="ngModel" required class="w-full p-2 border rounded">
             <option disabled selected value="">Select Section</option>
-            <option *ngFor="let section of getSectionsForGrade()" [value]="section">{{ section }}</option>
+            <option *ngFor="let section of getSectionsForGrade(newAccount.gradeLevel)" [value]="section">{{ section }}</option>
           </select>
            <div *ngIf="section.invalid && section.touched" class="text-red-500 text-sm mt-1">
                   Please Select Section.
@@ -412,89 +413,128 @@
     </div>
     <!-- Modal Body -->
     <div class="p-6 bg-gray-50">
-      <form class="space-y-4">
+
+      <form class="space-y-4" action="#" #formRef="ngForm" (ngSubmit)="onEditSubmit(formRef)" method="post">
         <label class="block text-sm font-medium text-gray-400 mb-1">Basic Information</label>
         <!-- Row 1: Name Fields -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="relative">
-              <input type="text" placeholder="First Name" class="w-full pl-12 p-2 border rounded" />
+              <input type="text" placeholder="First Name" [(ngModel)]="selectedUser.Fname" name="fname" #fname="ngModel" required value="selectedUser.Fname" class="w-full pl-12 p-2 border rounded" />
               <div class="absolute left-3 top-2.5 flex items-center space-x-1 text-gray-400">
                 <i class="fas fa-user"></i>
                 <div class="h-5 border-l border-gray-300 ml-2"></div>
               </div>
+              <div *ngIf="fname.invalid && fname.touched" class="text-red-500 text-sm mt-1">
+                  First Name is required.
+              </div>
             </div>
-          <input type="text" placeholder="Middle Name" class="w-full p-2 border rounded" />
-          <input type="text" placeholder="Last Name" class="w-full p-2 border rounded" />
+            <div>
+              <input type="text" placeholder="Middle Name"[(ngModel)]="selectedUser.Mname" name="mname" #mname="ngModel" required class="w-full p-2 border rounded" />
+               <div *ngIf="mname.invalid && mname.touched" class="text-red-500 text-sm mt-1">
+                  Middle Name is required.
+              </div>
+            </div>
+            <div>
+              <input type="text" placeholder="Last Name" [(ngModel)]="selectedUser.Lname" name="lname" #lname="ngModel" required class="w-full p-2 border rounded" />
+              <div *ngIf="lname.invalid && lname.touched" class="text-red-500 text-sm mt-1">
+                  Last Name is required.
+              </div>
+            </div>
         </div>
         <!-- Row 2: Email & Phone -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <!-- Email -->
       <div class="relative">
         <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
-        <input type="email" placeholder="example@gmail.com" class="w-full pl-14 p-2 border rounded" />
+        <input type="email" placeholder="example@gmail.com" [(ngModel)]="selectedUser.email" name="email" #email="ngModel" required class="w-full pl-14 p-2 border rounded" />
         <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
           <i class="fas fa-envelope"></i>
           <div class="h-5 border-l border-gray-300 mx-2"></div>
         </div>
+         <div *ngIf="email.invalid && email.touched" class="text-red-500 text-sm mt-1">
+                  Email is required.
+          </div>
       </div>
   <!-- Phone Number -->
       <div class="relative">
           <label class="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
-          <input type="number" placeholder="Normal" class="w-full pl-14 p-2 border rounded" />
+          <input type="number" name="phone" [(ngModel)]="selectedUser.phone" #phone="ngModel" required placeholder="09676039132" class="w-full pl-14 p-2 border rounded" />
           <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
             <i class="fas fa-phone"></i>
             <div class="h-5 border-l border-gray-300 mx-2"></div>
           </div>
+          <div *ngIf="phone.invalid && phone.touched" class="text-red-500 text-sm mt-1">
+                  Phone Number is required.
+          </div>
         </div>
+          
       </div>
               <!-- Row 3: ID, Role, Status -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
          <div class="relative">
-            <label class="block text-sm font-medium text-gray-400 mb-1">Student Id</label>
-            <input type="text" placeholder="XXX" class="w-full pl-14 p-2 border rounded" />
+            <label *ngIf="selectedUser.role === 'Student'"  class="block text-sm font-medium text-gray-400 mb-1">Student Id</label>
+            <label *ngIf="selectedUser.role === 'Teacher'" class="block text-sm font-medium text-gray-400 mb-1">Teacher Id</label>
+            <input type="text" placeholder="XXX" [(ngModel)]="selectedUser.ID" name="id" #id="ngModel" required class="w-full pl-14 p-2 border rounded" />
             <div class="absolute left-3 top-[2.2rem] flex items-center text-gray-400">
               <i class="fas fa-id-card"></i>
               <div class="h-5 border-l border-gray-300 mx-2"></div>
             </div>
+            <div *ngIf="id.invalid && id.touched && selectedUser.role === 'Student'" class="text-red-500 text-sm mt-1">
+                  Student ID is required.
+              </div>
+              <div *ngIf="id.invalid && id.touched && selectedUser.role === 'Teacher'" class="text-red-500 text-sm mt-1">
+                  Teacher ID is required.
+              </div>
           </div>
           <div class="relative">
               <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
                 <i class="fas fa-user"></i>
                 <label>Role</label>
                 </div>
-                <select class="w-full p-2 border rounded">
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="admin">Admin</option>
+                <select [(ngModel)]="selectedUser.role" name="role" #role="ngModel" required class="w-full p-2 border rounded">
+                <option value="Student" selected>Student</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Admin">Admin</option>
               </select>
+               <div *ngIf="role.invalid && role.touched" class="text-red-500 text-sm mt-1">
+                  Please Select Account Role.
+              </div>
           </div>
           <div class="relative">
               <div class="flex items-center gap-1 mb-1 text-gray-400 text-sm font-medium">
                 <i class="fas fa-check-circle"></i>
                 <label>Status</label>
                 </div>
-                <select class="w-full p-2 border rounded">
-                <option>Normal</option>
-                <option>Inactive</option>
+                <select [(ngModel)]="selectedUser.status" name="status"  class="w-full p-2 border rounded">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </select>
           </div>
         </div>
         <!-- Row 4: Grade Level & Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div *ngIf="selectedUser.role === 'Student'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1">Grade Level</label>
-            <select class="w-full p-2 border rounded">
-            <option disabled selected>Grade Level</option>
-            <option>7</option>
-            <option>8</option>
-            <option>9</option>
+            <select [(ngModel)]="selectedUser.grade" name="grade" #grade="ngModel" required (change)="onGradeChange(selectedUser,'grade')" class="w-full p-2 border rounded">
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
           </select>
+          <div *ngIf="grade.invalid && grade.touched" class="text-red-500 text-sm mt-1">
+                  Please Select Grade Level.
+              </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1">Section</label>
-            <input type="text" placeholder="St. Peter" class="w-full p-2 border rounded" />
+            <select name="section" [(ngModel)]="selectedUser.section" name="section" #section="ngModel" required class="w-full p-2 border rounded">
+            <option disabled selected value="">Select Section</option>
+            <option *ngFor="let section of getSectionsForGrade(selectedUser.grade)" [value]="section">{{ section }}</option>
+          </select>
+           <div *ngIf="section.invalid && section.touched" class="text-red-500 text-sm mt-1">
+                  Please Select Section.
+              </div>
           </div>
-          
         </div>
         <!-- Row 5: Password -->
         <div>
@@ -556,13 +596,11 @@
                 Passwords do not match.
               </div>
           </div>
+          <div class="px-6 py-4 bg-gray-100 flex justify-end gap-2 rounded-b-lg">
+              <button (click)="EcloseModal()" class="bg-white px-4 py-0 rounded border hover:bg-gray-200">Cancel</button>
+              <button type="submit" class="bg-[#F1C428] hover:bg-yellow-500 text-black px-4 py- 0 rounded">Add Account</button>
+          </div>
       </form>
-    </div>
-
-    <!-- Modal Footer -->
-    <div class="px-6 py-4 bg-gray-100 flex justify-end gap-2 rounded-b-lg">
-      <button (click)="EcloseModal()" class="bg-white px-4 py-0 rounded border hover:bg-gray-200">Cancel</button>
-      <button type="submit" class="bg-[#F1C428] hover:bg-yellow-500 text-black px-4 py- 0 rounded">Add Account</button>
     </div>
   </div>
 </div>

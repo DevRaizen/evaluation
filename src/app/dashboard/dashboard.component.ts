@@ -29,15 +29,15 @@ import { SharedService } from '../shared.service';
               const userType = parsedUser.UserType;
 
               switch (userType) {
-                case 'student':
+                case 'Student':
                   this.sharedService.CurrentStudent = parsedUser;
                   this.router.navigate(['/stdashboard']);
                   break;
-                case 'admin':
+                case 'Admin':
                   this.sharedService.CurrentAdmin = parsedUser;
                   this.router.navigate(['/dashboard']);
                   break;
-                case 'teacher':
+                case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   break;

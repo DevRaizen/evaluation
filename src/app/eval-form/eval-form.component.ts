@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SharedService } from '../shared.service';
 
 @Component({
   selector: 'app-eval-form',
@@ -7,11 +8,12 @@ import { Router } from '@angular/router';
   templateUrl: './eval-form.component.html',
   styleUrl: './eval-form.component.css'
 })
-export class EvalFormComponent {
+export class EvalFormComponent implements OnInit {
+  errorMessage ="";
     isSidebarOpen = false;
     showCategoryModal = false;
-    categories: string [] = ['Respect', 'Punctuality', 'Professionalism', 'Clarity'];
-    originalCategories: string[] = [];
+    categories: { catID: number; categoryName: string }[] = [];
+    originalCategories: { catID: number; categoryName: string }[] = [];
     questionTypes = ['Likert Scale', 'Comment', 'Yes/No'];
     newCategory: string = '';
     editMode: boolean[] = new Array(this.categories.length).fill(false);
@@ -24,13 +26,36 @@ export class EvalFormComponent {
     }[] = [];
     showAddForm = false;
     newQuestion = {
-      category: '',
+      category: null,
       text: '',
       type: 'Likert Scale'
     };
-    constructor(private router:Router){
+    constructor(private router:Router, private sharedService: SharedService){
   
     }
+    ngOnInit(): void {
+      this.getAllCategories();
+    }
+
+getAllCategories() {
+  this.sharedService.getAllCategories().subscribe({
+    next: (res) => {
+      this.categories = res.map((cat: any) => ({
+        catID: cat.catID,
+        categoryName: cat.categoryName
+      }));
+      this.originalCategories = [...this.categories];
+      this.editMode = new Array(this.categories.length).fill(false);
+      console.log(res.cat.CategoryName);
+    },
+    error: (err) => {
+      console.error('Failed to fetch categories:', err);
+      this.errorMessage = 'Could not load categories.';
+    }
+  });
+}
+
+
     openSidebar() {
       this.isSidebarOpen = true;
     }
@@ -79,12 +104,12 @@ export class EvalFormComponent {
     }
 
     // Reset and hide form
-    this.newQuestion = { category: '', text: '', type: 'Likert Scale' };
+    this.newQuestion = { category: null, text: '', type: 'Likert Scale' };
     this.showAddForm = false;
   }
 
   cancelAdd() {
-    this.newQuestion = { category: '', text: '', type: 'Likert Scale' };
+    this.newQuestion = { category: null, text: '', type: 'Likert Scale' };
     this.showAddForm = false;
   }
 
@@ -99,40 +124,49 @@ export class EvalFormComponent {
     return index;
   }
 
-  addCategory() {
-    if (this.newCategory.trim()) {
-      this.categories.push(this.newCategory.trim());
-      this.editMode.push(false);
-      this.newCategory = '';
-    }
+addCategory() {
+  const trimmedName = this.newCategory.trim();
+  if (trimmedName) {
+    const newCat = {
+      catID: 0, // 0 or any temporary value since not from DB
+      categoryName: trimmedName
+    };
+    this.categories.push(newCat);
+    this.editMode.push(false);
+    this.newCategory = '';
   }
+}
 
-  editCategory(index: number, inputRef: HTMLInputElement) {
-    this.editMode[index] = true;
-    setTimeout(() => {
-      inputRef.focus();
-      inputRef.select();
-    });
-  }
+onCategoryChange(index: number, newValue: string) {
+  this.categories[index].categoryName = newValue.trim();
+}
 
-  deleteCategory(index: number) {
-    this.categories.splice(index, 1);
-    this.editMode.splice(index,1);
-  }
+editCategory(index: number, inputRef: HTMLInputElement) {
+  this.editMode[index] = true;
+  setTimeout(() => {
+    inputRef.focus();
+    inputRef.select();
+  }, 0);
+}
 
-  saveCategories() {
-    console.log('Saving categories:', this.categories);
-    this.showCategoryModal = false;
+deleteCategory(index: number) {
+  this.categories.splice(index, 1);
+  this.editMode.splice(index, 1);
+}
 
-  }
-  onCategoryChange(index: number, newValue: string) {
-    this.categories[index] = newValue;
-  }
 
-  cancelAddCat() {
-    this.categories = [...this.originalCategories];
-    this.showCategoryModal = false;
-    this.editMode = new Array(this.categories.length).fill(false);
-  }
+saveCategories() {
+  console.log('Saving categories:', this.categories);
+  // You can implement API call here to save/update to DB
+  this.originalCategories = [...this.categories];
+  this.showCategoryModal = false;
+}
+
+ cancelAddCat() {
+  this.categories = [...this.originalCategories];
+  this.editMode = new Array(this.categories.length).fill(false);
+  this.showCategoryModal = false;
+}
+
 
 }

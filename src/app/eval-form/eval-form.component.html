@@ -165,9 +165,12 @@
                     <td class="px-4 py-2 border" colspan="3">
                         <div class="flex flex-col md:flex-row gap-2">
                         <select [(ngModel)]="newQuestion.category" class="border px-2 py-1 rounded w-full md:w-1/3">
-                            <option value="" disabled selected>Select Category</option>
-                            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
-                        </select>
+                        <option [value]="null" disabled selected>Select Category</option>
+                        <option *ngFor="let cat of categories" [value]="cat.catID">
+                          {{ cat.categoryName }}
+                        </option>
+                      </select>
+
                         <input [(ngModel)]="newQuestion.text" placeholder="Enter your question" class="border px-2 py-1 rounded w-full md:w-1/2" />
                         <select [(ngModel)]="newQuestion.type" class="border px-2 py-1 rounded w-full md:w-1/4">
                             <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
@@ -208,7 +211,7 @@
     <table class="min-w-full text-sm ">
     <div class="p-6 space-y-3 overflow-y-auto">
       <tr *ngFor="let cat of categories; let i = index; trackBy: trackByIndex " class="border flex items-center gap-2 px-4 py-2">
-        <input [(ngModel)]="categories[i]" [readonly]="!editMode[i]"  #categoryInput  (ngModelChange)="onCategoryChange(i, $event)" class=" rounded px-3 py-1 w-full" />
+        <input [(ngModel)]="cat.categoryName" [readonly]="!editMode[i]"  #categoryInput  (ngModelChange)="onCategoryChange(i, $event)" class=" rounded px-3 py-1 w-full" />
         <button (click)="editCategory(i,categoryInput)" class="text-gray-500 border-r px-2">
           <i class="fas fa-edit"></i>
         </button>
@@ -229,6 +232,25 @@
     <div class="px-6 py-4 flex justify-between">
       <button (click)="cancelAddCat()" class="bg-gray-200 px-4 py-2 rounded">Cancel</button>
       <button (click)="saveCategories()" class="bg-yellow-500 text-white px-4 py-2 rounded">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚠️ Warning</h3>
+      <button (click)="errorMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
+      <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
     </div>
   </div>
 </div>

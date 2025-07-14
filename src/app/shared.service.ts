@@ -39,6 +39,7 @@ Teacher: {
   Mname?: string;
   Lname?: string;
   Email?: string;
+  PhoneNumber?: string;
   Password?: string;
   UserType?: string;
 } = {};
@@ -196,6 +197,93 @@ getAccount(){
     action: 'getUserAccount'
   };
   return this.http.post<any>(url,data);
+}
+
+getYearSection(yearSecId: number) {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const data = {
+    action: 'getYearSection',
+    yearsecid: yearSecId  // Pass the parameter here
+  };
+  return this.http.post<any>(url, data);
+}
+
+updateStudent() {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const studentData = {
+    action: 'updateStudent',
+    studid: this.Student.StudId,
+    fname: this.Student.Fname,
+    mname: this.Student.Mname,
+    lname: this.Student.Lname,
+    grade: this.Student.Grade,
+    section: this.Student.Section,
+    phone: this.Student.PhoneNumber,
+    email: this.Student.Email,
+    accid: this.Student.AccID,
+    password: this.Student.Password
+  };
+  return this.http.post<any>(url, studentData);
+}
+
+
+updateTeacher() {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const teacherData = {
+    action: 'updateTeacher',
+    teacherid: this.Teacher.TeacherID,
+    fname: this.Teacher.Fname,
+    mname: this.Teacher.Mname,
+    lname: this.Teacher.Lname,
+    phone: this.Teacher.PhoneNumber,
+    email: this.Teacher.Email,
+    accid: this.Teacher.AccID,
+    usertype: this.Teacher.UserType,
+    password: this.Teacher.Password
+  };
+  return this.http.post<any>(url, teacherData);
+}
+
+
+updateAdmin() {
+  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const adminData = {
+    action: 'updateAdmin',
+    adminid: this.Admin.AdminID,
+    fname: this.Admin.Fname,
+    mname: this.Admin.Mname,
+    lname: this.Admin.Lname,
+    email: this.Admin.Email,
+    accid: this.Admin.AccID,
+    usertype: this.Admin.UserType,
+    password: this.Admin.Password
+  };
+  return this.http.post<any>(url, adminData);
+}
+
+getAllQuestionnaireIDs() {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'getAllQIDs'
+  };
+  return this.http.post<any>(url, payload);
+}
+
+getQuestionsByQID(qid: number) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'getQuestionsByQID',
+    QID: qid
+  };
+  return this.http.post<any>(url, payload);
+}
+
+getAllCategories() {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'getAllCategories'
+  };
+  return this.http.post<any>(url, payload);
 }
 
 }
