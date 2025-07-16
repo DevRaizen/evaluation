@@ -120,12 +120,15 @@
         <!-- Manage Forms -->
         <section class="bg-white p-6 rounded shadow">
           <div class="flex justify-between items-center mb-4">
-            <select class="border px-3 py-2 rounded w-1/2">
-              <option>Questionnaire #1</option>
-              <!-- Add more options dynamically -->
-            </select>
+          <select class="border px-3 py-2 rounded w-1/4" [(ngModel)]="selectedQID" (change)="onQIDChange()" >
+  <option value="null" disabled selected>Select Questionnaire</option>
+  <option *ngFor="let qid of questionnaireIDs" [value]="qid">
+    Questionnaire #{{ qid }}
+  </option>
+</select>
+
             <div class="space-x-2">
-              <button class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">+ Add Form</button>
+              <button *ngIf="!isAddingNew" (click)="prepareNewQuestionnaire()" class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">+ Add Questionnaire</button>
               <button (click)="openCategoryModal()" class="bg-gray-300 px-4 py-2 rounded">Manage Categories</button>
             </div>
           </div>
@@ -133,8 +136,9 @@
             <thead class="bg-gray-100 text-left">
                 <tr>
                 <th class="px-4 py-2 w-1/4 border">Category</th>
-                <th class="px-4 py-2 border">Questions</th>
-                <th class="px-4 py-2 w-1/4 border">Question Type</th>
+                <th class="px-4 py-2 border" colspan="2">Questions</th>
+                <th class="px-4 py-2 w-1/4 border" >Question Type</th>
+                <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -143,20 +147,32 @@
                     <tr class="border-b">
                     <!-- Category Dropdown (only on first row) -->
                     <td *ngIf="i === 0" [attr.rowspan]="group.list.length" class="px-4 py-2 align-top border">
-                        <select [(ngModel)]="group.category" class=" rounded px-2 py-1 w-full hover:border">
-                        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                        <select [(ngModel)]="group.category" class=" rounded px-2 py-1 w-full " disabled>
+                        <option *ngFor="let cat of categories" [value]="cat.categoryName" >{{ cat.categoryName }}</option>
                         </select>
                     </td>
                     <!-- Question Text -->
-                    <td class="px-4 py-2 border">
-                        <input [(ngModel)]="q.text" type="text" class="hover:border rounded px-2 py-1 w-full" />
+                    <td class="px-4 py-2 border" colspan="2">
+                        <input [(ngModel)]="q.text" type="text" class=" rounded px-2 py-1 w-full" disabled />
                     </td>
                     <!-- Question Type Dropdown -->
-                    <td class="px-4 py-2 border">
-                        <select [(ngModel)]="q.type" class="hover:border rounded px-2 py-1 w-full">
+                    <td class="px-4 py-2 border" >
+                        <select [(ngModel)]="q.type" class=" rounded px-2 py-1 w-full" disabled>
                         <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
                         </select>
                     </td>
+
+                     <td class=" text-gray-600 text-center">
+                          <div class="flex flex-wrap gap-2 items-center justify-center">
+                            <button  class="text-[#35353A] text-xl" title="Edit">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button  class="text-[#35353A] text-xl" title="Delete">
+                              <i class="fas fa-trash-alt"></i>
+                            </button>
+                          </div>
+                        </td>
+
                     </tr>
                 </ng-container>
                 </ng-container>
@@ -166,7 +182,7 @@
                         <div class="flex flex-col md:flex-row gap-2">
                         <select [(ngModel)]="newQuestion.category" class="border px-2 py-1 rounded w-full md:w-1/3">
                         <option [value]="null" disabled selected>Select Category</option>
-                        <option *ngFor="let cat of categories" [value]="cat.catID">
+                        <option *ngFor="let cat of categories" [value]="cat.categoryName">
                           {{ cat.categoryName }}
                         </option>
                       </select>
@@ -181,7 +197,7 @@
                     </td>
                     </tr>
                     <!-- + Add Question Button -->
-                    <tr *ngIf="!showAddForm">
+                    <tr *ngIf="!showAddForm && selectedQID">
                     <td colspan="3" class="px-4 py-2 text-center text-blue-500 cursor-pointer hover:underline"
                         (click)="showAddForm = true">
                         + Add a new question
@@ -189,9 +205,9 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="flex justify-end mt-4 space-x-2">
-                <button class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-                <button class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">Preview</button>
+            <div *ngIf="isAddingNew" class="flex justify-end mt-4 space-x-2">
+                <button (click)="cancelNewQuestionnaire()" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+                <button (click)="saveQuestionnaire()" class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">Save</button>
             </div>
         </section>
       </main>

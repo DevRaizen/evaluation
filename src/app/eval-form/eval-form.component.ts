@@ -14,8 +14,11 @@ export class EvalFormComponent implements OnInit {
     showCategoryModal = false;
     categories: { catID: number; categoryName: string }[] = [];
     originalCategories: { catID: number; categoryName: string }[] = [];
-    questionTypes = ['Likert Scale', 'Comment', 'Yes/No'];
+    questionnaireIDs: number[] = [];
+    questionTypes = ['likert', 'comment'];
     newCategory: string = '';
+    isAddingNew = false; // To track if user is adding a new questionnaire
+    newQID: number | null = null;
     editMode: boolean[] = new Array(this.categories.length).fill(false);
     questions: {
       category: string;
@@ -35,6 +38,8 @@ export class EvalFormComponent implements OnInit {
     }
     ngOnInit(): void {
       this.getAllCategories();
+      this.getAllQuestionnaireIDs();
+     
     }
 
 getAllCategories() {
@@ -55,6 +60,112 @@ getAllCategories() {
   });
 }
 
+getAllQuestionnaireIDs() {
+  this.sharedService.getAllQuestionnaireIDs().subscribe({
+    next: (res) => {
+      console.log('All QIDs:', res); 
+      this.questionnaireIDs = res;
+    },
+    error: (err) => {
+      console.error('Failed to fetch QIDs:', err);
+    }
+  });
+}
+
+fetchQuestionsByQID(qid: number) {
+  this.sharedService.getQuestionsByQID(qid).subscribe({
+    next: (res) => {
+      // Transform response into grouped by category format
+      const grouped: {
+        category: string;
+        list: { text: string; type: string }[];
+      }[] = [];
+
+      res.forEach((q: any) => {
+        let group = grouped.find(g => g.category === q.categoryName);
+        if (!group) {
+          group = { category: q.categoryName, list: [] };
+          grouped.push(group);
+        }
+        group.list.push({
+          text: q.questionText,
+          type: q.type
+        });
+      });
+
+      this.questions = grouped;
+      console.log(this.questionTypes)
+      
+    },
+    error: (err) => {
+      console.error('Failed to fetch questions:', err);
+      this.errorMessage = 'Could not load questions.';
+    }
+  });
+}
+
+selectedQID: number | null = null;
+
+prepareNewQuestionnaire() {
+  // Get highest existing QID (whether from DB or UI-added)
+  const maxQID = this.questionnaireIDs.length > 0 ? Math.max(...this.questionnaireIDs) : 0;
+
+  this.newQID = maxQID + 1;
+  this.selectedQID = this.newQID;
+  this.isAddingNew = true;
+
+  // Push it to local list (UI only, no backend yet)
+  this.questionnaireIDs.push(this.newQID);
+
+  // Clear questions so user can enter new ones
+  this.questions = [];
+
+  console.log('Prepared Questionnaire #', this.newQID);
+}
+
+cancelNewQuestionnaire() {
+  if (this.isAddingNew && this.newQID) {
+    // Remove the temporary QID from the UI list
+    this.questionnaireIDs = this.questionnaireIDs.filter(id => id !== this.newQID);
+
+    // Clear temp state
+    this.questions = [];
+    this.selectedQID = null;
+    this.newQID = 0;
+    this.isAddingNew = false;
+
+    console.log('Cancelled new questionnaire creation.');
+  }
+}
+
+saveQuestionnaire() {
+    const hasQuestions = this.questions.some(group => group.list.length > 0);
+
+  if (!hasQuestions) {
+    this.errorMessage = "You must add at least one question before saving.";
+    return;
+  }
+
+  this.sharedService.saveQuestionnaire(this.newQID!, this.questions).subscribe({
+    next: (res) => {
+      console.log('Saved:', res);
+      this.isAddingNew = false;
+      this.newQID = 0;
+      this.selectedQID = null;
+      this.errorMessage = "Questionnaire Saved Successfully";
+    },
+    error: (err) => {
+      console.error('Error:', err);
+    }
+  });
+}
+
+
+onQIDChange() {
+  if (this.selectedQID !== null) {
+    this.fetchQuestionsByQID(this.selectedQID);
+  }
+}
 
     openSidebar() {
       this.isSidebarOpen = true;
@@ -102,7 +213,23 @@ getAllCategories() {
         list: [{ text: this.newQuestion.text, type: this.newQuestion.type }]
       });
     }
+ const safeQuestion = {
+    text: this.newQuestion.text,
+    type: this.newQuestion.type,
+    category: this.newQuestion.category as string
+  };
 
+
+      this.sharedService.addSingleQuestionToQuestionnaire(this.selectedQID!,safeQuestion).subscribe({
+    next: (res) => {
+      console.log("Saved to DB:", res);
+      this.errorMessage = "Question saved successfully.";
+    },
+    error: (err) => {
+      console.error("Failed to save question:", err);
+      this.errorMessage = "Error saving question.";
+    }
+  });
     // Reset and hide form
     this.newQuestion = { category: null, text: '', type: 'Likert Scale' };
     this.showAddForm = false;
@@ -126,16 +253,32 @@ getAllCategories() {
 
 addCategory() {
   const trimmedName = this.newCategory.trim();
-  if (trimmedName) {
-    const newCat = {
-      catID: 0, // 0 or any temporary value since not from DB
-      categoryName: trimmedName
-    };
-    this.categories.push(newCat);
-    this.editMode.push(false);
-    this.newCategory = '';
-  }
+  if (!trimmedName) return;
+
+  this.sharedService.addCategory(trimmedName).subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+        const newCat = {
+          catID: res.catID,
+          categoryName: trimmedName
+        };
+        this.categories.push(newCat);
+        this.editMode.push(false);
+        this.newCategory = '';
+        this.errorMessage = "Category Added Successfully";
+      } else if (res.status === 'exists') {
+        this.errorMessage = "Category already exists.";
+      } else {
+        this.errorMessage = "Failed to add category.";
+      }
+    },
+    error: (err) => {
+      console.error(err);
+      this.errorMessage = "Error connecting to server.";
+    }
+  });
 }
+
 
 onCategoryChange(index: number, newValue: string) {
   this.categories[index].categoryName = newValue.trim();
@@ -150,9 +293,34 @@ editCategory(index: number, inputRef: HTMLInputElement) {
 }
 
 deleteCategory(index: number) {
-  this.categories.splice(index, 1);
-  this.editMode.splice(index, 1);
+  const catID = this.categories[index].catID;
+
+  // Optional confirmation
+  if (!confirm("Are you sure you want to delete this category?")) return;
+
+  if (catID > 0) {
+    this.sharedService.deleteCategoryFromDB(catID).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.categories.splice(index, 1);
+          this.editMode.splice(index, 1);
+          this.errorMessage = "Category Deleted Successfully";
+        } else {
+          alert(res.message || "Error deleting category.");
+        }
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        alert("Failed to delete category.");
+      }
+    });
+  } else {
+    // For new categories not saved in DB yet
+    this.categories.splice(index, 1);
+    this.editMode.splice(index, 1);
+  }
 }
+
 
 
 saveCategories() {

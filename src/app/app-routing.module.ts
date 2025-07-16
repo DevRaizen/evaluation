@@ -21,7 +21,7 @@ import { StdashboardComponent } from './stdashboard/stdashboard.component';
 import { StevalFormComponent } from './steval-form/steval-form.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'user', pathMatch: 'full' }, // Redirect to login on load
+  { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirect to login on load
   { path: 'login', component: LoginComponent },
   { path: 'user', component: UserComponent },
   { path: 'dashboard', component: DashboardComponent },

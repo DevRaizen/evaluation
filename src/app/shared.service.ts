@@ -286,5 +286,44 @@ getAllCategories() {
   return this.http.post<any>(url, payload);
 }
 
+saveQuestionnaire(qid: number, questions: any[]) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'saveQuestionnaire',
+    QID: qid,
+    questions: questions
+  };
+  return this.http.post<any>(url, payload);
+}
+
+addSingleQuestionToQuestionnaire(qid: number, question: { text: string, type: string, category: string }) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'addSingleQuestion',
+    QID: qid,
+    question: question
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+addCategory(categoryName: string) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'addCategory',
+    categoryName: categoryName
+  };
+  return this.http.post<any>(url, payload);
+}
+
+deleteCategoryFromDB(catID: number) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'deleteCategory',
+    catID: catID
+  };
+  return this.http.post<any>(url, payload);
+}
+
 }
 
