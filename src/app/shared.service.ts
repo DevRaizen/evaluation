@@ -325,5 +325,15 @@ deleteCategoryFromDB(catID: number) {
   return this.http.post<any>(url, payload);
 }
 
+updateCategory(catID: number, newCategoryName: string) {
+  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const payload = {
+    action: 'updateCategory',
+    catID: catID,
+    categoryName: newCategoryName
+  };
+  return this.http.post<any>(url, payload);
+}
+
 }
 

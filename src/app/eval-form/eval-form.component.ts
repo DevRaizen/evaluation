@@ -9,6 +9,7 @@ import { SharedService } from '../shared.service';
   styleUrl: './eval-form.component.css'
 })
 export class EvalFormComponent implements OnInit {
+ 
   errorMessage ="";
     isSidebarOpen = false;
     showCategoryModal = false;
@@ -266,6 +267,7 @@ addCategory() {
         this.editMode.push(false);
         this.newCategory = '';
         this.errorMessage = "Category Added Successfully";
+        
       } else if (res.status === 'exists') {
         this.errorMessage = "Category already exists.";
       } else {
@@ -290,6 +292,7 @@ editCategory(index: number, inputRef: HTMLInputElement) {
     inputRef.focus();
     inputRef.select();
   }, 0);
+
 }
 
 deleteCategory(index: number) {
@@ -321,6 +324,22 @@ deleteCategory(index: number) {
   }
 }
 
+saveSingleCategory(index: number) {
+  const cat = this.categories[index];
+
+  if (!cat.catID || !cat.categoryName.trim()) return;
+
+  this.sharedService.updateCategory(cat.catID, cat.categoryName.trim()).subscribe({
+    next: () => {
+      this.editMode[index] = false;
+      this.errorMessage = "Category updated successfully.";
+      this.originalCategories[index] = { ...cat }; // update cache
+    },
+    error: () => {
+      this.errorMessage = "Error updating category.";
+    }
+  });
+}
 
 
 saveCategories() {
@@ -331,10 +350,15 @@ saveCategories() {
 }
 
  cancelAddCat() {
-  this.categories = [...this.originalCategories];
+  
   this.editMode = new Array(this.categories.length).fill(false);
   this.showCategoryModal = false;
 }
 
+cancelEditCategory(index: number) {
+  // Revert to original name if changed
+  this.categories[index].categoryName = this.originalCategories[index].categoryName;
+  this.editMode[index] = false;
+}
 
 }

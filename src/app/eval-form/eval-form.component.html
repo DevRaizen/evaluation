@@ -218,25 +218,44 @@
 
 <!-- Category Modal -->
 <div *ngIf="showCategoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-  <div class="bg-white w-[500px] rounded-lg shadow-lg">
+  <div class="bg-white w-[500px] max-h-[90vh] rounded-lg shadow-lg flex flex-col">
+    <!-- Header -->
     <div class="bg-red-800 text-white px-6 py-3 rounded-t-lg flex justify-between items-center">
       <h2 class="text-lg font-semibold">Manage Categories</h2>
       <button (click)="cancelAddCat()" class="text-white text-xl font-bold">&times;</button>
     </div>
 
-    <table class="min-w-full text-sm ">
-    <div class="p-6 space-y-3 overflow-y-auto">
-      <tr *ngFor="let cat of categories; let i = index; trackBy: trackByIndex " class="border flex items-center gap-2 px-4 py-2">
-        <input [(ngModel)]="cat.categoryName" [readonly]="!editMode[i]"  #categoryInput  (ngModelChange)="onCategoryChange(i, $event)" class=" rounded px-3 py-1 w-full" />
-        <button (click)="editCategory(i,categoryInput)" class="text-gray-500 border-r px-2">
-          <i class="fas fa-edit"></i>
-        </button>
-        <button (click)="deleteCategory(i)" class="text-gray-500">
-          <i class="fas fa-trash"></i>
-        </button>
-      </tr>
+    <!-- Scrollable Body -->
+    <div class="p-6 space-y-3 overflow-y-auto" style="max-height: 60vh;">
+      <table class="min-w-full text-sm w-full">
+        <tbody>
+          <tr *ngFor="let cat of categories; let i = index; trackBy: trackByIndex" class="border flex items-center gap-2 px-4 py-2">
+            <input [(ngModel)]="cat.categoryName" [readonly]="!editMode[i]" #categoryInput (ngModelChange)="onCategoryChange(i, $event)" class="rounded px-3 py-1 w-full" />
 
-      <!-- Add Category Input -->
+            <!-- Default: Edit & Delete -->
+            <ng-container *ngIf="!editMode[i]">
+              <button class="text-[#35353A] text-xl" title="Edit" (click)="editCategory(i, categoryInput)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="text-[#35353A] text-xl" title="Delete" (click)="deleteCategory(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </ng-container>
+
+            <!-- When Editing -->
+            <ng-container *ngIf="editMode[i]">
+              <button class="text-green-600 text-xl" title="Save" (click)="saveSingleCategory(i)">
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="text-red-600 text-xl" title="Cancel" (click)="cancelEditCategory(i)">
+                <i class="fas fa-times"></i>
+              </button>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Add New Category Input -->
       <div class="flex items-center gap-2">
         <input [(ngModel)]="newCategory" placeholder="Input Category Name here..." class="border rounded px-3 py-1 w-full" />
         <button (click)="addCategory()" class="text-gray-500">
@@ -244,13 +263,15 @@
         </button>
       </div>
     </div>
-    </table>
+
+    <!-- Footer -->
     <div class="px-6 py-4 flex justify-between">
-      <button (click)="cancelAddCat()" class="bg-gray-200 px-4 py-2 rounded">Cancel</button>
+      <button  (click)="cancelAddCat()" class="bg-gray-200 px-4 py-2 rounded">Cancel</button>
       <button (click)="saveCategories()" class="bg-yellow-500 text-white px-4 py-2 rounded">Save Changes</button>
     </div>
   </div>
 </div>
+
 
 
 <div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
