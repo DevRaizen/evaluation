@@ -335,5 +335,34 @@ updateCategory(catID: number, newCategoryName: string) {
   return this.http.post<any>(url, payload);
 }
 
+createSchedule(scheduleData: {
+  title: string;
+  questionnaireID: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  targetGrades: string[];
+  schoolYear: string;
+  adminID: string;
+}) {
+  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const payload = {
+    action: 'createSchedule',
+    schedule: {
+      title: scheduleData.title,
+      questionnaireID: scheduleData.questionnaireID,
+      startDate: scheduleData.startDate,
+      endDate: scheduleData.endDate,
+      status: scheduleData.status,
+      targetGrades: scheduleData.targetGrades,
+      schoolYear: scheduleData.schoolYear,
+      adminID: scheduleData.adminID
+    }
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+
 }
 

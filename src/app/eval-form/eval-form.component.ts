@@ -9,7 +9,7 @@ import { SharedService } from '../shared.service';
   styleUrl: './eval-form.component.css'
 })
 export class EvalFormComponent implements OnInit {
- 
+  avatar?: any;
   errorMessage ="";
     isSidebarOpen = false;
     showCategoryModal = false;
@@ -34,8 +34,45 @@ export class EvalFormComponent implements OnInit {
       text: '',
       type: 'Likert Scale'
     };
+    selectedQID: number | null = null;
+    
     constructor(private router:Router, private sharedService: SharedService){
-  
+      this.avatar = this.sharedService.defaultAvatar;
+
+        const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              const userType = parsedUser.UserType;
+
+              switch (userType) {
+                case 'Student':
+                  this.sharedService.CurrentStudent = parsedUser;
+                  this.router.navigate(['/stdashboard']);
+                  break;
+                case 'Admin':
+                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.router.navigate(['/eval-form']);
+                  break;
+                case 'Teacher':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
+                  break;
+                default:
+            
+                  this.router.navigate(['/login']);
+                  break;
+              }
+
+            } catch (e) {
+              console.error('Error parsing user from storage:', e);
+              this.router.navigate(['/login']);
+            }
+          } else {
+            // No user found
+            this.router.navigate(['/login']);
+          }
     }
     ngOnInit(): void {
       this.getAllCategories();
@@ -105,7 +142,6 @@ fetchQuestionsByQID(qid: number) {
   });
 }
 
-selectedQID: number | null = null;
 
 prepareNewQuestionnaire() {
   // Get highest existing QID (whether from DB or UI-added)
