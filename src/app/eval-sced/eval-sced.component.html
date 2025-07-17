@@ -110,7 +110,7 @@
               🔔
             </div>
             <img
-              src="https://via.placeholder.com/40"  
+              [src]="avatar"  
               alt="Profile"
               class="w-10 h-10 rounded-full object-cover cursor-pointer"
             />
@@ -139,27 +139,46 @@
       </thead>
       <tbody>
         <!-- Sample row -->
-        <tr class="bg-white border-b">
-          <td class="px-4 py-2">Midyear Eval 2025</td>
+        <tr *ngFor="let set of EvaluationSettings" class="bg-white border-b">
           <td class="px-4 py-2">
-            <input type="date" class="border rounded p-1 w-full" value="2024-12-01" />
+            <p *ngIf="editingRowId !== set.ESetID">{{set.Title}}</p>
+            <input *ngIf="editingRowId === set.ESetID" type="text" name="Title" class="border rounded p-1 w-full" [(ngModel)]="set.Title" value="{{set.Title}}">
           </td>
           <td class="px-4 py-2">
-            <input type="date" class="border rounded p-1 w-full" value="2025-01-01" />
+            <p *ngIf="editingRowId !== set.ESetID">{{set.StartDate}}</p>
+            <input *ngIf="editingRowId === set.ESetID" name="startdate" [(ngModel)]="set.StartDate" type="date" class="border rounded p-1 w-full" value="{{set.StartDate}}" />
           </td>
           <td class="px-4 py-2">
-            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Active</span>
+             <p *ngIf="editingRowId !== set.ESetID">{{set.EndDate}}</p>
+            <input *ngIf="editingRowId === set.ESetID" name="enddate" [(ngModel)]="set.EndDate" type="date" class="border rounded p-1 w-full" value="{{set.EndDate}}" />
           </td>
           <td class="px-4 py-2">
-            <span class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-xs">All Grade Levels</span>
+            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">{{set.Status}}</span>
+          </td>
+          <td class="px-4 py-2">
+            <span class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-xs">{{set.TargetGrade}}</span>
           </td>
           <td class="px-4 py-2 flex gap-2">
-            <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-pen"></i></button>
-            <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-trash"></i></button>
+            <ng-container *ngIf="editingRowId !== set.ESetID">
+              <button (click)="EditSettings(set.ESetID)" class="hover:text-[#35353A] text-gray-700 text-xl" title="Edit">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button (click)="openDeleteModal(set.ESetID)" class="hover:text-[#35353A] text-gray-700 text-xl" title="Delete" >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </ng-container>
+
+            <!-- When Editing -->
+            <ng-container *ngIf="editingRowId === set.ESetID">
+              <button (click)="SaveEditSettings(set)" class="text-green-600 text-xl" title="Save" >
+                <i class="fas fa-check"></i>
+              </button>
+              <button (click)="CloseEditSettings()" class="text-red-600 text-xl" title="Cancel" >
+                <i class="fas fa-times"></i>
+              </button>
+            </ng-container>
           </td>
         </tr>
-
-        <!-- Add more rows similarly -->
       </tbody>
     </table>
   </div>
@@ -168,7 +187,6 @@
     </div>
   </body>
 </html>
-
 
 
 <!-- BACKDROP -->
@@ -292,5 +310,33 @@
         Okay
       </button>
     </div>
+  </div>
+</div>
+
+<div *ngIf="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+  <!-- Modal Container -->
+  <div class="bg-white w-[350px] rounded-lg shadow-lg overflow-hidden">
+    
+    <!-- Header -->
+    <div class="bg-[#8C2224] px-4 py-2 flex justify-between items-center">
+      <h2 class="text-white font-semibold text-sm">Delete Confirmation</h2>
+      <button (click)="closeDeleteModal()" class="text-white text-lg font-bold hover:text-gray-300">&times;</button>
+    </div>
+    
+    <!-- Body -->
+    <div class="p-5 text-center">
+      <h3 class="text-base font-medium mb-5">Are you sure you want to delete this item?</h3>
+      <div class="flex justify-center gap-4">
+        <button (click)="closeDeleteModal()"
+                class="bg-gray-200 text-gray-800 px-4 py-1 rounded hover:bg-gray-300 text-sm">
+          Cancel
+        </button>
+        <button (click)="confirmDelete()"
+                class="bg-[#8C2224] text-white font-medium px-4 py-1 rounded hover:bg-red-600 text-sm">
+          Delete
+        </button>
+      </div>
+    </div>
+    
   </div>
 </div>

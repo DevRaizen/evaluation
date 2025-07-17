@@ -363,6 +363,33 @@ createSchedule(scheduleData: {
   return this.http.post<any>(url, payload);
 }
 
+getAllEvaluationSettings(){
+  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const payload = {
+    action: 'getEvaluationSettings'
+  };
+
+  return this.http.post<any>(url,payload);
+}
+
+saveSettings(schedule: any){
+  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const payload = {
+    action: 'updateEvaluationSettings',
+    schedule: schedule
+  };
+
+  return this.http.post<any>(url,payload);
+}
+
+deleteEvaluationSetting(id: number) {
+  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const payload = {
+    action: 'deleteEvaluationSetting',
+    id: id
+  };
+  return this.http.post<any>(url, payload);
+}
 
 }
 

@@ -334,9 +334,6 @@ editCategory(index: number, inputRef: HTMLInputElement) {
 deleteCategory(index: number) {
   const catID = this.categories[index].catID;
 
-  // Optional confirmation
-  if (!confirm("Are you sure you want to delete this category?")) return;
-
   if (catID > 0) {
     this.sharedService.deleteCategoryFromDB(catID).subscribe({
       next: (res) => {
@@ -397,4 +394,49 @@ cancelEditCategory(index: number) {
   this.editMode[index] = false;
 }
 
+
+showDeleteModal = false;
+itemToDeleteId: number | null = null;
+
+openDeleteModal(id: number) {
+  this.itemToDeleteId = id;
+  this.showDeleteModal = true;
 }
+
+closeDeleteModal() {
+  this.showDeleteModal = false;
+  this.itemToDeleteId = null;
+}
+
+confirmDelete() {
+  const index = this.itemToDeleteId!;
+  const catID = this.categories[index].catID;
+
+  if (catID > 0) {
+    this.sharedService.deleteCategoryFromDB(catID).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.categories.splice(index, 1);
+          this.editMode.splice(index, 1);
+          this.closeDeleteModal()
+          this.errorMessage ="Category Deleted Successfully";
+          this.ngOnInit();
+        } else {
+          alert(res.message || "Error deleting category.");
+        }
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        alert("Failed to delete category.");
+      }
+    });
+  } else {
+    // For new categories not saved in DB yet
+    this.categories.splice(index, 1);
+    this.editMode.splice(index, 1);
+  }
+}
+
+}
+
+

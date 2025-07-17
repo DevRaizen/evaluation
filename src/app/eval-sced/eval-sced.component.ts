@@ -10,6 +10,10 @@ import { NgForm } from '@angular/forms';
   styleUrl: './eval-sced.component.css'
 })
 export class EvalScedComponent implements OnInit{
+    itemToDeleteId: number | null = null;
+    showDeleteModal = false;
+    avatar: any;
+    editingRowId: number | null = null;
     errorMessage= ""
     isSidebarOpen = false;
     gradeSelectionInvalid = false;
@@ -17,7 +21,7 @@ export class EvalScedComponent implements OnInit{
     dateRangeInvalid = false;
     questionnaireIDs: number[] = [];
     selectedQID: number | null = null;
-   
+    EvaluationSettings: any[] = [];
     scheduleData = {
     title: '',
     questionnaireId: 0,
@@ -31,7 +35,7 @@ export class EvalScedComponent implements OnInit{
 
 
     constructor(private router: Router, private sharedService:SharedService){
-      
+        this.avatar = this.sharedService.defaultAvatar;
         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
           if (storedUser) {
@@ -70,9 +74,88 @@ export class EvalScedComponent implements OnInit{
 
     ngOnInit(): void {
       this.getAllQuestionnaireIDs();
+
+      this.sharedService.getAllEvaluationSettings().subscribe({
+        next: (res) =>{
+          if(res.status === 'success'){
+            this.EvaluationSettings = res.evalsettings;
+          }
+        },
+        error: (err)=>{
+           this.errorMessage = "Database Error";
+        }
+      })
     }
 
-    
+    EditSettings(id: number){
+      this.editingRowId = id;
+    }
+    CloseEditSettings(){
+      this.editingRowId = null;
+    }
+
+    SaveEditSettings(newSetting: any){
+
+      const start = new Date(newSetting.StartDate);
+      const end = new Date(newSetting.EndDate);
+     
+      if (end < start) {
+        this.errorMessage ="End Date cannot be earlier than Start Date."
+        return;
+      } 
+
+      const original = this.EvaluationSettings.find(s => s.ESetID === newSetting.ESetID);
+
+      if (
+        original &&
+        original.Title === newSetting.Title &&
+        original.StartDate === newSetting.StartDate &&
+        original.EndDate === newSetting.EndDate
+      ) {
+        this.errorMessage = "No changes detected.";
+        return;
+      }
+
+      const payload = {
+        id: newSetting.ESetID,
+        title: newSetting.Title,
+        startDate: newSetting.StartDate,
+        endDate: newSetting.EndDate
+      };
+
+      this.sharedService.saveSettings(payload).subscribe({
+        next: (res)=>{
+          if(res.status === 'success'){
+            this.editingRowId = null;
+            this.errorMessage = "Updated Successfully";
+          }
+        },
+        error: (err) =>{
+          this.errorMessage = "Database Error";
+        }
+      })
+
+    }
+
+confirmDelete() {
+  if (this.itemToDeleteId !== null) {
+    this.sharedService.deleteEvaluationSetting(this.itemToDeleteId).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+         this.ngOnInit();
+        } else {
+          this.errorMessage = res.message || 'Delete failed';
+        }
+        this.closeDeleteModal();
+      },
+      error: () => {
+        this.errorMessage = 'Server error while deleting';
+        this.closeDeleteModal();
+      }
+    });
+  }
+}
+
 getAllQuestionnaireIDs() {
   this.sharedService.getAllQuestionnaireIDs().subscribe({
     next: (res) => {
@@ -103,15 +186,14 @@ onSubmit(form: NgForm) {
       });
       return;
     }
-
+    
     if (this.scheduleData.targetGrades.length === 0) {
       this.gradeSelectionInvalid = true;
       return;
     }else {
       this.gradeSelectionInvalid = false;
     }
-    
-          // Custom: Check date range validity
+
       const start = new Date(this.scheduleData.startDate);
       const end = new Date(this.scheduleData.endDate);
       if (end < start) {
@@ -130,7 +212,7 @@ onSubmit(form: NgForm) {
         startDate: this.scheduleData.startDate,
         endDate: this.scheduleData.endDate,
         status: this.scheduleData.status,
-        targetGrades: this.scheduleData.targetGrades, // already string[]
+        targetGrades: this.scheduleData.targetGrades, 
         schoolYear: this.scheduleData.schoolYear,
         adminID: this.scheduleData.adminId
       };
@@ -140,6 +222,7 @@ onSubmit(form: NgForm) {
           if(res.status === "success"){
             this.errorMessage = "Evaluation Schedule Saved Successfully";
             this.closeScheduleModal();
+            this.ngOnInit();
           }else{
              this.errorMessage = "Unexpected response from server.";
           }
@@ -168,6 +251,15 @@ onSubmit(form: NgForm) {
       this.dateRangeInvalid = false;
       this.gradeSelectionInvalid = false;
     }
+    
+   openDeleteModal(id: number) {
+  this.itemToDeleteId = id;
+  this.showDeleteModal = true;
+}
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+  }
 
     goToDashboard(){
       this.router.navigate(['/dashboard']);
