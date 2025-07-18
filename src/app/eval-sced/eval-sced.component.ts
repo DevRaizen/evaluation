@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../shared.service';
 import { NgForm } from '@angular/forms';
+import jsPDf from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-eval-sced',
@@ -233,6 +235,45 @@ onSubmit(form: NgForm) {
       }
       });
 
+  }
+
+  exportScheduletoPDF(){
+    const doc = new jsPDf();
+
+    doc.setFontSize(16);
+    doc.text('Evaluation Schedule Report',105,15,{align: 'center'});
+
+    const headers = [['Title','Start Date','End Date','Status','Target Grade']];
+    const data = this.EvaluationSettings.map(set =>[
+      set.Title,
+      set.StartDate,
+      set.EndDate,
+      set.Status,
+      set.TargetGrade
+    ]);
+
+     // Add table
+    autoTable(doc, {
+      head: headers,
+      body: data,
+      startY: 25,
+      theme: 'grid',
+      headStyles: { fillColor: [140, 34, 36] },
+      styles: {
+        fontSize: 10,
+        cellPadding: 4,
+        halign: 'center'
+      },
+      didDrawPage: (data) => {
+        doc.setFontSize(10);
+        const pageSize = doc.internal.pageSize;
+        const pageHeight = pageSize.height || doc.internal.pageSize.getHeight();
+        doc.text('Saint Rose of Lima Catholic School', data.settings.margin.left, pageHeight - 10);
+      }
+    });
+
+    // Save the PDF
+    doc.save('Evaluation_Schedule.pdf');
   }
 
     openSidebar() {
