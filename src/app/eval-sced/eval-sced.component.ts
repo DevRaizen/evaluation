@@ -282,4 +282,7 @@ onSubmit(form: NgForm) {
     goToSettings() {
       this.router.navigate(['/settings']);
     }
+    goToCallendar() {
+      this.router.navigate(['/calendar-view']);
+    }
 }

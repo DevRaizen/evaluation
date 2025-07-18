@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import { SharedService } from '../shared.service';
+import { Title } from 'chart.js';
+import { color } from 'chart.js/helpers';
 
 @Component({
   selector: 'app-calendar-view',
@@ -9,26 +12,46 @@ import dayGridPlugin from '@fullcalendar/daygrid';
   templateUrl: './calendar-view.component.html',
   styleUrl: './calendar-view.component.css'
 })
-export class CalendarViewComponent {
+export class CalendarViewComponent implements OnInit {
     isSidebarOpen = false;
     calendarOptions = {
       plugins: [dayGridPlugin],
       initialView: 'dayGridMonth',
-      events: [
-        {
-          title: 'Midyear Eval 2025 Start Date',
-          date: '2025-06-01',
-          color: '#00BFA6',
-        },
-        {
-          title: 'Midyear Eval 2025 End Date',
-          date: '2025-06-05',
-          color: '#00BFA6',
-        }
-      ]
+      events: []
     };
     
-    constructor(private router: Router){}
+    constructor(private router: Router, private sharedService: SharedService){
+        
+    }
+
+    ngOnInit(): void {
+        this.sharedService.getAllEvaluationSettings().subscribe({
+          next: (res)=>{
+            if(res.status === 'success'){
+              const evalEvent = [] as any;
+
+              res.evalsettings.forEach((setting: any)=>{
+                evalEvent.push({
+                  title: `${setting.Title}  Start Date`,
+                  date: setting.StartDate,
+                  color: '#00BFA6'
+                });
+                evalEvent.push({
+                  title: `${setting.Title}  End Date`,
+                  date: setting.EndDate,
+                  color: '#00BFA6'
+                });
+              });
+              
+              this.calendarOptions.events = evalEvent;
+            }
+          },
+          error: (err)=>{
+
+          }
+        });
+    }
+
     openSidebar() {
       this.isSidebarOpen = true;
     }
