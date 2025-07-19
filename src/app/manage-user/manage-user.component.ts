@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
   styleUrl: './manage-user.component.css'
 })
 export class ManageUserComponent implements OnInit{
+    url = "";
     errorMessage = "";
     avatar?: any;
     showLogoutModal = false;
@@ -44,7 +45,7 @@ export class ManageUserComponent implements OnInit{
   
     constructor(private sharedService: SharedService ,private router: Router){
       this.avatar = this.sharedService.defaultAvatar;
-
+      this.url = this.sharedService.burl;
        const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
           if (storedUser) {

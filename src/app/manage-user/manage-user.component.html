@@ -93,7 +93,7 @@
           <!-- Dashboard -->
           <div class="flex items-center space-x-4">
             <!-- Dashboard Title -->
-            <h1 class="text-xl font-semibold">Manage User</h1>
+            <h1 class="text-xl font-semibold text-black">Manage User</h1>
 
           </div>
         
@@ -165,9 +165,9 @@
                     </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200 ">
-                    <tr *ngFor="let user of filteredAccounts()" class="hover:bg-gray-50 lg:text-sm text-xs">
+                    <tr *ngFor="let user of filteredAccounts()" class="hover:bg-gray-50 lg:text-sm text-xs text-black">
                         <td class="px-4 py-2 flex items-center gap-2 whitespace-nowrap max-w-[200px] overflow-hidden text-ellipsis">
-                            <img src="https://i.pravatar.cc/30" class="w-8 h-8 rounded-full" />
+                            <img [src]="user.image === '/user.png' ? '/user.png' : url + user.image"  class="w-8 h-8 rounded-full" />
                             <span class="font-semibold truncate" title="Balaji Nant">{{ user.Fname }} {{ user.Mname }} {{ user.Lname }}</span>
                         </td>
                         <!-- School ID -->

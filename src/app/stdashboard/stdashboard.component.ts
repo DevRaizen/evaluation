@@ -37,16 +37,16 @@ export class StdashboardComponent {
 
 
               switch (userType) {
-                case 'student':
-                  this.sharedService.Student = parsedUser;
+                case 'Student':
+                  this.sharedService.CurrentStudent = parsedUser;
                   this.router.navigate(['/stdashboard']);
-                  this.Student = this.sharedService.Student;
+                  this.Student = this.sharedService.CurrentStudent;
                   break;
-                case 'admin':
+                case 'Admin':
                   this.sharedService.Admin = parsedUser;
                   this.router.navigate(['/dashboard']);
                   break;
-                case 'teacher':
+                case 'Teacher':
                   this.sharedService.Teacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   break;

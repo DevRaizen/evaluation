@@ -11,16 +11,65 @@ import { SharedService } from '../shared.service';
   styleUrl: './tdashboard.component.css'
 })
 export class TdashboardComponent{
-
+  errorMessage ="";
+  showLogoutModal = false;
   avatar?: any;
-
-  constructor(private router: Router, private sharedService: SharedService){
-    this.avatar = this.sharedService.defaultAvatar;
-  }
   isSidebarOpen = false;
+  selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
   responseCount = 1230;
   responseMax = 1500;
+  Teacher: {
+    TeacherID?: string;
+    AccID?: number;
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    Email?: string;
+    PhoneNumber?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
+
+  constructor(private router: Router, private sharedService: SharedService){
+    this.avatar = this.sharedService.defaultAvatar;
+    this.imagePreview = this.sharedService.defaultAvatar;
+    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              const userType = parsedUser.UserType;
+
+              switch (userType) {
+                case 'Student':
+                  this.sharedService.CurrentStudent = parsedUser;
+                  this.router.navigate(['/stdashboard']);
+                  break;
+                case 'Admin':
+                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.router.navigate(['/dashboard']);
+                  break;
+                case 'Teacher':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
+                  this.Teacher = this.sharedService.CurrentTeacher;
+                  break;
+                default:
+            
+                  this.router.navigate(['/login']);
+                  break;
+              }
+
+            } catch (e) {
+              console.error('Error parsing user from storage:', e);
+              this.router.navigate(['/login']);
+            }
+          } else {
+            // No user found
+            this.router.navigate(['/login']);
+          }
+  }
 
   openSidebar() {
       this.isSidebarOpen = true;
@@ -32,18 +81,82 @@ export class TdashboardComponent{
   ngOnInit(): void {
     this.renderChart();
     this.renderRatingChart();
+    this.getProfile();
   }
   
+  getProfile(){
+     const payload = {
+      userid: this.Teacher.TeacherID,
+      userRole: this.Teacher.UserType
+     }
+     console.log(payload);
+    this.sharedService.getProfile(payload).subscribe({
+      next: (res) =>{
+        console.log("response",res);
+        if(res && res.status === 'success' && res.image){
+          if (res.image === '/user.png') {
+            this.avatar = res.image;
+            this.imagePreview = res.image;
+        } else {
+          this.avatar = `${this.sharedService.burl}${res.image}`;
+          this.imagePreview = `${this.sharedService.burl}${res.image}`;
+        }
+        }else{
+          this.avatar = this.sharedService.defaultAvatar;
+          this.imagePreview = this.sharedService.defaultAvatar;
+          
+        }
+      },
+      error: (err)=>{
+       this.errorMessage ="di mo nakuhaprofile boi";
+       console.log(err);
+      }
+    });
+  }
+
   onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
       if (file) {
+        this.selectedFile = file;
         const reader = new FileReader();
         reader.onload = () => {
           this.imagePreview = reader.result;
         };
         reader.readAsDataURL(file);
+        console.log(this.selectedFile)
+        this.saveProfileImage();
       }
     }
+
+  saveProfileImage() {
+  if (!this.selectedFile || !this.Teacher.TeacherID) {
+    console.warn("No file or Teacher ID found.");
+    return;
+  }
+  const payload ={
+    userid: this.Teacher.TeacherID,
+    userRole: this.Teacher.UserType,
+  }
+
+  this.sharedService.saveProfile(payload, this.selectedFile).subscribe({
+    next: (response) => {
+      if (response.status === 'success') {
+        console.log('Profile image saved successfully!');
+        this.errorMessage = "Profile image saved successfully!";
+        // Optionally update avatar image if you have one
+        // this.avatar = 'path-to-new-image';
+      } else {
+        console.error('Upload failed:', response.message);
+        this.errorMessage = "ayaw ma save";
+      }
+    },
+    error: (err) => {
+      console.error("Upload error:", err);
+      this.errorMessage = "ayaw ma save e";
+      console.log(err);
+    }
+  });
+}
 
 
   goToDashboard(){
@@ -54,6 +167,22 @@ export class TdashboardComponent{
     }
   goToSettings() {
         this.router.navigate(['/tsettings']);
+    }
+    logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
+
+      }
+
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
     }
 
   renderChart() {

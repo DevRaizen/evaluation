@@ -80,15 +80,18 @@ CurrentTeacher: {
   UserType?: string;
 } = {};
 
+  burl = 'http://192.168.1.6/teacher-evaluation-backend/';
   constructor(private http: HttpClient) { }
 
   sendVerificationEmail(email:string, code: string){
-    const url = 'http://localhost/teacher-evaluation-backend/verification.php'; 
+    const url = `${this.burl}verification.php` 
+    //const url = 'http://localhost/teacher-evaluation-backend/verification.php'; 
     return this.http.post(url, { email, code });
   }
 
   sendUserInfoToDB() {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php'; 
+  const url = `${this.burl}api.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/api.php'; 
   const userData = {
     action: 'register',
     fname: this.Student.Fname,
@@ -105,7 +108,8 @@ CurrentTeacher: {
 }
 
 sendAdminInfoToDB() {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
+  const url = `${this.burl}manageuser.php` 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
   const adminData = {
     action: 'register_admin',
     fname: this.Admin.Fname,
@@ -120,7 +124,8 @@ sendAdminInfoToDB() {
 }
 
 sendTeacherInfoToDB() {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
+  const url = `${this.burl}manageuser.php` 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
   const teacherData = {
     action: 'register_teacher',
     fname: this.Teacher.Fname,
@@ -136,7 +141,8 @@ sendTeacherInfoToDB() {
 
 
 loginUser(email: string, password: string, rememberme: boolean) {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php';
+  const url = `${this.burl}api.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/api.php';
   const loginData = {
     action: 'login',
     email: email,
@@ -148,7 +154,8 @@ loginUser(email: string, password: string, rememberme: boolean) {
 }
 
 checkEmailExists(email: string) {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php';
+  const url = `${this.burl}api.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/api.php';
   const data = {
     action: 'check_email',
     email: email
@@ -157,7 +164,8 @@ checkEmailExists(email: string) {
 }
 
 checkStudIdExists(studid: string) {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php';
+  const url = `${this.burl}api.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/api.php';
   const data = {
     action: 'check_studid',
     studid: studid
@@ -166,7 +174,8 @@ checkStudIdExists(studid: string) {
 }
 
 logout() {
-  const url = 'http://localhost/teacher-evaluation-backend/api.php';
+  const url = `${this.burl}api.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/api.php';
 
     const data = {
     action: 'logout'
@@ -176,7 +185,8 @@ logout() {
 }
 
 getStudentCount() {
-  const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
+  const url = `${this.burl}admindashboard.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
   const data = {
     action: 'count_students'
   };
@@ -184,7 +194,8 @@ getStudentCount() {
 }
 
 getTeacherCount() {
-  const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
+  const url = `${this.burl}admindashboard.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
   const data = {
     action: 'count_teachers'
   };
@@ -192,7 +203,8 @@ getTeacherCount() {
 }
 
 getAccount(){
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
     const data = {
     action: 'getUserAccount'
   };
@@ -200,7 +212,8 @@ getAccount(){
 }
 
 getYearSection(yearSecId: number) {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
   const data = {
     action: 'getYearSection',
     yearsecid: yearSecId  // Pass the parameter here
@@ -209,7 +222,8 @@ getYearSection(yearSecId: number) {
 }
 
 updateStudent() {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
   const studentData = {
     action: 'updateStudent',
     studid: this.Student.StudId,
@@ -228,7 +242,8 @@ updateStudent() {
 
 
 updateTeacher() {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
   const teacherData = {
     action: 'updateTeacher',
     teacherid: this.Teacher.TeacherID,
@@ -246,7 +261,8 @@ updateTeacher() {
 
 
 updateAdmin() {
-  const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
   const adminData = {
     action: 'updateAdmin',
     adminid: this.Admin.AdminID,
@@ -262,7 +278,8 @@ updateAdmin() {
 }
 
 getAllQuestionnaireIDs() {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const url = `${this.burl}questions.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'getAllQIDs'
   };
@@ -270,7 +287,8 @@ getAllQuestionnaireIDs() {
 }
 
 getQuestionsByQID(qid: number) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'getQuestionsByQID',
     QID: qid
@@ -279,7 +297,8 @@ getQuestionsByQID(qid: number) {
 }
 
 getAllCategories() {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'getAllCategories'
   };
@@ -287,7 +306,8 @@ getAllCategories() {
 }
 
 saveQuestionnaire(qid: number, questions: any[]) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'saveQuestionnaire',
     QID: qid,
@@ -297,7 +317,8 @@ saveQuestionnaire(qid: number, questions: any[]) {
 }
 
 addSingleQuestionToQuestionnaire(qid: number, question: { text: string, type: string, category: string }) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+  const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'addSingleQuestion',
     QID: qid,
@@ -308,7 +329,8 @@ addSingleQuestionToQuestionnaire(qid: number, question: { text: string, type: st
 }
 
 addCategory(categoryName: string) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+   const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'addCategory',
     categoryName: categoryName
@@ -317,7 +339,8 @@ addCategory(categoryName: string) {
 }
 
 deleteCategoryFromDB(catID: number) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+   const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'deleteCategory',
     catID: catID
@@ -326,7 +349,8 @@ deleteCategoryFromDB(catID: number) {
 }
 
 updateCategory(catID: number, newCategoryName: string) {
-  const url = 'http://localhost/teacher-evaluation-backend/questions.php';
+   const url = `${this.burl}questions.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/questions.php';
   const payload = {
     action: 'updateCategory',
     catID: catID,
@@ -345,7 +369,8 @@ createSchedule(scheduleData: {
   schoolYear: string;
   adminID: string;
 }) {
-  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const url = `${this.burl}evalSched.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
   const payload = {
     action: 'createSchedule',
     schedule: {
@@ -364,7 +389,8 @@ createSchedule(scheduleData: {
 }
 
 getAllEvaluationSettings(){
-  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+   const url = `${this.burl}evalSched.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
   const payload = {
     action: 'getEvaluationSettings'
   };
@@ -373,7 +399,8 @@ getAllEvaluationSettings(){
 }
 
 saveSettings(schedule: any){
-  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+   const url = `${this.burl}evalSched.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
   const payload = {
     action: 'updateEvaluationSettings',
     schedule: schedule
@@ -383,13 +410,38 @@ saveSettings(schedule: any){
 }
 
 deleteEvaluationSetting(id: number) {
-  const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+   const url = `${this.burl}evalSched.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
   const payload = {
     action: 'deleteEvaluationSetting',
     id: id
   };
   return this.http.post<any>(url, payload);
 }
+
+saveProfile(profileData: any, selectedFile: File) {
+  const url = `${this.burl}saveProfile.php`; // Your PHP endpoint
+
+   const formData = new FormData();
+  formData.append('action', 'saveProfile');
+  formData.append('userid', profileData.userid);
+  formData.append('userRole', profileData.userRole);
+  formData.append('userImage', selectedFile); 
+
+  return this.http.post<any>(url, formData);
+}
+
+getProfile(profileData: any) {
+  const url = `${this.burl}saveProfile.php`; 
+
+   const payload = {
+    action: 'getProfile',
+    userid: profileData.userid,
+    userRole: profileData.userRole
+  };
+  return this.http.post<any>(url, payload);
+}
+
 
 }
 
