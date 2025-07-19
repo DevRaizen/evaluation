@@ -12,6 +12,7 @@ import { NgForm } from '@angular/forms';
 export class ManageUserComponent implements OnInit{
     errorMessage = "";
     avatar?: any;
+    showLogoutModal = false;
     isSidebarOpen = false;
     showPassword = false;
     showconPassword = false;
@@ -89,63 +90,6 @@ export class ManageUserComponent implements OnInit{
 
     }
 
-    openSidebar() {
-      this.isSidebarOpen = true;
-    }
-    closeSidebar() {
-      this.isSidebarOpen = false;
-    }
-
-    AopenModal() {
-      this.AisModalOpen = true;
-    }
-
-    AcloseModal() {
-      this.AisModalOpen = false;
-       this.Password = "";
-      this.conPassword ="";
-  }
-   EopenModal() {
-      this.EisModalOpen = true;
-    }
-
-    EcloseModal() {
-      this.EisModalOpen = false;
-      this.Password = "";
-      this.conPassword ="";
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
-    
-  }
-  toggleconPasswordVisibility(): void {
-    this.showconPassword = !this.showconPassword;
-    
-  }
-
-  // Router
-      goToDashboard(){
-        this.router.navigate(['/dashboard']);
-      }
-      goToManageUser() {
-        this.router.navigate(['/manage-user']);
-      }
-      goToSubjectMap() {
-        this.router.navigate(['/subject-map']);
-      }
-      goToEvalForm() {
-        this.router.navigate(['/eval-form']);
-      }
-      goToEvalSched() {
-        this.router.navigate(['/eval-sced']);
-      }
-      goToGenReport() {
-        this.router.navigate(['/gen-report']);
-      }
-      goToSettings() {
-        this.router.navigate(['/settings']);
-      }
 
       filteredAccounts(): any[] {
         return this.userAccount.filter(user => {
@@ -160,32 +104,32 @@ export class ManageUserComponent implements OnInit{
           );
         });
       }
+      
+        allSections: { [key: string]: string[] } = {
+        '7': ['St. Peter', 'St. Paul'],
+        '8': ['St. John', 'St. Agnes'],
+        '9': ['St. Therese', 'St. Monica'],
+        '10': ['St. Joseph', 'St. Veronica']
+      };
 
-  allSections: { [key: string]: string[] } = {
-  '7': ['St. Peter', 'St. Paul'],
-  '8': ['St. John', 'St. Agnes'],
-  '9': ['St. Therese', 'St. Monica'],
-  '10': ['St. Joseph', 'St. Veronica']
-};
+      getSectionsForGrade(grade:string): string[] {
+        return this.allSections[grade] || [];
+      }
 
-getSectionsForGrade(grade:string): string[] {
-  return this.allSections[grade] || [];
-}
-
-onGradeChange(account: any, gradeKey: string) {
-  const grade = account[gradeKey];
-  const availableSections = this.getSectionsForGrade(account.grade);
-  if (!availableSections.includes(account.section)) {
-    account.section = '';
-  }
-}
+      onGradeChange(account: any, gradeKey: string) {
+        const grade = account[gradeKey];
+        const availableSections = this.getSectionsForGrade(account.grade);
+        if (!availableSections.includes(account.section)) {
+          account.section = '';
+        }
+      }
 
 
-get gradeLevels(): string[] {
-  return Object.keys(this.allSections);
-}
-
- onSubmit(form: NgForm) {
+      get gradeLevels(): string[] {
+        return Object.keys(this.allSections);
+      }
+    
+      onSubmit(form: NgForm) {
     if (form.invalid) {
       Object.values(form.controls).forEach(control => {
         control.markAsTouched();
@@ -300,150 +244,225 @@ get gradeLevels(): string[] {
               }
               });
         
-  }
-});
- 
-}
+              }
+            });
+            
+            }
 
+      editUser(user: any) {
+        // Copy the user data to avoid direct mutation
+        this.selectedUser = { ...user };
+        this.EisModalOpen = true;
 
-editUser(user: any) {
-  // Copy the user data to avoid direct mutation
-  this.selectedUser = { ...user };
-  this.EisModalOpen = true;
-
-  if (this.selectedUser.role === 'Student' && this.selectedUser.YearSec) {
-      this.sharedService.getYearSection(this.selectedUser.YearSec).subscribe({
-      next: (res) => {
-        if (res.status === 'success') {
-          this.selectedUser.section = res.account.SectionName;
-          this.selectedUser.grade = res.account.YearLevel;
-          
-        } else {
-          this.errorMessage = res.status || "Failed to fetch year/section";
+        if (this.selectedUser.role === 'Student' && this.selectedUser.YearSec) {
+            this.sharedService.getYearSection(this.selectedUser.YearSec).subscribe({
+            next: (res) => {
+              if (res.status === 'success') {
+                this.selectedUser.section = res.account.SectionName;
+                this.selectedUser.grade = res.account.YearLevel;
+                
+              } else {
+                this.errorMessage = res.status || "Failed to fetch year/section";
+              }
+            },
+            error: (err) => {
+              console.error('Error fetching year/section:', err);
+              this.errorMessage = "An error occurred while fetching data";
+            }
+          });
         }
-      },
-      error: (err) => {
-        console.error('Error fetching year/section:', err);
-        this.errorMessage = "An error occurred while fetching data";
-      }
-    });
-  }
-}
-
-onEditSubmit(form: NgForm) {
-  if (form.invalid) {
-    Object.values(form.controls).forEach(control => control.markAsTouched());
-    return;
-  }
-  const passwordMatch = this.Password === this.conPassword;
-  const passwordLengthOk = this.Password!.length >= 8;
-  const edited = this.selectedUser;
-  const email = edited.email?.trim().toLowerCase();
-  const isGmail = email?.endsWith('@gmail.com');
-
-  if (!isGmail) {
-    this.errorMessage = 'Only @gmail.com addresses are allowed.';
-    return;
-  }
-    if (!passwordMatch) {
-        this.errorMessage = 'Passwords do not match.';
-        return;
       }
 
-      if (!passwordLengthOk) {
-        this.errorMessage = 'Password must be at least 8 characters.';
-        return;
-      }
-
-  if (edited.role === 'Student' && !edited.ID.startsWith('s')) {
-    this.errorMessage = 'Student ID must start with "s".';
-    return;
-  }
-
-  if (edited.role === 'Teacher' && !edited.ID.startsWith('T')) {
-    this.errorMessage = 'Teacher ID must start with "T".';
-    return;
-  }
-
-  if (edited.role === 'Tdmin' && !edited.ID.startsWith('A')) {
-    this.errorMessage = 'Admin ID must start with "A".';
-    return;
-  }
-
-
-  if (edited.role === 'Student') {
-    this.sharedService.Student = {
-    StudId: edited.ID,
-    Fname: edited.Fname,
-    Mname: edited.Mname,
-    Lname: edited.Lname,
-    Grade: edited.grade,
-    Section: edited.section,
-    PhoneNumber: edited.phone,
-    Email: edited.email,
-    AccID: edited.accid,
-    UserType: 'Student',
-    Password: this.Password
-  };
-  console.log('Sending updateStudent request:', this.sharedService.Student);
-  this.sharedService.updateStudent().subscribe({
-      next: (res) => {
-        if (res.status === 'success') {
-          this.errorMessage = res.message;
-           setTimeout(() => {
-        window.location.reload();
-      }, 1000); 
-        } else {
-          this.errorMessage = res.message || "Failed to fetch year/section";
+      onEditSubmit(form: NgForm) {
+        if (form.invalid) {
+          Object.values(form.controls).forEach(control => control.markAsTouched());
+          return;
         }
-      },
-      error: (err) => {
-        this.errorMessage = "An error occurred while fetching data";
-      }
-    });
-  } else if (edited.role === 'Teacher'){
-  this.sharedService.Teacher = {
-    TeacherID: edited.ID,
-    Fname: edited.Fname,
-    Mname: edited.Mname,
-    Lname: edited.Lname,
-    PhoneNumber: edited.phone,
-    Email: edited.email,
-    AccID: edited.accid,
-    UserType: 'Teacher',
-    Password: this.Password
-  };
-  
-    this.sharedService.updateTeacher().subscribe({
-      next: (res) => {
-        if (res.status === 'success') {
-          this.errorMessage = res.message; 
-           setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-        } else {
-          this.errorMessage = res.message || "Failed to fetch year/section";
+        const passwordMatch = this.Password === this.conPassword;
+        const passwordLengthOk = this.Password!.length >= 8;
+        const edited = this.selectedUser;
+        const email = edited.email?.trim().toLowerCase();
+        const isGmail = email?.endsWith('@gmail.com');
+
+        if (!isGmail) {
+          this.errorMessage = 'Only @gmail.com addresses are allowed.';
+          return;
         }
-      },
-      error: (err) => {
-        this.errorMessage = "An error occurred while fetching data";
+          if (!passwordMatch) {
+              this.errorMessage = 'Passwords do not match.';
+              return;
+            }
+
+            if (!passwordLengthOk) {
+              this.errorMessage = 'Password must be at least 8 characters.';
+              return;
+            }
+
+        if (edited.role === 'Student' && !edited.ID.startsWith('s')) {
+          this.errorMessage = 'Student ID must start with "s".';
+          return;
+        }
+
+        if (edited.role === 'Teacher' && !edited.ID.startsWith('T')) {
+          this.errorMessage = 'Teacher ID must start with "T".';
+          return;
+        }
+
+        if (edited.role === 'Tdmin' && !edited.ID.startsWith('A')) {
+          this.errorMessage = 'Admin ID must start with "A".';
+          return;
+        }
+
+
+        if (edited.role === 'Student') {
+          this.sharedService.Student = {
+          StudId: edited.ID,
+          Fname: edited.Fname,
+          Mname: edited.Mname,
+          Lname: edited.Lname,
+          Grade: edited.grade,
+          Section: edited.section,
+          PhoneNumber: edited.phone,
+          Email: edited.email,
+          AccID: edited.accid,
+          UserType: 'Student',
+          Password: this.Password
+        };
+        console.log('Sending updateStudent request:', this.sharedService.Student);
+        this.sharedService.updateStudent().subscribe({
+            next: (res) => {
+              if (res.status === 'success') {
+                this.errorMessage = res.message;
+                setTimeout(() => {
+              window.location.reload();
+            }, 1000); 
+              } else {
+                this.errorMessage = res.message || "Failed to fetch year/section";
+              }
+            },
+            error: (err) => {
+              this.errorMessage = "An error occurred while fetching data";
+            }
+          });
+        } else if (edited.role === 'Teacher'){
+        this.sharedService.Teacher = {
+          TeacherID: edited.ID,
+          Fname: edited.Fname,
+          Mname: edited.Mname,
+          Lname: edited.Lname,
+          PhoneNumber: edited.phone,
+          Email: edited.email,
+          AccID: edited.accid,
+          UserType: 'Teacher',
+          Password: this.Password
+        };
+        
+          this.sharedService.updateTeacher().subscribe({
+            next: (res) => {
+              if (res.status === 'success') {
+                this.errorMessage = res.message; 
+                setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+              } else {
+                this.errorMessage = res.message || "Failed to fetch year/section";
+              }
+            },
+            error: (err) => {
+              this.errorMessage = "An error occurred while fetching data";
+            }
+          });
+        } else if (edited.role === 'Admin') {
+          this.sharedService.Admin = {
+          AdminID: edited.id,
+          Fname: edited.fname,
+          Mname: edited.mname,
+          Lname: edited.lname,
+          Email: edited.email,
+          AccID: edited.accid,
+          UserType: 'Admin',
+          Password: this.Password
+        };
+        }
+
+        
       }
-    });
-  } else if (edited.role === 'Admin') {
-    this.sharedService.Admin = {
-    AdminID: edited.id,
-    Fname: edited.fname,
-    Mname: edited.mname,
-    Lname: edited.lname,
-    Email: edited.email,
-    AccID: edited.accid,
-    UserType: 'Admin',
-    Password: this.Password
-  };
+
+    openSidebar() {
+      this.isSidebarOpen = true;
+    }
+    closeSidebar() {
+      this.isSidebarOpen = false;
+    }
+
+    AopenModal() {
+      this.AisModalOpen = true;
+    }
+
+    AcloseModal() {
+      this.AisModalOpen = false;
+       this.Password = "";
+      this.conPassword ="";
+  }
+   EopenModal() {
+      this.EisModalOpen = true;
+    }
+
+    EcloseModal() {
+      this.EisModalOpen = false;
+      this.Password = "";
+      this.conPassword ="";
   }
 
-  
-}
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+    
+  }
+  toggleconPasswordVisibility(): void {
+    this.showconPassword = !this.showconPassword;
+    
+  }
+
+  // Router
+      goToDashboard(){
+        this.router.navigate(['/dashboard']);
+      }
+      goToManageUser() {
+        this.router.navigate(['/manage-user']);
+      }
+      goToSubjectMap() {
+        this.router.navigate(['/subject-map']);
+      }
+      goToEvalForm() {
+        this.router.navigate(['/eval-form']);
+      }
+      goToEvalSched() {
+        this.router.navigate(['/eval-sced']);
+      }
+      goToGenReport() {
+        this.router.navigate(['/gen-report']);
+      }
+      goToSettings() {
+        this.router.navigate(['/settings']);
+      }
+
+       logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
+
+      }
+
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
+    }
+
 
 
 }

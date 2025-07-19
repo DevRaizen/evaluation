@@ -78,7 +78,7 @@
         </a>
       </nav>
         <div class="p-4 mt-16">
-          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+          <button (click)="openLogoutModal()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
             Log Out
           </button>
         </div>
@@ -620,5 +620,33 @@
         Okay
       </button>
     </div>
+  </div>
+</div>
+
+<div *ngIf="showLogoutModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+  <!-- Modal Container -->
+  <div class="bg-gray-100 w-[450px] rounded-lg shadow-lg overflow-hidden">
+    
+    <!-- Header -->
+    <div class="bg-[#8C2224] px-5 py-3 flex justify-between items-center">
+      <h2 class="text-white font-semibold">Log Out</h2>
+      <button (click)="closeLogoutModal()" class="text-white text-xl font-bold hover:text-gray-300">&times;</button>
+    </div>
+    
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <h3 class="text-lg font-semibold mb-6">Do you want to log out?</h3>
+      <div class="flex justify-center gap-4">
+        <button (click)="closeLogoutModal()"
+                class="bg-white border  text-gray-700 px-6 py-2 rounded hover:bg-gray-200">
+          No
+        </button>
+        <button (click)="logout()"
+                class="bg-yellow-400 text-white font-medium px-6 py-2 rounded hover:bg-yellow-500">
+          Yes
+        </button>
+      </div>
+    </div>
+    
   </div>
 </div>

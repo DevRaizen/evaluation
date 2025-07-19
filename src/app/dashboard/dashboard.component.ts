@@ -12,6 +12,7 @@ import { SharedService } from '../shared.service';
     styleUrl: './dashboard.component.css'
   })
   export class DashboardComponent implements OnInit {
+    showLogoutModal = false;
     avatar?: any;
     studentcount: any = 0;
     teachercount: any = 0;
@@ -58,49 +59,20 @@ import { SharedService } from '../shared.service';
     }
 
     ngOnInit(){
-        this.sharedService.getStudentCount().subscribe(res => {
-         if(res.status === 'success'){
-          this.studentcount = res.count;
-         }
-      });
+          this.sharedService.getStudentCount().subscribe(res => {
+            if(res.status === 'success'){
+              this.studentcount = res.count;
+            }
+          });
 
-        this.sharedService.getTeacherCount().subscribe(res => {
-         if(res.status === 'success'){
-          this.teachercount = res.count;
-         }
-      });
+            this.sharedService.getTeacherCount().subscribe(res => {
+            if(res.status === 'success'){
+              this.teachercount = res.count;
+            }
+          });
       }
 
-    openSidebar() {
-      this.isSidebarOpen = true;
-    }
-    closeSidebar() {
-      this.isSidebarOpen = false;
-    }
-
-    goToDashboard(){
-      this.router.navigate(['/dashboard']);
-    }
-    goToManageUser() {
-      this.router.navigate(['/manage-user']);
-    }
-    goToSubjectMap() {
-      this.router.navigate(['/subject-map']);
-    }
-    goToEvalForm() {
-      this.router.navigate(['/eval-form']);
-    }
-    goToEvalSched() {
-      this.router.navigate(['/eval-sced']);
-    }
-    goToGenReport() {
-      this.router.navigate(['/gen-report']);
-    }
-    goToSettings() {
-      this.router.navigate(['/settings']);
-    }
-
-    public barChartOptions: ChartOptions = {
+     public barChartOptions: ChartOptions = {
       indexAxis: 'x',
       responsive: true,
       maintainAspectRatio: false,
@@ -110,6 +82,7 @@ import { SharedService } from '../shared.service';
           max: 100,
           ticks: {
             stepSize: 25,
+            callback: (val) => `${val}%`
           },
           grid: {
             color: '#e5e7eb', // tailwind gray-200
@@ -123,6 +96,11 @@ import { SharedService } from '../shared.service';
         },
       },
       plugins: {
+        tooltip:{
+          callbacks:{
+            label: (val) => `${val.parsed.y}%`
+          }
+        },
         legend: {
           display: false,
           labels: {
@@ -164,6 +142,54 @@ import { SharedService } from '../shared.service';
     }
     };
 
-    
+      
+
+    openSidebar() {
+      this.isSidebarOpen = true;
+    }
+    closeSidebar() {
+      this.isSidebarOpen = false;
+    }
+
+    goToDashboard(){
+      this.router.navigate(['/dashboard']);
+    }
+    goToManageUser() {
+      this.router.navigate(['/manage-user']);
+    }
+    goToSubjectMap() {
+      this.router.navigate(['/subject-map']);
+    }
+    goToEvalForm() {
+      this.router.navigate(['/eval-form']);
+    }
+    goToEvalSched() {
+      this.router.navigate(['/eval-sced']);
+    }
+    goToGenReport() {
+      this.router.navigate(['/gen-report']);
+    }
+    goToSettings() {
+      this.router.navigate(['/settings']);
+    }
+
+     logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
+
+      }
+
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
+    }
+
+   
    
   }

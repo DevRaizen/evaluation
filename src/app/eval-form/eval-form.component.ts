@@ -9,6 +9,9 @@ import { SharedService } from '../shared.service';
   styleUrl: './eval-form.component.css'
 })
 export class EvalFormComponent implements OnInit {
+  showLogoutModal = false;
+  showDeleteModal = false;
+  itemToDeleteId: number | null = null;
   avatar?: any;
   errorMessage ="";
     isSidebarOpen = false;
@@ -36,6 +39,7 @@ export class EvalFormComponent implements OnInit {
     };
     selectedQID: number | null = null;
     
+
     constructor(private router:Router, private sharedService: SharedService){
       this.avatar = this.sharedService.defaultAvatar;
 
@@ -204,35 +208,6 @@ onQIDChange() {
   }
 }
 
-    openSidebar() {
-      this.isSidebarOpen = true;
-    }
-    closeSidebar() {
-      this.isSidebarOpen = false;
-    }
-
-    // Router Section
-    goToDashboard(){
-      this.router.navigate(['/dashboard']);
-    }
-    goToManageUser() {
-      this.router.navigate(['/manage-user']);
-    }
-    goToSubjectMap() {
-      this.router.navigate(['/subject-map']);
-    }
-    goToEvalForm() {
-      this.router.navigate(['/eval-form']);
-    }
-    goToEvalSched() {
-      this.router.navigate(['/eval-sced']);
-    }
-    goToGenReport() {
-      this.router.navigate(['/gen-report']);
-    }
-    goToSettings() {
-      this.router.navigate(['/settings']);
-    }
 
     // Question Section
   addNewQuestion() {
@@ -395,9 +370,6 @@ cancelEditCategory(index: number) {
 }
 
 
-showDeleteModal = false;
-itemToDeleteId: number | null = null;
-
 openDeleteModal(id: number) {
   this.itemToDeleteId = id;
   this.showDeleteModal = true;
@@ -436,6 +408,54 @@ confirmDelete() {
     this.editMode.splice(index, 1);
   }
 }
+
+
+    openSidebar() {
+      this.isSidebarOpen = true;
+    }
+    closeSidebar() {
+      this.isSidebarOpen = false;
+    }
+
+    // Router Section
+    goToDashboard(){
+      this.router.navigate(['/dashboard']);
+    }
+    goToManageUser() {
+      this.router.navigate(['/manage-user']);
+    }
+    goToSubjectMap() {
+      this.router.navigate(['/subject-map']);
+    }
+    goToEvalForm() {
+      this.router.navigate(['/eval-form']);
+    }
+    goToEvalSched() {
+      this.router.navigate(['/eval-sced']);
+    }
+    goToGenReport() {
+      this.router.navigate(['/gen-report']);
+    }
+    goToSettings() {
+      this.router.navigate(['/settings']);
+    }
+
+      logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
+
+      }
+
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
+    }
 
 }
 

@@ -12,6 +12,7 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './eval-sced.component.css'
 })
 export class EvalScedComponent implements OnInit{
+    showLogoutModal = false;
     itemToDeleteId: number | null = null;
     showDeleteModal = false;
     avatar: any;
@@ -325,5 +326,22 @@ onSubmit(form: NgForm) {
     }
     goToCallendar() {
       this.router.navigate(['/calendar-view']);
+    }
+
+     logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
+
+      }
+
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
     }
 }
