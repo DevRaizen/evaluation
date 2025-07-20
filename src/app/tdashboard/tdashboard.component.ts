@@ -97,9 +97,11 @@ export class TdashboardComponent{
           if (res.image === '/user.png') {
             this.avatar = res.image;
             this.imagePreview = res.image;
+          
         } else {
           this.avatar = `${this.sharedService.burl}${res.image}`;
           this.imagePreview = `${this.sharedService.burl}${res.image}`;
+          
         }
         }else{
           this.avatar = this.sharedService.defaultAvatar;

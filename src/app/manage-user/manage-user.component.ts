@@ -182,7 +182,7 @@ export class ManageUserComponent implements OnInit{
           this.errorMessage = "Email already exists!";
           }else
               {
-                if (this.newAccount.role === 'student') {
+                if (this.newAccount.role === 'Student') {
                   this.sharedService.Student = {
                   Fname: this.newAccount.fname,
                   Mname: this.newAccount.mname,
@@ -198,6 +198,7 @@ export class ManageUserComponent implements OnInit{
                     next: (res)=>{
                           this.errorMessage = "Student registered successfully"
                           this.AisModalOpen = false;
+                          this.ngOnInit();
                     },
                     error: (err)=>{
                           this.errorMessage = "Database Error"

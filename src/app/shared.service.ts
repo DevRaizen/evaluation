@@ -6,7 +6,6 @@ import { Injectable } from '@angular/core';
 })
 export class SharedService {
   defaultAvatar = "/user.png";
-
  Student: {
   Fname?: string;
   Mname?: string;
@@ -442,6 +441,23 @@ getProfile(profileData: any) {
   return this.http.post<any>(url, payload);
 }
 
+getYearSec(){
+  const url = `${this.burl}tsubjectmap.php`;
+  const payload ={
+    action: 'getYearSec'
+  };
 
+return this.http.post<any>(url,payload)
+};
+
+getSubPerYEar(grade: string){
+  const url = `${this.burl}tsubjectmap.php`;
+    const payload ={
+    action: 'getSubPerYear',
+    grade: grade
+  };
+
+  return this.http.post<any>(url,payload)
+}
 }
 
