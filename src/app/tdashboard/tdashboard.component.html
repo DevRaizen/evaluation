@@ -74,7 +74,7 @@
           <!-- Dashboard -->
           <div class="flex items-center space-x-4">
             <!-- Dashboard Title -->
-            <h1 class="text-xl font-semibold">Dashboard</h1>
+            <h1 class="text-xl font-semibold text-black">Dashboard</h1>
 
           </div>
         
@@ -128,8 +128,8 @@
                 <p class="text-lg text-gray-500 mt-1">School Year</p>
                  <div>
                         <select class="border border-gray-300 rounded px-3 py-2 md:w-48">
-                            <option>2024-2025</option>
-                            <option>2023-2024</option>
+                            <option *ngFor="let sy of SchoolYear" [value]="sy">{{sy}}</option> 
+                         
                         </select>
                         <i class="fas fa-angle-bottommm"></i>
                     </div>
@@ -140,7 +140,7 @@
                 <div class="grid  gap-6">
                     <div class="bg-white  p-4 rounded-lg shadow-md ">
                 <div class="flex items-center justify-center gap-6">
-                    <div class="relative w-36 h-36 lg:mt-10 sm:mt-2">
+                    <div class="relative w-36 h-36 ">
                         <canvas id="ratingChart" width="100" height="100"></canvas>
                         <div class="absolute inset-0 flex items-center justify-center text-yellow-400 font-bold text-2xl">
                         4.8
@@ -155,7 +155,7 @@
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-4 ">
-                <p class="text-lg font-semibold">Response Count</p>
+                <p class="text-lg font-semibold text-black">Response Count</p>
                 <div class="h-2 bg-gray-200 rounded overflow-hidden">
                 <div class="h-full bg-yellow-400 " [style.width.%]="(responseCount / responseMax) * 100"></div>
                 </div>
@@ -167,13 +167,13 @@
                 </div>
             
                 <div class="bg-white p-4 shadow-md rounded-lg">
-                <h4 class="font-bold mb-2 text-center">Performance</h4>
+                <h4 class="font-bold mb-2 text-center text-black">Performance</h4>
                 <canvas id="performanceChart" height="100"></canvas>
                 </div>
             </div>
 
             <div class="bg-white shadow-md p-4 rounded ">
-            <h4 class="font-bold mb-2">Insights by Nerd AI</h4>
+            <h4 class="font-bold mb-2 text-black">Insights by Nerd AI</h4>
             <ul class="text-sm list-disc ml-4 text-gray-600 space-y-1">
                 <li>Your professionalism stands out. You could lead workshops on professional conduct and ethics.</li>
                 <li>Communicate regularly with students through digital platforms to improve clarity on expectations.</li>
@@ -199,7 +199,7 @@
     
     <!-- Body -->
     <div class="p-6 text-center">
-      <h3 class="text-lg font-semibold mb-6">Do you want to log out?</h3>
+      <h3 class="text-lg font-semibold mb-6 text-black">Do you want to log out?</h3>
       <div class="flex justify-center gap-4">
         <button (click)="closeLogoutModal()"
                 class="bg-white border  text-gray-700 px-6 py-2 rounded hover:bg-gray-200">

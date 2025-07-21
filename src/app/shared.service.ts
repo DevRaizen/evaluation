@@ -210,6 +210,7 @@ getAccount(){
   return this.http.post<any>(url,data);
 }
 
+
 getYearSection(yearSecId: number) {
   const url = `${this.burl}manageuser.php`; 
   //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
@@ -219,6 +220,7 @@ getYearSection(yearSecId: number) {
   };
   return this.http.post<any>(url, data);
 }
+
 
 updateStudent() {
   const url = `${this.burl}manageuser.php`; 
@@ -459,5 +461,41 @@ getSubPerYEar(grade: string){
 
   return this.http.post<any>(url,payload)
 }
+
+getSchoolYear(){
+   const url = `${this.burl}tsubjectmap.php`;
+    const payload ={
+    action: 'getSchoolYear',
+  };
+
+  return this.http.post<any>(url,payload)
+}
+
+saveSubjectMapping(load: any) {
+  const url = `${this.burl}tsubjectmap.php`;
+
+    const payload ={
+    action: 'saveSubjectMapping',
+      teacherID: load.teacherID,
+      subjectID: load.subjectID,
+      grade: load.grade,
+      sections: load.sections,
+      schoolYear: load.schoolYear
+  };
+
+  return this.http.post<any>(url,payload);
+}
+
+getTeacherSubjectMappings(teacherID: string) {
+  const url = `${this.burl}tsubjectmap.php`;
+  const payload = {
+    action: 'getTeacherMappings',
+    teacherID: teacherID
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+
 }
 

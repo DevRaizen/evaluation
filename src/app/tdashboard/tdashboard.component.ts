@@ -30,6 +30,7 @@ export class TdashboardComponent{
     Password?: string;
     UserType?: string;
   } = {};
+  SchoolYear: any = [];
 
   constructor(private router: Router, private sharedService: SharedService){
     this.avatar = this.sharedService.defaultAvatar;
@@ -82,6 +83,7 @@ export class TdashboardComponent{
     this.renderChart();
     this.renderRatingChart();
     this.getProfile();
+    this.getSchoolYear();
   }
   
   getProfile(){
@@ -160,6 +162,19 @@ export class TdashboardComponent{
   });
 }
 
+getSchoolYear(){
+    this.sharedService.getSchoolYear().subscribe({
+      next: (res) => {
+        if(res.status === 'success'){
+          this.SchoolYear = res.schoolYears
+          console.log(this.SchoolYear);
+        }
+      },
+      error: (err) =>{
+
+      }
+    })
+  }
 
   goToDashboard(){
         this.router.navigate(['/tdashboard']);

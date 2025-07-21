@@ -39,7 +39,7 @@ verifyOtp() {
   .join('');
 
   const storedCode = localStorage.getItem('verificationCode');
-  localStorage.clear();
+ 
   if (!this.Otp1 || !this.Otp2 || !this.Otp3 || !this.Otp4 || !this.Otp5 || !this.Otp6) {
     setTimeout(() => this.submitted = false, 500);
     return;
@@ -47,6 +47,7 @@ verifyOtp() {
 
   if (enteredCode === storedCode) {
     this.errorMessage = "✅ Code verified!";
+     localStorage.clear();
     this.sharedService.sendUserInfoToDB().subscribe({
       next: (res)=>{
         alert('✅ User data saved to database!');

@@ -34,28 +34,12 @@ export class TsubjectMapComponent implements OnInit {
   grades: string[] = ['7', '8', '9', '10'];
   selectedGrade: string = '7';
   subjects: any[] = [];
+  SchoolYear: any = [];
+  teacherMappings: any[] = [];
+
+  selectedSchoolYear = "";
   selectedSections: { [section: string]: boolean } = {};
 
-  assignments = [
-    {
-      name: 'Jane Cooper',
-      subject: 'English',
-      section: 'St. Agnes',
-      imageUrl: 'https://randomuser.me/api/portraits/women/1.jpg'
-    },
-    {
-      name: 'Erwin Smith',
-      subject: 'Science',
-      section: 'St. Paul',
-      imageUrl: 'https://randomuser.me/api/portraits/men/2.jpg'
-    },
-    {
-      name: 'Pedro Cabang',
-      subject: 'MAPEH',
-      section: 'St. Peter',
-      imageUrl: 'https://randomuser.me/api/portraits/men/3.jpg'
-    }
-  ];
 
     constructor(private router: Router, private sharedService: SharedService){
         this.avatar = this.sharedService.defaultAvatar;
@@ -101,6 +85,8 @@ export class TsubjectMapComponent implements OnInit {
       this.getProfile();
       this.getYearSection();
       this.getSubPerYear(this.selectedGrade);
+      this.getSchoolYear();
+      this.getMapping()
     }
 
      getProfile(){
@@ -108,6 +94,7 @@ export class TsubjectMapComponent implements OnInit {
       userid: this.Teacher.TeacherID,
       userRole: this.Teacher.UserType
      }
+
      console.log(payload);
     this.sharedService.getProfile(payload).subscribe({
       next: (res) =>{
@@ -160,17 +147,77 @@ export class TsubjectMapComponent implements OnInit {
 
   getSubPerYear(grade: string){
     this.selectedGrade = grade;
+    this.selectedSections = {};
     this.sharedService.getSubPerYEar(this.selectedGrade!).subscribe({
     next: (res) =>{
       this.subjects = res.subject;
       this.selectedSubject = this.subjects[0]?.subjectid?? '';
-      console.log(this.subjects)
+      this.autoCheckExistingMappings();
+      console.log(this.subjects,"ahahha")
     },
     error: (err) =>{
       console.log("error")
     }
     })
+
   }
+
+  getSchoolYear(){
+    this.sharedService.getSchoolYear().subscribe({
+      next: (res) => {
+        if(res.status === 'success'){
+          this.SchoolYear = res.schoolYears
+          this.selectedSchoolYear = this.SchoolYear[0];
+          console.log(this.SchoolYear);
+        }
+      },
+      error: (err) =>{
+
+      }
+    })
+  }
+
+  getMapping(){
+    this.sharedService.getTeacherSubjectMappings(this.Teacher.TeacherID!).subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+        this.teacherMappings = res.mappings;
+        this.autoCheckExistingMappings();
+        console.log(this.teacherMappings);
+        
+      }
+    },
+    error: (err) => {
+      console.error('Failed to fetch mappings:', err);
+    }
+  });
+
+  }
+
+  autoCheckExistingMappings() {
+      console.log("Checking for:", {
+    selectedSubject: this.selectedSubject,
+    selectedGrade: this.selectedGrade,
+    selectedSchoolYear: this.selectedSchoolYear
+  });
+  this.teacherMappings.forEach(mapping => {
+    console.log('Checking mapping:', mapping);
+    if (
+      mapping.SubjectID === parseInt(this.selectedSubject) &&
+      mapping.YearLevel === this.selectedGrade &&
+      mapping.SchoolYear === this.selectedSchoolYear
+    ) {
+      this.selectedSections[mapping.SectionName] = true;
+    }
+  });
+}
+
+  onSubjectChange() {
+  this.selectedSections = {}; 
+  this.autoCheckExistingMappings();
+ 
+}
+
 
   getSelectedSectionList(): string[] {
   return Object.keys(this.selectedSections).filter(section => this.selectedSections[section]);
@@ -207,7 +254,33 @@ isAnySectionSelected(): boolean {
       console.log(this.selectedSubject);
       console.log(this.selectedGrade);
       console.log('Selected sections:', this.getSelectedSectionList());
+      console.log(this.selectedSchoolYear);
 
+      const payload = {
+      teacherID: this.Teacher.TeacherID,
+      subjectID: this.selectedSubject,
+      grade: this.selectedGrade,
+      sections: this.getSelectedSectionList(),
+      schoolYear: this.selectedSchoolYear
+    };
+
+    console.log(payload,"erer")
+  
+      this.sharedService.saveSubjectMapping(payload).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.errorMessage = 'Mapping saved successfully!';
+          this.getMapping();
+        } else {
+          this.errorMessage = res.message; // Conflict error (e.g., another teacher already assigned)
+        }
+      },
+      error: (err) => {
+        alert("An error occurred.");
+        console.log(err);
+      }
+    });
+  
   }
 
     openSidebar() {
@@ -237,10 +310,10 @@ isAnySectionSelected(): boolean {
       }
 
   filteredAssignments() {
-    return this.assignments.filter(a =>
-      a.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      a.subject.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      a.section.toLowerCase().includes(this.searchTerm.toLowerCase())
+    return this.teacherMappings.filter(a =>
+      a.Fname.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      a.SubjectName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      a.SectionName.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 }
