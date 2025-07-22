@@ -55,6 +55,7 @@ export class TdashboardComponent{
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   this.Teacher = this.sharedService.CurrentTeacher;
+                  console.log(this.Teacher);
                   break;
                 default:
             
@@ -131,7 +132,7 @@ export class TdashboardComponent{
         this.saveProfileImage();
       }
     }
-
+    
   saveProfileImage() {
   if (!this.selectedFile || !this.Teacher.TeacherID) {
     console.warn("No file or Teacher ID found.");

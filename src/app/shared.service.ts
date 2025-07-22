@@ -58,7 +58,7 @@ CurrentAdmin: {
   Fname?: string;
   Mname?: string;
   Lname?: string;
-  StudId?: string;
+  StudID?: string;
   Grade?: string;
   AccID?: number;
   Section?: string;
@@ -78,7 +78,8 @@ CurrentTeacher: {
   Password?: string;
   UserType?: string;
 } = {};
-
+  
+  //burl = 'https://61rr1xns-80.asse.devtunnels.ms/teacher-evaluation-backend/'
   burl = 'http://192.168.1.6/teacher-evaluation-backend/';
   constructor(private http: HttpClient) { }
 
@@ -496,6 +497,15 @@ getTeacherSubjectMappings(teacherID: string) {
   return this.http.post<any>(url, payload);
 }
 
+getTeacherOfStudent(StudID: string) {
+  const url = `${this.burl}stdashboard.php`;
+  const payload = {
+    action: 'getTeacher',
+    StudID: StudID
+  };
+
+  return this.http.post<any>(url, payload);
+}
 
 }
 

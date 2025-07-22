@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
   styleUrl: './tsubject-map.component.css'
 })
 export class TsubjectMapComponent implements OnInit {
+    addmap = false;
     formSubmitted = false;
     sectionError = false;
     selectedSubject: string = ''; 
@@ -148,6 +149,7 @@ export class TsubjectMapComponent implements OnInit {
   getSubPerYear(grade: string){
     this.selectedGrade = grade;
     this.selectedSections = {};
+    this.formSubmitted = false
     this.sharedService.getSubPerYEar(this.selectedGrade!).subscribe({
     next: (res) =>{
       this.subjects = res.subject;
@@ -214,6 +216,7 @@ export class TsubjectMapComponent implements OnInit {
 
   onSubjectChange() {
   this.selectedSections = {}; 
+  this.formSubmitted = false
   this.autoCheckExistingMappings();
  
 }
@@ -227,10 +230,11 @@ isAnySectionSelected(): boolean {
 }
 
   onSubmit(form: NgForm) {
-    this.formSubmitted = true;
+       this.formSubmitted = true;
     setTimeout(()=>{
         this.formSubmitted = false;
       },3000);
+      
     if (form.invalid) {
       // Show validation errors
       Object.values(form.controls).forEach(control => {

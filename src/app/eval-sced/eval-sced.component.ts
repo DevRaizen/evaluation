@@ -25,6 +25,7 @@ export class EvalScedComponent implements OnInit{
     questionnaireIDs: number[] = [];
     selectedQID: number | null = null;
     EvaluationSettings: any[] = [];
+
     scheduleData = {
     title: '',
     questionnaireId: 0,
@@ -77,7 +78,7 @@ export class EvalScedComponent implements OnInit{
 
     ngOnInit(): void {
       this.getAllQuestionnaireIDs();
-
+      this.getSchoolYear();
       this.sharedService.getAllEvaluationSettings().subscribe({
         next: (res) =>{
           if(res.status === 'success'){
@@ -90,6 +91,18 @@ export class EvalScedComponent implements OnInit{
       })
     }
 
+      getSchoolYear(){
+    this.sharedService.getSchoolYear().subscribe({
+      next: (res) => {
+        if(res.status === 'success'){
+          this.scheduleData.schoolYear = res.schoolYears[0];
+        }
+      },
+      error: (err) =>{
+
+      }
+    })
+  }
     EditSettings(id: number){
       this.editingRowId = id;
     }

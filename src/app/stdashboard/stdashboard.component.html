@@ -92,7 +92,7 @@
               🔔
             </div>
             <img
-              [src]="imagePreview || '/teacher.png'"  
+              [src]="imagePreview || avatar"  
               alt="Profile"
               class="w-10 h-10 rounded-full object-cover cursor-pointer"
             />
@@ -155,45 +155,24 @@
         </div>
 
         <!-- Pending Evaluations Section -->
-        <div class="mt-2">
+        <div *ngIf="ActiveEvalutaion" class="mt-2">
           <h3 class="text-2xl font-semibold mb-4">Pending Evaluation</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Card Example -->
-            <div class="bg-white rounded-lg shadow p-4 text-center">
+            <div *ngFor="let map of teachermap" class="bg-white rounded-lg shadow p-4 text-center">
               <img src="/teacher.png" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
-              <h4 class="font-bold">Vin Bautista</h4>
-              <p class="text-sm text-gray-500">Mathematics</p>
+              <h4 class="font-bold">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
+              <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
               <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
-              <p class="text-xs text-gray-400 mt-1">Due March 21</p>
+              <p class="text-xs text-black mt-1">Due {{ActiveEvalutaion.EndDate}}</p>
             </div>
-
-            <div class="bg-white rounded-lg shadow p-4 text-center">
-              <img src="/teacher.png" alt="Jane Cooper" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
-              <h4 class="font-bold">Jane Cooper</h4>
-              <p class="text-sm text-gray-500">Mathematics</p>
-              <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
-              <p class="text-xs text-gray-400 mt-1">Due September 1</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-4 text-center">
-              <img src="/teacher.png" alt="Alex Smith" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
-              <h4 class="font-bold">Alex Smith</h4>
-              <p class="text-sm text-gray-500">History</p>
-              <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
-              <p class="text-xs text-gray-400 mt-1">Due June 23</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-4 text-center">
-              <img src="/teacher.png" alt="Rainier Tan" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
-              <h4 class="font-bold">Rainier Tan</h4>
-              <p class="text-sm text-gray-500">Christian Living</p>
-              <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
-              <p class="text-xs text-gray-400 mt-1">Due May 23</p>
-            </div>
-            
 
           </div>
         </div>
+
+         <div *ngIf="!ActiveEvalutaion" class="mt-2">
+            <h3 class="text-2xl font-semibold mb-4">No Evaluation</h3>  
+          </div>
       </div>
       
       </main>
@@ -246,5 +225,23 @@
       </div>
     </div>
     
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚠️ Warning</h3>
+      <button (click)="errorMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
+      <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
   </div>
 </div>
