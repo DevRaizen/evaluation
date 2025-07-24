@@ -183,11 +183,32 @@ getProfile(){
             console.log(this.EvaluationSettings)
           // const today = new Date().toISOString().split('T')[0];  // delay ng 1day
 
-            const today = new Date(Date.now() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0]; // ph time
-
+          //  const today = new Date(Date.now() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0]; // ph time string
+            const today = new Date(Date.now() + (8 * 60 * 60 * 1000));
+            today.setHours(0, 0, 0, 0); 
+            
             console.log(today);
-            this.ActiveEvalutaion = this.EvaluationSettings.find(setting => setting.StartDate === today && setting.Status === "Active");
+        
+         this.ActiveEvalutaion = this.EvaluationSettings.find(setting =>{
+            const startDate = new Date(setting.StartDate);
+            const endDate = new Date(setting.EndDate);
 
+            startDate.setHours(0,0,0,0);
+            endDate.setHours(0,0,0,0);
+
+            const isActive =
+          setting.Status === 'Active' &&
+          today >= startDate &&
+          today <= endDate;
+
+        if (!isActive) return false;
+
+        // Match student's grade (e.g., 8) with TargetGrade string
+        const allowedGrades = setting.TargetGrade.split(',')
+          .map((ge: any) => ge.trim().replace('Grade ', ''));
+
+        return allowedGrades.includes(this.Student.Grade);
+          });
             console.log(this.ActiveEvalutaion,"Eto ACtive")
           }
         },

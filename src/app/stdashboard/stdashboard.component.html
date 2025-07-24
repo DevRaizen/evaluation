@@ -75,7 +75,7 @@
           <!-- Dashboard -->
           <div class="flex items-center space-x-4">
             <!-- Dashboard Title -->
-            <h1 class="text-xl font-semibold">Dashboard</h1>
+            <h1 class="text-xl font-semibold text-black">Dashboard</h1>
 
           </div>
         
@@ -101,7 +101,7 @@
 
         <div class="flex justify-between items-center space-x-4">
             <div class="relative right ">
-                <span class="text-3xl font-semibold ">Student Profile</span>
+                <span class="text-3xl font-semibold text-black">Student Profile</span>
             </div>
         </div>
 
@@ -127,8 +127,8 @@
         </div>
 
           <div class="flex-1 w-full">
-            <h2 class="lg:text-2xl font-semibold sm:text-xs md:text-sm">{{Student.Fname}} {{Student.Mname}} {{Student.Lname}}</h2>
-            <p class="text-gray-600">Grade {{Student.Grade}} {{Student.Section}}</p>
+            <h2 class="lg:text-2xl font-semibold sm:text-xs md:text-sm text-black">{{Student.Fname}} {{Student.Mname}} {{Student.Lname}}</h2>
+            <p class="text-gray-600 ">Grade {{Student.Grade}} {{Student.Section}}</p>
             <hr class="mt-4 border-t border-gray-300 w-full" />
           </div>
 
@@ -137,31 +137,31 @@
         <!-- Evaluation Summary Section -->
         <div class=" grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-center p-4">
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold">3</p>
+            <p class="text-xl font-bold text-black">3</p>
             <p class="text-sm text-gray-600">Available Evaluations</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold">3</p>
+            <p class="text-xl font-bold text-black">3</p>
             <p class="text-sm text-gray-600">Completed Evaluations</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold">25%</p>
+            <p class="text-xl font-bold text-black">25%</p>
             <p class="text-sm text-gray-600">Overall Completion</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold">2D</p>
+            <p class="text-xl font-bold text-black">2D</p>
             <p class="text-sm text-gray-600">Time Remaining</p>
           </div>
         </div>
 
         <!-- Pending Evaluations Section -->
         <div *ngIf="ActiveEvalutaion" class="mt-2">
-          <h3 class="text-2xl font-semibold mb-4">Pending Evaluation</h3>
+          <h3 class="text-2xl font-semibold mb-4 text-black">Pending Evaluation</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Card Example -->
             <div *ngFor="let map of teachermap" class="bg-white rounded-lg shadow p-4 text-center">
               <img src="/teacher.png" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
-              <h4 class="font-bold">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
+              <h4 class="font-bold text-black">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
               <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
               <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
               <p class="text-xs text-black mt-1">Due {{ActiveEvalutaion.EndDate}}</p>
@@ -171,7 +171,7 @@
         </div>
 
          <div *ngIf="!ActiveEvalutaion" class="mt-2">
-            <h3 class="text-2xl font-semibold mb-4">No Evaluation</h3>  
+            <h3 class="text-2xl font-semibold mb-4 text-black text-center">No Evaluation</h3>  
           </div>
       </div>
       
