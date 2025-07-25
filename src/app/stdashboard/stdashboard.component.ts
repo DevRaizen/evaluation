@@ -35,6 +35,17 @@ export class StdashboardComponent implements OnInit {
   constructor(private router: Router, private sharedService: SharedService){
         this.avatar = this.sharedService.defaultAvatar;
         this.imagePreview = this.sharedService.defaultAvatar;
+
+           const evaluating = localStorage.getItem("Evaluating");
+            if(evaluating){
+              try{
+                   this.router.navigate(['/steval-form']);
+                   return
+              } catch (e){
+                console.error('Error parsing user from storage:', e);
+              }
+            }
+
         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
           if (storedUser) {
@@ -216,6 +227,13 @@ getProfile(){
            this.errorMessage = "Database Error";
         }
       })
+  }
+
+  startEval(SelectedTeacher: any){
+    console.log(SelectedTeacher);
+    localStorage.setItem('Evaluating', JSON.stringify(SelectedTeacher));
+    this.router.navigate(['/steval-form'])
+
   }
   
     openSidebar() {

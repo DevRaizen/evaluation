@@ -163,7 +163,7 @@
               <img src="/teacher.png" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
               <h4 class="font-bold text-black">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
               <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
-              <button class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
+              <button (click)="startEval(map)" class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
               <p class="text-xs text-black mt-1">Due {{ActiveEvalutaion.EndDate}}</p>
             </div>
 
@@ -171,6 +171,9 @@
         </div>
 
          <div *ngIf="!ActiveEvalutaion" class="mt-2">
+          <div>
+            <img src="/elepanty.png" alt="" class="h-60 w-6/12 block m-auto p-auto">
+          </div>
             <h3 class="text-2xl font-semibold mb-4 text-black text-center">No Evaluation</h3>  
           </div>
       </div>
