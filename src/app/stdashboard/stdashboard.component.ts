@@ -231,7 +231,18 @@ getProfile(){
 
   startEval(SelectedTeacher: any){
     console.log(SelectedTeacher);
-    localStorage.setItem('Evaluating', JSON.stringify(SelectedTeacher));
+    const now = new Date().getTime(); // Current time in ms
+    const expiryTime = now + 20 * 60 * 1000; // 20 minutes from now
+
+    localStorage.setItem('Evaluating', JSON.stringify({
+      data: SelectedTeacher,
+      expiry: expiryTime
+    }));
+
+    localStorage.setItem('EvalSet', JSON.stringify({
+      data: this.ActiveEvalutaion,
+      expiry: expiryTime
+    }));
     this.router.navigate(['/steval-form'])
 
   }

@@ -12,6 +12,7 @@ export class StevalFormComponent implements OnInit {
     errorMessage = '';
     avatar = ';'
     selectedTeacher: any = {};
+    EvalSetting: any = {};
     imagePreview: string | ArrayBuffer | null = null;
     isSidebarOpen = false;
     currentQuestion = 0;
@@ -28,7 +29,8 @@ export class StevalFormComponent implements OnInit {
       Password?: string;
       UserType?: string;
     } = {};
-    questions = [
+    questions: any [] = [];
+  /*  questions = [
       { type: 'likert', text: 'The teacher treats all students fairly and equally.' },
       { type: 'likert', text: 'The teacher respects students’ opinions and listens attentively.' },
       { type: 'likert', text: 'The teacher explains lessons clearly and understandably.' },
@@ -39,7 +41,7 @@ export class StevalFormComponent implements OnInit {
       { type: 'comment', text: 'What do you like most about this teacher’s teaching style?' },
       { type: 'comment', text: 'What suggestions do you have for improving the teacher’s methods?' },
       { type: 'comment', text: 'Any other comments or feedback you’d like to share?' }
-    ];
+    ]; */
     questionsPerPage = 5;
     currentPage = 1;
 
@@ -51,27 +53,27 @@ export class StevalFormComponent implements OnInit {
       this.imagePreview = this.sharedService.defaultAvatar;
 
       // getting selected Teacher on Evaluation
-      const evaluating = localStorage.getItem("Evaluating");
-      if(evaluating){
-        try{
-          this.selectedTeacher = JSON.parse(evaluating);
-           console.log(this.selectedTeacher.image);
-          if(this.selectedTeacher.image === '/user.png'){
-            this.imagePreview = this.selectedTeacher.image;
-            console.log(this.imagePreview,"ehehasd");
-          }else{
-            this.imagePreview = `${this.sharedService.burl}${this.selectedTeacher.image}`
-            console.log(this.imagePreview,"eheheh");
-          }
-          console.log(this.selectedTeacher);
+      const evaluating = this.sharedService.getWithExpiry("Evaluating");
+      const evalset = this.sharedService.getWithExpiry("EvalSet");
 
-        } catch (e){
-          console.error('Error parsing user from storage:', e);
+      if (evaluating && evalset) {
+        this.selectedTeacher = evaluating;
+        this.EvalSetting = evalset;
+
+        if (this.selectedTeacher.image === '/user.png') {
+          this.imagePreview = this.selectedTeacher.image;
+        } else {
+          this.imagePreview = `${this.sharedService.burl}${this.selectedTeacher.image}`;
         }
-      }else{
+
+        console.log(this.selectedTeacher);
+        console.log(this.EvalSetting);
+
+      } else {
         this.router.navigate(['stdashboard']);
-        return
+        return;
       }
+
 
       // getting the current user
       const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
@@ -114,6 +116,7 @@ export class StevalFormComponent implements OnInit {
     }
     ngOnInit(): void {
       this.getProfile()
+      this.getQuestionaire();
     }
 
     getProfile(){
@@ -142,6 +145,20 @@ export class StevalFormComponent implements OnInit {
       }
     });
   }
+
+  getQuestionaire(){
+    this.sharedService.getQuestionsByQID(this.EvalSetting.QID).subscribe({
+      next: (res) => {
+        this.questions = res.questions;
+        console.log(this.questions)
+      },
+      error: (err) =>{
+
+      }
+    })
+  }
+
+ 
     get paginatedQuestions() {
       const start = (this.currentPage - 1) * this.questionsPerPage;
       return this.questions.slice(start, start + this.questionsPerPage);

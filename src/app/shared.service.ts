@@ -79,6 +79,25 @@ CurrentTeacher: {
   UserType?: string;
 } = {};
 
+ getWithExpiry(key: string) {
+  const itemStr = localStorage.getItem(key);
+  if (!itemStr) return null;
+
+  try {
+    const item = JSON.parse(itemStr);
+    const now = new Date().getTime();
+
+    if (now > item.expiry) {
+      localStorage.removeItem(key); // remove expired
+      return null;
+    }
+
+    return item.data;
+  } catch (e) {
+    console.error('Invalid localStorage JSON:', key, e);
+    return null;
+  }
+}
 
   //burl = 'https://61rr1xns-80.asse.devtunnels.ms/teacher-evaluation-backend/'
   burl = 'http://192.168.1.6/teacher-evaluation-backend/';

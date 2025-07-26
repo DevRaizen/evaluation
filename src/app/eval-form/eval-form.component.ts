@@ -123,7 +123,7 @@ fetchQuestionsByQID(qid: number) {
         list: { text: string; type: string }[];
       }[] = [];
 
-      res.forEach((q: any) => {
+      res.questions.forEach((q: any) => {
         let group = grouped.find(g => g.category === q.categoryName);
         if (!group) {
           group = { category: q.categoryName, list: [] };
