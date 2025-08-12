@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../shared.service';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-stdashboard',
@@ -9,6 +10,8 @@ import { SharedService } from '../shared.service';
   styleUrl: './stdashboard.component.css'
 })
 export class StdashboardComponent implements OnInit {
+  result: any;
+  imgurl = "";
   errorMessage = "";
   Student: {
   Fname?: string;
@@ -31,11 +34,14 @@ export class StdashboardComponent implements OnInit {
   selectedFile: File | null = null;
   isSidebarOpen = false;
   imagePreview: string | ArrayBuffer | null = null;
+  today = new Date(Date.now() + (8 * 60 * 60 * 1000));
+  duration: { days: number; hours: number; mins: number } = { days: 0, hours: 0, mins: 0 };
+
 
   constructor(private router: Router, private sharedService: SharedService){
+        this.imgurl = this.sharedService.burl;
         this.avatar = this.sharedService.defaultAvatar;
         this.imagePreview = this.sharedService.defaultAvatar;
-
            const evaluating = localStorage.getItem("Evaluating");
             if(evaluating){
               try{
@@ -90,6 +96,7 @@ export class StdashboardComponent implements OnInit {
     this.getProfile();
     this.getStudentTeacher();
     this.getEvalSet();
+   
   }
 
   onFileSelected(event: Event): void {
@@ -168,6 +175,23 @@ getProfile(){
     });
   }
 
+  getBetweenDays(start: string, end: string) : {days: number, hours: number, mins: number}{
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    
+    let diff = endDate.getTime() - startDate.getTime();
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    diff -= days * (1000 * 60 * 60 * 24);
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    diff -= hours* (1000 * 60 * 60);
+  
+    const mins = Math.floor(diff / (1000 * 60 ));
+
+    return {days, hours , mins}
+  }
+
   getStudentTeacher(){
     this.sharedService.getTeacherOfStudent(this.Student.StudID!).subscribe({
       next: (res) => {
@@ -221,6 +245,11 @@ getProfile(){
         return allowedGrades.includes(this.Student.Grade);
           });
             console.log(this.ActiveEvalutaion,"Eto ACtive")
+
+            if (this.ActiveEvalutaion) {
+             
+            this.duration = this.getBetweenDays(this.today.toISOString(), this.ActiveEvalutaion.EndDate);
+          }
           }
         },
         error: (err)=>{

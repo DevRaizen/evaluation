@@ -137,7 +137,8 @@
         <!-- Evaluation Summary Section -->
         <div class=" grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-center p-4">
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold text-black">3</p>
+            <p *ngIf="!ActiveEvalutaion" class="text-xl font-bold text-black">0</p>
+            <p *ngIf="ActiveEvalutaion" class="text-xl font-bold text-black">{{teachermap.length}}</p>
             <p class="text-sm text-gray-600">Available Evaluations</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
@@ -149,7 +150,7 @@
             <p class="text-sm text-gray-600">Overall Completion</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold text-black">2D</p>
+            <p class="text-xl font-bold text-black"> Duration: {{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m</p>
             <p class="text-sm text-gray-600">Time Remaining</p>
           </div>
         </div>
@@ -160,7 +161,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Card Example -->
             <div *ngFor="let map of teachermap" class="bg-white rounded-lg shadow p-4 text-center">
-              <img src="/teacher.png" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
+              <img [src]="map.image === '/user.png' ? '/user.png' : imgurl + map.image" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
               <h4 class="font-bold text-black">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
               <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
               <button (click)="startEval(map)" class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>

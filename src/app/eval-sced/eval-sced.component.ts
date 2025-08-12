@@ -122,7 +122,7 @@ export class EvalScedComponent implements OnInit{
 
       const original = this.EvaluationSettings.find(s => s.ESetID === newSetting.ESetID);
 
-      if (
+      /*if (
         original &&
         original.Title === newSetting.Title &&
         original.StartDate === newSetting.StartDate &&
@@ -131,7 +131,8 @@ export class EvalScedComponent implements OnInit{
         this.errorMessage = "No changes detected.";
         return;
       }
-
+      */
+     
       const payload = {
         id: newSetting.ESetID,
         title: newSetting.Title,
@@ -321,9 +322,6 @@ onSubmit(form: NgForm) {
     }
     goToManageUser() {
       this.router.navigate(['/manage-user']);
-    }
-    goToSubjectMap() {
-      this.router.navigate(['/subject-map']);
     }
     goToEvalForm() {
       this.router.navigate(['/eval-form']);

@@ -100,7 +100,7 @@ CurrentTeacher: {
 }
 
   //burl = 'https://61rr1xns-80.asse.devtunnels.ms/teacher-evaluation-backend/'
-  burl = 'http://192.168.1.6/teacher-evaluation-backend/';
+  burl = 'http://192.168.1.9/teacher-evaluation-backend/';
   constructor(private http: HttpClient) { }
 
   sendVerificationEmail(email:string, code: string){

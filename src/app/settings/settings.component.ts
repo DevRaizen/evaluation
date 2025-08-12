@@ -25,9 +25,6 @@ export class SettingsComponent {
       goToManageUser() {
         this.router.navigate(['/manage-user']);
       }
-      goToSubjectMap() {
-        this.router.navigate(['/subject-map']);
-      }
       goToEvalForm() {
         this.router.navigate(['/eval-form']);
       }

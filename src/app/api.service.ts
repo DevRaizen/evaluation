@@ -7,7 +7,7 @@ import { catchError, Observable, throwError } from 'rxjs';
 })
 export class ApiService {
   private apiUrl = 'http://localhost/teacher-evaluation-backend/api.php';  
-
+  private nlpUrl = "http://127.0.0.1:5000";
   constructor(private http: HttpClient) {}
 
 
@@ -22,4 +22,8 @@ export class ApiService {
     );
   }
 
+  analyzeText(text: string) {
+    return this.http.post<any>(`${this.nlpUrl}/analyze`, { text });
+  }
+  
 }
