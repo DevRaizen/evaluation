@@ -53,28 +53,6 @@ export class StevalFormComponent implements OnInit {
       this.avatar = this.sharedService.defaultAvatar;
       this.imagePreview = this.sharedService.defaultAvatar;
 
-      // getting selected Teacher on Evaluation
-      const evaluating = this.sharedService.getWithExpiry("Evaluating");
-      const evalset = this.sharedService.getWithExpiry("EvalSet");
-
-      if (evaluating && evalset) {
-        this.selectedTeacher = evaluating;
-        this.EvalSetting = evalset;
-
-        if (this.selectedTeacher.image === '/user.png') {
-          this.imagePreview = this.selectedTeacher.image;
-        } else {
-          this.imagePreview = `${this.sharedService.burl}${this.selectedTeacher.image}`;
-        }
-
-        console.log(this.selectedTeacher);
-        console.log(this.EvalSetting);
-
-      } else {
-        this.router.navigate(['stdashboard']);
-        return;
-      }
-
 
       // getting the current user
       const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
@@ -114,7 +92,32 @@ export class StevalFormComponent implements OnInit {
             // No user found
             this.router.navigate(['/login']);
           }
+
+           // getting selected Teacher on Evaluation
+        const evaluating = this.sharedService.getWithExpiry(`Evaluating_${this.Student.StudID}`);
+        const evalset = this.sharedService.getWithExpiry(`EvalSet_${this.Student.StudID}`);
+
+
+        if (evaluating && evalset) {
+          this.selectedTeacher = evaluating;
+          this.EvalSetting = evalset;
+
+          if (this.selectedTeacher.image === '/user.png') {
+            this.imagePreview = this.selectedTeacher.image;
+          } else {
+            this.imagePreview = `${this.sharedService.burl}${this.selectedTeacher.image}`;
+          }
+
+          console.log(this.selectedTeacher);
+          console.log(this.EvalSetting);
+
+        } else {
+          this.router.navigate(['stdashboard']);
+          return;
+        }
+
     }
+    
     ngOnInit(): void {
       this.getProfile()
       this.getQuestionaire();

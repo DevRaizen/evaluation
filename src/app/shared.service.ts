@@ -80,7 +80,7 @@ CurrentTeacher: {
 } = {};
 
  getWithExpiry(key: string) {
-  const itemStr = localStorage.getItem(key);
+  const itemStr = sessionStorage.getItem(key);
   if (!itemStr) return null;
 
   try {
@@ -88,13 +88,13 @@ CurrentTeacher: {
     const now = new Date().getTime();
 
     if (now > item.expiry) {
-      localStorage.removeItem(key); // remove expired
+      sessionStorage.removeItem(key); // remove expired
       return null;
     }
 
     return item.data;
   } catch (e) {
-    console.error('Invalid localStorage JSON:', key, e);
+    console.error('Invalid sessionStorage JSON:', key, e);
     return null;
   }
 }

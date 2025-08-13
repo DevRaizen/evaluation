@@ -42,15 +42,6 @@ export class StdashboardComponent implements OnInit {
         this.imgurl = this.sharedService.burl;
         this.avatar = this.sharedService.defaultAvatar;
         this.imagePreview = this.sharedService.defaultAvatar;
-           const evaluating = localStorage.getItem("Evaluating");
-            if(evaluating){
-              try{
-                   this.router.navigate(['/steval-form']);
-                   return
-              } catch (e){
-                console.error('Error parsing user from storage:', e);
-              }
-            }
 
         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
@@ -90,6 +81,16 @@ export class StdashboardComponent implements OnInit {
             // No user found
             this.router.navigate(['/login']);
           }
+
+            const evaluating = this.sharedService.getWithExpiry(`Evaluating_${this.Student.StudID}`);
+            if(evaluating){
+              try{
+                   this.router.navigate(['/steval-form']);
+                   return
+              } catch (e){
+                console.error('Error parsing user from storage:', e);
+              }
+            }
   }
 
   ngOnInit(): void {
@@ -263,20 +264,16 @@ getProfile(){
     const now = new Date().getTime(); // Current time in ms
     const expiryTime = now + 20 * 60 * 1000; // 20 minutes from now
 
-    localStorage.setItem('Evaluating', JSON.stringify({
+    sessionStorage.setItem(`Evaluating_${this.Student.StudID}`, JSON.stringify({
       data: SelectedTeacher,
       expiry: expiryTime
     }));
 
-    localStorage.setItem('EvalSet', JSON.stringify({
+    sessionStorage.setItem(`EvalSet_${this.Student.StudID}`, JSON.stringify({
       data: this.ActiveEvalutaion,
       expiry: expiryTime
     }));
 
-    localStorage.setItem('curEvalStud', JSON.stringify({
-      data: this.Student,
-      expiry: expiryTime
-    }));
 
     this.router.navigate(['/steval-form'])
 
