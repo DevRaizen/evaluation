@@ -9,6 +9,7 @@ import { SharedService } from '../shared.service';
   styleUrl: './steval-form.component.css'
 })
 export class StevalFormComponent implements OnInit {
+    showLogoutModal = false;
     errorMessage = '';
     avatar = ';'
     selectedTeacher: any = {};
@@ -199,7 +200,19 @@ export class StevalFormComponent implements OnInit {
     goToSettings() {
         this.router.navigate(['/stsettings']);
       }
+       logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
 
-  
+      }
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+    closeLogoutModal() {
+      this.showLogoutModal = false;
+    }
      
 }

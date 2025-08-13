@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
   styleUrl: './tsubject-map.component.css'
 })
 export class TsubjectMapComponent implements OnInit {
+    showLogoutModal = false;
     addmap = false;
     formSubmitted = false;
     sectionError = false;
@@ -301,6 +302,14 @@ isAnySectionSelected(): boolean {
     closeModal() {
       this.showModal = false;
     }
+    openLogoutModal() {
+      this.showLogoutModal = true;
+    }
+
+    closeLogoutModal() {
+      this.showLogoutModal = false;
+    }
+
 
   // Router
     goToDashboard(){
@@ -311,6 +320,13 @@ isAnySectionSelected(): boolean {
       }
     goToSettings() {
         this.router.navigate(['/tsettings']);
+      }
+    logout(){
+        this.sharedService.logout().subscribe(() => {
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        this.router.navigate(['/login']);
+      });
       }
 
   filteredAssignments() {

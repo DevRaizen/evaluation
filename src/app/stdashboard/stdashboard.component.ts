@@ -272,6 +272,12 @@ getProfile(){
       data: this.ActiveEvalutaion,
       expiry: expiryTime
     }));
+
+    localStorage.setItem('curEvalStud', JSON.stringify({
+      data: this.Student,
+      expiry: expiryTime
+    }));
+
     this.router.navigate(['/steval-form'])
 
   }
