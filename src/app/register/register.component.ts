@@ -20,7 +20,6 @@ export class RegisterComponent {
   StudId?: string;
   Grade?: string;
   Section?: string;
-  PhoneNumber?: string;
   Email?: string;
   Password?: string;
   conPassword?: string;
@@ -139,5 +138,8 @@ export class RegisterComponent {
         }
       */
     }
+      goToReg() {
+  this.router.navigate(['/user']);
+}
   
 }

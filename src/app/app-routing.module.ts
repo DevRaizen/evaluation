@@ -19,6 +19,8 @@ import { TsubjectMapComponent } from './tsubject-map/tsubject-map.component';
 import { TsettingsComponent } from './tsettings/tsettings.component';
 import { StdashboardComponent } from './stdashboard/stdashboard.component';
 import { StevalFormComponent } from './steval-form/steval-form.component';
+import { ViewTeacherReportComponent } from './view-teacher-report/view-teacher-report.component';
+import { PdashboardComponent } from './pdashboard/pdashboard.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirect to login on load
@@ -41,6 +43,8 @@ const routes: Routes = [
   { path: 'tsettings', component: TsettingsComponent},
   { path: 'stdashboard', component: StdashboardComponent},
   { path: 'steval-form', component: StevalFormComponent},
+  { path: 'view-teacher-report', component: ViewTeacherReportComponent},
+  { path: 'pdashboard', component:PdashboardComponent},
 ];
 
 @NgModule({

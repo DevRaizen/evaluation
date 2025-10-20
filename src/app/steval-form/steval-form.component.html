@@ -77,7 +77,7 @@
           <!-- Dashboard -->
           <div class="flex items-center space-x-4">
             <!-- Dashboard Title -->
-            <h1 class="text-xl font-semibold">Evaluation</h1>
+            <h1 class="text-xl text-black font-semibold">Evaluation</h1>
 
           </div>
         
@@ -115,14 +115,14 @@
 
         <!-- Progress Box -->
         <div class="bg-white border shadow  p-4 rounded w-full md:w-96">
-        <p class="text-sm mb-2">
+        <p class="text-sm text-black mb-2">
             🧠 Consider running a teacher workshop on clearer assignment instructions.
         </p>
         <div class="text-sm font-medium text-gray-700 mb-1">
-            Progress:{{currentQuestion}} out of {{questions.length}} Questions
+            Progress:{{ getAnsweredCountForCategory(currentCategoryIndex) }} out of {{questions[currentCategoryIndex].list.length }} Questions
         </div>
         <div class="w-full bg-gray-200 rounded h-2">
-            <div class="bg-yellow-400 h-2 rounded" [style.width.%]="(currentQuestion / questions.length) * 100"></div>
+            <div class="bg-yellow-400 h-2 rounded" [style.width.%]="(getAnsweredCountForCategory(currentCategoryIndex)  / questions[currentCategoryIndex].list.length) * 100"></div>
         </div>
         </div>
     </div>
@@ -130,44 +130,55 @@
     <!-- Directions -->
     <p class="text-sm text-gray-700 bg-white py-4 rounded shadow">
         <span class="font-semibold">Direction:</span>
-        Evaluate your subject teachers objectively using the following descriptors as 4 being the highest score and 1 being the lowest.
+        Evaluate your subject teachers objectively using the following descriptors as 5 being the highest score and 1 being the lowest.
     </p>
-<div class="overflow-x-auto">
+<div class="overflow-x-auto max-h-80 ">
   <div class="rounded-lg shadow-sm bg-white border border-gray-300">
     <table class="min-w-full text-sm border-collapse">
       <thead class="bg-gray-100">
         <tr class="text-gray-700">
-          <th class="border border-gray-300 p-3 text-left text-lg font-semibold w-[60%]">Respect</th>
-          <th class="border border-gray-300 p-3 text-center">4</th>
-          <th class="border border-gray-300 p-3 text-center">3</th>
-          <th class="border border-gray-300 p-3 text-center">2</th>
-          <th class="border border-gray-300 p-3 text-center">1</th>
+          <th class="border border-gray-300 p-3 text-left text-lg font-semibold w-[60%]">{{questions[currentCategoryIndex].category}}{{questions[currentCategoryIndex].catID}}</th>
+          <th class="border border-gray-300 p-3 text-center ">Strongly Agree</th>
+          <th class="border border-gray-300 p-3 text-center ">Agree</th>
+          <th class="border border-gray-300 p-3 text-center ">Neutral</th>
+          <th class="border border-gray-300 p-3 text-center ">Disagree</th>
+          <th class="border border-gray-300 p-3 text-center ">Strongly Disagree</th>
+          <th class="border border-gray-300 p-3 text-center ">Comments/Remarks</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let question of paginatedQuestions; let i = index">
+      <tbody class="bg-white">
+        <tr *ngFor="let question of questions[currentCategoryIndex].list; let i = index" >
           <td class="border border-gray-300 p-3 text-gray-800">
-            {{ question.questionText }} 
+            {{ question.questionText }} {{question.QuesID}}
           </td>
 
           <!-- Likert-type question -->
           <ng-container *ngIf="question.type === 'likert'">
-            <td *ngFor="let score of [4, 3, 2, 1]" class="border border-gray-300 text-center">
-              <input type="radio" name="q{{ (currentPage - 1) * questionsPerPage + i }}" [value]="score" 
+            <td *ngFor="let score of [5,4, 3, 2, 1]" class="border border-gray-300 text-center">
+              <input type="radio" name="q{{ question.QuesID }}" [value]="score" 
                        (change)="onAnswer()"
-                      [(ngModel)]="answers[(currentPage - 1) * questionsPerPage + i]" 
+                      [(ngModel)]="answers[questions[currentCategoryIndex].catID][question.QuesID]" 
                       class="accent-[#6A1321] h-5 w-5" />
+            </td> 
+            <td class="border border-gray-300 text-center">
+                <input 
+                  type="text"
+                  placeholder="Write your comment..."
+                  [(ngModel)]="Optionalanswers[questions[currentCategoryIndex].catID][question.QuesID]"
+                    (change)="onAnswer()"
+                  class="w-40 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
+                />
             </td>
-          
+             
           </ng-container>
 
           <!-- Comment-type question -->
           <ng-container *ngIf="question.type === 'comment'">
-            <td class="border border-gray-300 text-center" colspan="4">
+            <td class="border border-gray-300 text-center" colspan="6">
               <input
                 type="text"
                 placeholder="Write your comment..."
-                 [(ngModel)]="answers[(currentPage - 1) * questionsPerPage + i]"
+                 [(ngModel)]="answers[questions[currentCategoryIndex].catID][question.QuesID]"
                   (change)="onAnswer()"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
               />
@@ -181,24 +192,24 @@
 
    <div class="flex justify-between pt-4">
     <button
-      class="bg-gray-300 px-4 py-2 rounded disabled:opacity-50"
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
+      class="bg-gray-300 px-4 py-2 text-black rounded disabled:opacity-50"
+      (click)="prevCategory()"
+      [disabled]="currentCategoryIndex === 0"
     >
       Previous
     </button>
 
     <button
-     *ngIf="currentPage != totalPages"
+     *ngIf="currentCategoryIndex != questions.length - 1"
       class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50 "
-      (click)="nextPage()"
-      [disabled]="currentPage * questionsPerPage >= questions.length"
+      (click)="nextCategory()"
+      [disabled]="currentCategoryIndex === questions.length - 1"
     >
-      Next
+      Next Category
     </button>
 
     <button 
-  *ngIf="currentPage === totalPages" 
+  *ngIf="currentCategoryIndex === questions.length - 1" 
   (click)="submitAnswers()" 
   class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50"
 >

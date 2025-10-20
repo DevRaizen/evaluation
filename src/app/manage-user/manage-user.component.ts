@@ -35,7 +35,7 @@ export class ManageUserComponent implements OnInit{
     email: '',
     phone: '',
     id: '',
-    role: '',
+    role: 'Student',
     gradeLevel: '',
     section: '',
     password: '',
@@ -65,6 +65,10 @@ export class ManageUserComponent implements OnInit{
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
+                  break;
+                case 'Principal':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/pdashboard']);
                   break;
                 default:
             
@@ -168,12 +172,17 @@ export class ManageUserComponent implements OnInit{
       }
 
       if(this.newAccount.role === "Teacher" && !this.newAccount.id.startsWith("T")){
-        this.errorMessage = "ID of the Students start with letter T";
+        this.errorMessage = "ID of the Teacher start with letter T";
         return 
       }
 
       if(this.newAccount.role === "Admin" && !this.newAccount.id.startsWith("A")){
-        this.errorMessage = "ID of the Students start with letter A";
+        this.errorMessage = "ID of the Admin start with letter A";
+        return 
+      }
+
+      if(this.newAccount.role === "Principal" && !this.newAccount.id.startsWith("P")){
+        this.errorMessage = "ID of the Principal start with letter P";
         return 
       }
 
@@ -190,7 +199,6 @@ export class ManageUserComponent implements OnInit{
                   StudId: this.newAccount.id,
                   Grade: this.newAccount.gradeLevel,
                   Section: this.newAccount.section,
-                  PhoneNumber: this.newAccount.phone,
                   Email: this.newAccount.email,
                   Password: this.Password
                   };
@@ -236,6 +244,26 @@ export class ManageUserComponent implements OnInit{
                   this.sharedService.sendAdminInfoToDB().subscribe({
                     next: (res)=>{
                           this.errorMessage = "Admin registered successfully"
+                          this.AisModalOpen = false;
+                    },
+                    error: (err)=>{
+                           this.errorMessage = "Database Error"
+                    }
+                  }); 
+                }
+                else if (this.newAccount.role === 'Principal') {
+                  this.sharedService.Principal = {
+                  Fname: this.newAccount.fname,
+                  Mname: this.newAccount.mname,
+                  Lname: this.newAccount.lname,
+                  PrincipalID: this.newAccount.id,
+                  Email: this.newAccount.email,
+                  Password: this.Password,
+                  UserType: "Principal"
+                  };
+                  this.sharedService.sendPrincipalInfoToDB().subscribe({
+                    next: (res)=>{
+                          this.errorMessage = "Principal registered successfully"
                           this.AisModalOpen = false;
                     },
                     error: (err)=>{
@@ -324,7 +352,6 @@ export class ManageUserComponent implements OnInit{
           Lname: edited.Lname,
           Grade: edited.grade,
           Section: edited.section,
-          PhoneNumber: edited.phone,
           Email: edited.email,
           AccID: edited.accid,
           UserType: 'Student',

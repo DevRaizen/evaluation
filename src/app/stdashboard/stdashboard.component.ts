@@ -26,9 +26,11 @@ export class StdashboardComponent implements OnInit {
   Password?: string;
   UserType?: string;
 } = {};
+  totalSumittedEval = 0;
   EvaluationSettings: any[] = [];
   ActiveEvalutaion?: any;
   teachermap: any[] = [];
+  unevalteacher: any[] = [];
   showLogoutModal = false;
   avatar: string | null = null;
   selectedFile: File | null = null;
@@ -67,6 +69,10 @@ export class StdashboardComponent implements OnInit {
                   this.sharedService.Teacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
+                  break;
                 default:
                   // Unknown role, redirect to login
                   this.router.navigate(['/login']);
@@ -97,6 +103,7 @@ export class StdashboardComponent implements OnInit {
     this.getProfile();
     this.getStudentTeacher();
     this.getEvalSet();
+    
    
   }
 
@@ -200,6 +207,7 @@ getProfile(){
             this.teachermap = res.mappings;
             console.log("nakuha mo mga teacher")
             console.log(this.teachermap)
+
         }else{
           this.errorMessage = "anyare";
         }
@@ -211,15 +219,35 @@ getProfile(){
     });
   }
 
+  getUnEvalStudentTeacher() {
+  const eSetId = this.ActiveEvalutaion!.ESetID;  // current evaluation set
+  if (!eSetId) return;
+
+  this.sharedService.getUnevaluatedTeachers(this.Student.StudID!, eSetId)
+    .subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          this.unevalteacher = res.mappings;
+          this.totalSumittedEval = this.teachermap.length - this.unevalteacher.length;
+          console.log('Teachers left to evaluate:', this.teachermap);
+        } else {
+          this.errorMessage = res.message || 'No teachers found';
+        }
+      },
+      error: (err) => {
+        this.errorMessage = 'Database error';
+        console.error(err);
+      }
+    });
+}
+
   getEvalSet(){
-    this.sharedService.getAllEvaluationSettings().subscribe({
+    this.sharedService.getEvaluationSettings().subscribe({
         next: (res) =>{
           if(res.status === 'success'){
             this.EvaluationSettings = res.evalsettings;
             console.log(this.EvaluationSettings)
-          // const today = new Date().toISOString().split('T')[0];  // delay ng 1day
-
-          //  const today = new Date(Date.now() + (8 * 60 * 60 * 1000)).toISOString().split('T')[0]; // ph time string
+          
             const today = new Date(Date.now() + (8 * 60 * 60 * 1000));
             today.setHours(0, 0, 0, 0); 
             
@@ -252,6 +280,8 @@ getProfile(){
             this.duration = this.getBetweenDays(this.today.toISOString(), this.ActiveEvalutaion.EndDate);
           }
           }
+
+          this.getUnEvalStudentTeacher();
         },
         error: (err)=>{
            this.errorMessage = "Database Error";

@@ -63,4 +63,8 @@ verifyOtp() {
     this.errorMessage = "❌ Code does not Match";
   }
 }
+
+  goToLogin() {
+  this.router.navigate(['/login']);
+}
 }

@@ -31,22 +31,39 @@ export class StevalFormComponent implements OnInit {
       UserType?: string;
     } = {};
     questions: any [] = [];
-  /*  questions = [
-      { type: 'likert', text: 'The teacher treats all students fairly and equally.' },
-      { type: 'likert', text: 'The teacher respects students’ opinions and listens attentively.' },
-      { type: 'likert', text: 'The teacher explains lessons clearly and understandably.' },
-      { type: 'likert', text: 'The teacher is well-prepared for class activities and discussions.' },
-      { type: 'likert', text: 'The teacher uses class time effectively and efficiently.' },
-      { type: 'likert', text: 'The teacher encourages students to participate and ask questions.' },
-      { type: 'likert', text: 'The teacher provides helpful feedback on student work.' },
-      { type: 'comment', text: 'What do you like most about this teacher’s teaching style?' },
-      { type: 'comment', text: 'What suggestions do you have for improving the teacher’s methods?' },
-      { type: 'comment', text: 'Any other comments or feedback you’d like to share?' }
-    ]; */
-    questionsPerPage = 5;
-    currentPage = 1;
 
-    answers: (number | string)[] = new Array(this.questions.length).fill(null);
+    currentCategoryIndex = 0;  // start with first category
+
+
+nextCategory() {
+  const totalQuestions = this.questions[this.currentCategoryIndex].list.length;
+  const answered = this.getAnsweredCountForCategory(this.currentCategoryIndex);
+
+  if (answered < totalQuestions) {
+    alert("Sagutan mo lahat bago mag next!");
+  } else {
+    if (this.currentCategoryIndex < this.questions.length - 1) {
+      this.currentCategoryIndex++;
+    }
+  }
+}
+
+
+prevCategory() {
+  if (this.currentCategoryIndex > 0) {
+    this.currentCategoryIndex--;
+  }
+  this.currentQuestion = this.getAnsweredCountForCategory(this.currentCategoryIndex)
+}
+
+answers: {
+  [catID: number]: { [questionId: number]: number | string }
+} = {};
+
+Optionalanswers: {
+  [catID: number]: { [questionId: number]: number | string }
+} = {};
+
 
       constructor(private router: Router, private sharedService: SharedService){
       
@@ -77,6 +94,10 @@ export class StevalFormComponent implements OnInit {
                 case 'Teacher':
                   this.sharedService.Teacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
+                  break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
                   break;
                 default:
                   // Unknown role, redirect to login
@@ -151,9 +172,28 @@ export class StevalFormComponent implements OnInit {
   }
 
   getQuestionaire(){
-    this.sharedService.getQuestionsByQID(this.EvalSetting.QID).subscribe({
+    this.sharedService.getStudentQuestionsByQID(this.EvalSetting.QID).subscribe({
       next: (res) => {
-        this.questions = res.questions;
+        this.questions = res.questions; 
+        console.log(this.questions)
+
+       const grouped: { catID: number, category: string, list: any[] }[] = [];
+
+        res.questions.forEach((q: any) => {
+          let group = grouped.find(g => g.catID === q.catID);
+          if (!group) {
+            group = { catID: q.catID, category: q.categoryName, list: [] };
+            grouped.push(group);
+
+            // 🔑 Initialize answers storage for this category
+            this.answers[q.catID] = {};
+            this.Optionalanswers[q.catID] = {};
+          }
+          group.list.push(q);
+        });
+
+        this.questions = grouped;
+
         console.log(this.questions)
       },
       error: (err) =>{
@@ -162,31 +202,69 @@ export class StevalFormComponent implements OnInit {
     })
   }
 
- 
-    get paginatedQuestions() {
-      const start = (this.currentPage - 1) * this.questionsPerPage;
-      return this.questions.slice(start, start + this.questionsPerPage);
-    }
-    get totalPages(): number {
-      return Math.ceil(this.questions.length / this.questionsPerPage);
-    }
+getAnsweredCountForCategory(categoryIndex: number): number {
+  // safety check
+  if (!this.questions[categoryIndex]) return 0;
 
+  const catID = this.questions[categoryIndex].catID;
+  const categoryQuestions = this.questions[categoryIndex].list;
+
+  let answered = 0;
+
+  for (const q of categoryQuestions) {
+    const value = this.answers[catID]?.[q.QuesID]; // ✅ nested lookup
+    if (value !== null && value !== '' && value !== undefined) {
+      answered++;
+    }
+  }
+
+  return answered;
+}
+
+ 
     submitAnswers() {
-      alert( this.answers);
+       const totalQuestions = this.questions[this.currentCategoryIndex].list.length;
+    const answered = this.getAnsweredCountForCategory(this.currentCategoryIndex)
+      if(answered < totalQuestions){
+   alert( "You need to complete all the answer"); 
+      }else{
+        
+             const payload = {
+    StudID: this.Student.StudID!,
+    TeacherID: this.selectedTeacher.TeacherID,
+    SubjectID: this.selectedTeacher.SubjectID,
+    ESetID: this.EvalSetting.ESetID,
+    SchoolYearID: this.EvalSetting.SchoolYearID,
+    answers: this.answers,
+    Optionalanswers: this.Optionalanswers
+  };
+
+  this.sharedService.submitEvaluation(payload).subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+       // alert('Evaluation submitted successfully!');
+        sessionStorage.removeItem(`Evaluating_${this.Student.StudID}`);
+        sessionStorage.removeItem(`EvalSet_${this.Student.StudID}`);
+        this.router.navigate(['/stdashboard']);
+      } else {
+        alert("May error");
+      }
+    },
+    error: (err) => {
+      console.error('Submission failed:', err);
+     // alert('Data base Error: ' + err);
+    }
+  });
+   
+      }
+   
     }
 
     onAnswer(): void {
-      this.currentQuestion = this.answers.filter(answer => 
-        answer !== null && answer !== ''
-      ).length;
+     this.currentQuestion = Object.values(this.answers).filter(answer =>
+    answer !== null && answer !== ''
+  ).length
     } 
-
-      nextPage() {
-      this.currentPage++;
-    }
-    prevPage() {
-      this.currentPage--;
-    }
 
     openSidebar() {
       this.isSidebarOpen = true;

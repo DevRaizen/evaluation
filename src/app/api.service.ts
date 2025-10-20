@@ -11,7 +11,6 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
 
-
   logoutUser(): Observable<any> {
     const body = { action: 'logout' }; // Adding logout action
     return this.http.post<any>(this.apiUrl, body).pipe(
@@ -22,8 +21,8 @@ export class ApiService {
     );
   }
 
-  analyzeText(text: string) {
-    return this.http.post<any>(`${this.nlpUrl}/analyze`, { text });
+  analyzeText(feedbacks: string[]) {
+    return this.http.post<any>(`${this.nlpUrl}/analyze`, { feedbacks});
   }
   
 }

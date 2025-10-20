@@ -36,11 +36,30 @@ export class TsubjectMapComponent implements OnInit {
   grades: string[] = ['7', '8', '9', '10'];
   selectedGrade: string = '7';
   subjects: any[] = [];
-  SchoolYear: any = [];
   teacherMappings: any[] = [];
-
   selectedSchoolYear = "";
-  selectedSections: { [section: string]: boolean } = {};
+  selectedSection: string | null = null;
+addedSections: string[] = [];
+
+addSection() {
+   if (!this.selectedSection) {
+    this.errorMessage = "Please select a section first.";
+    return;
+  }
+
+  if (this.addedSections.includes(this.selectedSection)) {
+    this.errorMessage = `You already added "${this.selectedSection}"`;
+    this.selectedSection = null;
+    return;
+  }
+
+  this.addedSections.push(this.selectedSection);
+   this.selectedSection = null;
+}
+
+removeSection(section: string) {
+  this.addedSections = this.addedSections.filter(s => s !== section);
+}
 
 
     constructor(private router: Router, private sharedService: SharedService){
@@ -65,8 +84,11 @@ export class TsubjectMapComponent implements OnInit {
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/rsubject-map']);
-                  this.Teacher = this.sharedService.CurrentTeacher;
-                 
+                  this.Teacher = this.sharedService.CurrentTeacher; 
+                  break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
                   break;
                 default:
             
@@ -149,13 +171,15 @@ export class TsubjectMapComponent implements OnInit {
 
   getSubPerYear(grade: string){
     this.selectedGrade = grade;
-    this.selectedSections = {};
+
+    this.selectedSection = null;
+    this.addedSections = [];
     this.formSubmitted = false
     this.sharedService.getSubPerYEar(this.selectedGrade!).subscribe({
     next: (res) =>{
       this.subjects = res.subject;
       this.selectedSubject = this.subjects[0]?.subjectid?? '';
-      this.autoCheckExistingMappings();
+
       console.log(this.subjects,"ahahha")
     },
     error: (err) =>{
@@ -165,27 +189,37 @@ export class TsubjectMapComponent implements OnInit {
 
   }
 
-  getSchoolYear(){
-    this.sharedService.getSchoolYear().subscribe({
-      next: (res) => {
-        if(res.status === 'success'){
-          this.SchoolYear = res.schoolYears
-          this.selectedSchoolYear = this.SchoolYear[0];
-          console.log(this.SchoolYear);
-        }
-      },
-      error: (err) =>{
+SchoolYear: any[] = [];
+selectedSchoolYearID: any;
 
+  getSchoolYear() {
+  this.sharedService.getSchoolYear().subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+        this.SchoolYear = res.schoolYears;
+
+        // Set default selected to the first schoolyearid
+        this.selectedSchoolYearID = this.SchoolYear[0]?.SchoolYearID;
+
+        // If you need the object too, you can find it
+        const selectedSY = this.SchoolYear.find(sy => sy.SchoolYearID === this.selectedSchoolYearID);
+        console.log('Selected SchoolYear:', selectedSY);
+
+      
       }
-    })
-  }
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
 
   getMapping(){
     this.sharedService.getTeacherSubjectMappings(this.Teacher.TeacherID!).subscribe({
     next: (res) => {
       if (res.status === 'success') {
         this.teacherMappings = res.mappings;
-        this.autoCheckExistingMappings();
+        
         console.log(this.teacherMappings);
         
       }
@@ -197,38 +231,15 @@ export class TsubjectMapComponent implements OnInit {
 
   }
 
-  autoCheckExistingMappings() {
-      console.log("Checking for:", {
-    selectedSubject: this.selectedSubject,
-    selectedGrade: this.selectedGrade,
-    selectedSchoolYear: this.selectedSchoolYear
-  });
-  this.teacherMappings.forEach(mapping => {
-    console.log('Checking mapping:', mapping);
-    if (
-      mapping.SubjectID === parseInt(this.selectedSubject) &&
-      mapping.YearLevel === this.selectedGrade &&
-      mapping.SchoolYear === this.selectedSchoolYear
-    ) {
-      this.selectedSections[mapping.SectionName] = true;
-    }
-  });
-}
+ 
 
   onSubjectChange() {
-  this.selectedSections = {}; 
+  this.addedSections = []
+  this.selectedSection = null;
   this.formSubmitted = false
-  this.autoCheckExistingMappings();
  
 }
-
-
-  getSelectedSectionList(): string[] {
-  return Object.keys(this.selectedSections).filter(section => this.selectedSections[section]);
-}
-isAnySectionSelected(): boolean {
-  return Object.values(this.selectedSections).some(v => v === true);
-}
+ 
 
   onSubmit(form: NgForm) {
        this.formSubmitted = true;
@@ -244,29 +255,26 @@ isAnySectionSelected(): boolean {
 
       return;
     }
-
-    const hasSelectedSection = Object.values(this.selectedSections).some(selected => selected);
-
-      if (!hasSelectedSection) {
-        this.sectionError = true;
-        return;
-      } else {
-        this.sectionError = false;
-      }
+      
+     // ✅ Check if sections are empty
+  if (!this.addedSections || this.addedSections.length === 0) {
+    this.errorMessage = "Please add at least one section before submitting.";
+    return;
+  }
 
       // Proceed with submit logic
       console.log('Form submitted');
       console.log(this.selectedSubject);
       console.log(this.selectedGrade);
-      console.log('Selected sections:', this.getSelectedSectionList());
+      
       console.log(this.selectedSchoolYear);
 
       const payload = {
       teacherID: this.Teacher.TeacherID,
       subjectID: this.selectedSubject,
       grade: this.selectedGrade,
-      sections: this.getSelectedSectionList(),
-      schoolYear: this.selectedSchoolYear
+      sections: this.addedSections,
+      schoolYearID: this.selectedSchoolYearID
     };
 
     console.log(payload,"erer")

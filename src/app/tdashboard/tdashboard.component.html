@@ -98,7 +98,7 @@
           </div>
         </div>
 
-            <div class=" pt-4 space-y-4 bg">
+            <div class="  space-y-4 bg">
             <div class="flex flex-col sm:flex-row items-center gap-6 bg-white  p-4 rounded shadow">                
                 <div class="text-center sm:text-left">
                     <div class="relative w-20 h-20">
@@ -127,10 +127,9 @@
             <div class="grid grid-flow-col gap-4 md:ml-auto sm:ml-0 ">
                 <p class="text-lg text-gray-500 mt-1">School Year</p>
                  <div>
-                        <select class="border border-gray-300 rounded px-3 py-2 md:w-48">
-                            <option *ngFor="let sy of SchoolYear" [value]="sy">{{sy}}</option> 
-                         
-                        </select>
+                       <select (change)="onSchoolYearChange()" [(ngModel)]="selectedSchoolYearID" class="border border-gray-300 rounded px-3 py-2 md:w-48">
+                        <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option>
+                      </select>
                         <i class="fas fa-angle-bottommm"></i>
                     </div>
             </div>
@@ -138,26 +137,32 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="grid  gap-6">
-                    <div class="bg-white  p-4 rounded-lg shadow-md ">
-                <div class="flex items-center justify-center gap-6">
+                    <div 
+                   class="bg-white  p-4 rounded-lg shadow-md ">
+                <div  class="flex items-center justify-center gap-6">
                     <div class="relative w-36 h-36 ">
                         <canvas id="ratingChart" width="100" height="100"></canvas>
                         <div class="absolute inset-0 flex items-center justify-center text-yellow-400 font-bold text-2xl">
-                        4.8
+                         {{ getRatingAvg()}}
                         </div>
                     </div>
-                    <div>
-                        <p class="lg:text-lg sm:text-sm font-medium text-gray-500">Highest Rated for</p>
-                        <p class="lg:text-2xl sm:text-lg font-bold text-gray-800">Professionalism</p>
+                    <div *ngIf="teacherData.length > 0" >
+                        <p class="lg:text-lg sm:text-sm font-medium text-gray-500">Highest Rated in</p>
+                        <p class="lg:text-2xl sm:text-lg font-bold text-gray-800"> {{ getLabel() }}</p>
                         <p class="lg:text-xl sm:text-sm text-gray-500">🤓 You received the 6th highest rating!</p>
+                    </div>
+                     <div *ngIf="teacherData.length === 0" >
+                        <p class="lg:text-lg sm:text-sm font-medium text-gray-500">No Ratings</p>
+                        <p class="lg:text-2xl sm:text-lg font-bold text-gray-800">No Data</p>
+                        <p class="lg:text-xl sm:text-sm text-gray-500"></p>
                     </div>
                     </div>
             </div>
 
             <div class="bg-white rounded-lg shadow-md p-4 ">
-                <p class="text-lg font-semibold text-black">Response Count</p>
+                <p class="text-lg font-semibold text-black">Evaluation Received</p>
                 <div class="h-2 bg-gray-200 rounded overflow-hidden">
-                <div class="h-full bg-yellow-400 " [style.width.%]="(responseCount / responseMax) * 100"></div>
+                <div class="h-full bg-yellow-400 " [style.width.%]="getProgress()"></div>
                 </div>
                 <p class="mt-1 text-sm font-medium text-gray-700">
                 {{ responseCount }} / {{ responseMax }}
@@ -168,21 +173,59 @@
             
                 <div class="bg-white p-4 shadow-md rounded-lg">
                 <h4 class="font-bold mb-2 text-center text-black">Performance</h4>
-                <canvas id="performanceChart" height="100"></canvas>
+                <canvas id="performanceChart" height="120" class="mt-2"></canvas>
                 </div>
             </div>
 
-            <div class="bg-white shadow-md p-4 rounded ">
-            <h4 class="font-bold mb-2 text-black">Insights by Nerd AI</h4>
-            <ul class="text-sm list-disc ml-4 text-gray-600 space-y-1">
-                <li>Your professionalism stands out. You could lead workshops on professional conduct and ethics.</li>
-                <li>Communicate regularly with students through digital platforms to improve clarity on expectations.</li>
-            </ul>
+            <div *ngIf="feedbackList.length > 0" class="bg-white shadow-md p-4 rounded">
+                <h4 class="font-bold mb-2 text-black ">Feedback Analysis</h4>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <!-- Positive Feedback -->
+                <div *ngIf="positiveFeedbacks.length > 0">
+                  <h5 class="font-semibold text-green-600">Positive Feedback</h5>
+                  <ul class="list-disc ml-4 text-sm text-gray-700 space-y-1">
+                    <li *ngFor="let item of positiveFeedbacks">{{ item }}</li>
+                  </ul>
+                </div>
+
+                <!-- Negative Feedback -->
+                <div *ngIf="negativeFeedbacks.length > 0" >
+                  <h5 class="font-semibold text-red-600">Negative Feedback</h5>
+                  <ul class="list-disc ml-4 text-sm text-gray-700 space-y-1">
+                    <li *ngFor="let item of negativeFeedbacks">{{ item }}</li>
+                  </ul>
+                </div>
+
+                <!-- Neutral Feedback -->
+                <div *ngIf="neutralFeedbacks.length > 0" >
+                  <h5 class="font-semibold text-yellow-600">Neutral Feedback</h5>
+                  <ul class="list-disc ml-4 text-sm text-gray-700 space-y-1">
+                    <li *ngFor="let item of neutralFeedbacks">{{ item }}</li>
+                  </ul>
+                </div>
+                </div>
             </div>
         </div>
-      
+
+        <div class="p-4 hidden ">
+          <h2 class="text-xl font-bold mb-4">Teacher List</h2>
+
+          <div *ngIf="teacherData && teacherData.length > 0; else noData" >
+            <div *ngFor="let teacher of teacherData" class="p-4 mb-2 rounded shadow bg-gray-100">
+              <p><strong>ID:</strong> {{ teacher.TeacherID }}</p>
+              <p><strong>Name:</strong> {{ teacher.TeacherName }}</p>
+              <p><strong>Category:</strong> {{ teacher.categoryName }}</p>
+              <p><strong>Rating:</strong> {{ teacher.AvgScore }}</p>
+              <p><strong>Feedbacks:</strong> {{ teacher.Feedbacks }}</p>
+            </div>
+          </div>
+
+          <ng-template #noData>
+            <p class="text-gray-500">No teacher data available.</p>
+          </ng-template>
+        </div>
       </main>
-    
     </div>
   </body>
 </html>

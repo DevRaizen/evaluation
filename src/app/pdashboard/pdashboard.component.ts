@@ -2,96 +2,79 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Chart } from 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { SharedService } from '../shared.service';
 import { ApiService } from '../api.service';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
-  selector: 'app-tdashboard',
+  selector: 'app-pdashboard',
   standalone: false,
-  templateUrl: './tdashboard.component.html',
-  styleUrl: './tdashboard.component.css'
+  templateUrl: './pdashboard.component.html',
+  styleUrl: './pdashboard.component.css'
 })
-export class TdashboardComponent{
-  
-  errorMessage ="";
-  showLogoutModal = false;
-  avatar?: any;
+export class PdashboardComponent {
+teachers: any[] = [];
   isSidebarOpen = false;
-  selectedFile: File | null = null;
-  imagePreview: string | ArrayBuffer | null = null;
-  responseCount = 0;
-  responseMax = 0;
-  Teacher: {
-    TeacherID?: string;
-    AccID?: number;
-    Fname?: string;
-    Mname?: string;
-    Lname?: string;
-    Email?: string;
-    PhoneNumber?: string;
-    Password?: string;
-    UserType?: string;
-  } = {};
-  
+  public barChartPlugins = [];
+  avatar = ""
+selectedTeacher: any = null;
+selectedTeacherId: string | null = null;
   teacherData: any = [];
   feedbackList: string[] = [];
   positiveFeedbacks: string[] = [];
   negativeFeedbacks: string[] = [];
   neutralFeedbacks: string[] = [];
   chart: any;
-  
   ratingChart: any;
-highestCategory: any;
-overallAverage: any;
-
-teacherStudentResCount: any = null;
-
-  constructor(private router: Router, private sharedService: SharedService, private Sentiments:ApiService){
-    this.avatar = this.sharedService.defaultAvatar;
-    this.imagePreview = this.sharedService.defaultAvatar;
-    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
-
-          if (storedUser) {
-            try {
-              const parsedUser = JSON.parse(storedUser);
-              const userType = parsedUser.UserType;
-
-              switch (userType) {
-                case 'Student':
-                  this.sharedService.CurrentStudent = parsedUser;
-                  this.router.navigate(['/stdashboard']);
-                  break;
-                case 'Admin':
-                  this.sharedService.CurrentAdmin = parsedUser;
-                  this.router.navigate(['/dashboard']);
-                  break;
-                case 'Teacher':
-                  this.sharedService.CurrentTeacher = parsedUser;
-                  this.router.navigate(['/tdashboard']);
-                  this.Teacher = this.sharedService.CurrentTeacher;
-                  console.log(this.Teacher);
-                  break;
-                case 'Principal':
-                  this.sharedService.Principal = parsedUser;
-                  this.router.navigate(['/pdashboard']);
-                  break;
-                default:
-            
-                  this.router.navigate(['/login']);
-                  break;
+  highestCategory: any;
+  overallAverage: any;
+  selectedSchoolYear: any;
+  teacherStudentResCount: any = null;
+  responseCount = 0;
+  responseMax = 0;
+  constructor(private sharedService: SharedService, private router: Router,private Sentiments:  ApiService) {
+        this.avatar = this.sharedService.defaultAvatar;
+         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+  
+            if (storedUser) {
+              try {
+                const parsedUser = JSON.parse(storedUser);
+                const userType = parsedUser.UserType;
+  
+                switch (userType) {
+                  case 'Student':
+                    this.sharedService.CurrentStudent = parsedUser;
+                    this.router.navigate(['/stdashboard']);
+                    break;
+                  case 'Admin':
+                    this.sharedService.CurrentAdmin = parsedUser;
+                    this.router.navigate(['/dashboard']);
+                    break;
+                  case 'Teacher':
+                    this.sharedService.CurrentTeacher = parsedUser;
+                    this.router.navigate(['/tdashboard']);
+                    break;
+                  case 'Principal':
+                    this.sharedService.CurrentTeacher = parsedUser;
+                    this.router.navigate(['/pdashboard']);
+                    break;
+                  default:
+              
+                    this.router.navigate(['/login']);
+                    break;
+                }
+  
+              } catch (e) {
+                console.error('Error parsing user from storage:', e);
+                this.router.navigate(['/login']);
               }
-
-            } catch (e) {
-              console.error('Error parsing user from storage:', e);
+            } else {
+              // No user found
               this.router.navigate(['/login']);
             }
-          } else {
-            // No user found
-            this.router.navigate(['/login']);
-          }
-  }
+      }
 
+    
   openSidebar() {
       this.isSidebarOpen = true;
     }
@@ -100,89 +83,12 @@ teacherStudentResCount: any = null;
     }
 
   ngOnInit(): void {
-    this.getProfile();
-    this.getSchoolYear();
     Chart.register(ChartDataLabels);
-    
-  }
-  
-  getProfile(){
-     const payload = {
-      userid: this.Teacher.TeacherID,
-      userRole: this.Teacher.UserType
-     }
-     console.log(payload);
-    this.sharedService.getProfile(payload).subscribe({
-      next: (res) =>{
-        console.log("response",res);
-        if(res && res.status === 'success' && res.image){
-          if (res.image === '/user.png') {
-            this.avatar = res.image;
-            this.imagePreview = res.image;
-          
-        } else {
-          this.avatar = `${this.sharedService.burl}${res.image}`;
-          this.imagePreview = `${this.sharedService.burl}${res.image}`;
-          
-        }
-        }else{
-          this.avatar = this.sharedService.defaultAvatar;
-          this.imagePreview = this.sharedService.defaultAvatar;
-          
-        }
-      },
-      error: (err)=>{
-       this.errorMessage ="di mo nakuhaprofile boi";
-       console.log(err);
-      }
-    });
+    this.loadTeachers();
+    this.getSchoolYear();
   }
 
-  onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-      if (file) {
-        this.selectedFile = file;
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.imagePreview = reader.result;
-        };
-        reader.readAsDataURL(file);
-        console.log(this.selectedFile)
-        this.saveProfileImage();
-      }
-    }
-    
-  saveProfileImage() {
-  if (!this.selectedFile || !this.Teacher.TeacherID) {
-    console.warn("No file or Teacher ID found.");
-    return;
-  }
-  const payload ={
-    userid: this.Teacher.TeacherID,
-    userRole: this.Teacher.UserType,
-  }
-
-  this.sharedService.saveProfile(payload, this.selectedFile).subscribe({
-    next: (response) => {
-      if (response.status === 'success') {
-        console.log('Profile image saved successfully!');
-        this.errorMessage = "Profile image saved successfully!";
-        // Optionally update avatar image if you have one
-        // this.avatar = 'path-to-new-image';
-      } else {
-        console.error('Upload failed:', response.message);
-        this.errorMessage = "ayaw ma save";
-      }
-    },
-    error: (err) => {
-      console.error("Upload error:", err);
-      this.errorMessage = "ayaw ma save e";
-      console.log(err);
-    }
-  });
-}
-
-SchoolYear: any[] = [];
+  SchoolYear: any[] = [];
 selectedSchoolYearID: any;
 
 getSchoolYear() {
@@ -207,10 +113,44 @@ getSchoolYear() {
   });
 }
 
+    onSchoolYearChange() {
+  console.log("Selected School Year:", this.selectedSchoolYear);
 
-  loadTeacherDashboard() {
+  // Reload the dashboard with the new school year
+  this.loadTeacherDashboard();
+}
+
+
+
+loadTeachers() {
+  this.sharedService.getAllTeachers().subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+        console.error('kuha',);
+        this.teachers = res.teachers.map((t: any) => ({
+          ...t,
+          fullName: `${t.Fname} ${t.Mname} ${t.Lname}`,
+          imageUrl: t.image === 'user.png' 
+            ? this.sharedService.defaultAvatar 
+            : `${this.sharedService.burl}${t.image}`
+        }));
+
+        // Default selection → first teacher
+        if (this.teachers.length > 0) {
+          this.selectedTeacherId = this.teachers[0].TeacherID;
+          this.updateSelectedTeacher();
+        }
+      }
+    },
+    error: (err) => {
+      console.error('Failed to fetch teachers:', err);
+    }
+  });
+}
+
+loadTeacherDashboard() {
    
-    this.sharedService.getTeacherDashboardData(this.Teacher.TeacherID!,this.selectedSchoolYearID).subscribe({
+    this.sharedService.getTeacherDashboardData(this.selectedTeacherId!,this.selectedSchoolYearID).subscribe({
       next: (res) =>{
             if(res.status == "success"){
               this.teacherData = res.data;
@@ -248,7 +188,7 @@ getSchoolYear() {
     });
     
 
-    this.sharedService.getTeacherStudentCount(this.Teacher.TeacherID!, this.selectedSchoolYearID!).subscribe({
+    this.sharedService.getTeacherStudentCount(this.selectedTeacherId!, this.selectedSchoolYearID!).subscribe({
     next: (res) => {
       if (res.status === 'success' && res.data.length > 0) {
         this.teacherStudentResCount = res.data[0];
@@ -265,7 +205,7 @@ getSchoolYear() {
     }
   });
 
-  this.sharedService.getTeacherResponseCount(this.Teacher.TeacherID!,this.selectedSchoolYearID).subscribe({
+  this.sharedService.getTeacherResponseCount(this.selectedTeacherId!,this.selectedSchoolYearID).subscribe({
     next: (res) => {
        console.log(res,"qweqweqw")
       if (res.status === 'success') {
@@ -285,7 +225,7 @@ getSchoolYear() {
     }
   });
 
-   this.sharedService.getTeacherFeedback(this.Teacher.TeacherID!, this.selectedSchoolYearID)
+   this.sharedService.getTeacherFeedback(this.selectedTeacherId!, this.selectedSchoolYearID)
     .subscribe({
       next: (res) => {
         if (res.status === 'success' && res.feedback.length > 0) {
@@ -324,21 +264,37 @@ getSchoolYear() {
 
   }
 
+onTeacherChange() {
+  this.updateSelectedTeacher();
+  this.loadTeacherDashboard()
+}
 
+updateSelectedTeacher() {
+  this.selectedTeacher = this.teachers.find(
+    t => t.TeacherID === this.selectedTeacherId
+  );
+  if (!this.selectedTeacher) return;
+
+  if (!this.selectedTeacher.imageUrl || this.selectedTeacher.image === '/user.png') {
+    this.selectedTeacher.imageUrl = this.sharedService.defaultAvatar;
+  } else {
+    this.selectedTeacher.imageUrl = `${this.sharedService.burl}${this.selectedTeacher.image}`;
+  }
+}
+  
+  goToDashboard(){
+        this.router.navigate(['/pdashboard']);
+    }
+  goToSettings() {
+        this.router.navigate(['/settings']);
+    }
+
+    
   getProgress(): number {
   if (!this.responseMax || this.responseMax === 0) return 0;
   return (this.responseCount / this.responseMax) * 100;
 }
-
-
-  onSchoolYearChange() {
-  console.log("Selected School Year:", this.selectedSchoolYearID);
-
-  // Reload the dashboard with the new school year
-  this.loadTeacherDashboard();
-}
-
-  getHighestCategory() {
+ getHighestCategory() {
   if (!this.teacherData || this.teacherData.length === 0) {
     return null; 
   }
@@ -371,33 +327,6 @@ getOverallAverage(): number {
 
  return parseFloat((total / this.teacherData.length).toFixed(1));
 }
-
-
-  goToDashboard(){
-        this.router.navigate(['/tdashboard']);
-    }
-  goToSubjectMap() {
-        this.router.navigate(['/tsubject-map']);
-    }
-  goToSettings() {
-        this.router.navigate(['/tsettings']);
-    }
-    logout(){
-        this.sharedService.logout().subscribe(() => {
-        localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
-        this.router.navigate(['/login']);
-      });
-
-      }
-
-    openLogoutModal() {
-      this.showLogoutModal = true;
-    }
-
-    closeLogoutModal() {
-      this.showLogoutModal = false;
-    }
 
 renderChart(labels: string[], values: number[]) {
   const ctx = document.getElementById('performanceChart') as HTMLCanvasElement;
@@ -470,13 +399,9 @@ renderChart(labels: string[], values: number[]) {
         tooltip: {
           callbacks: {
             // ✅ show full label in tooltip if truncated
-             title: (tooltipItems) => {
+            title: (tooltipItems) => {
               const item = tooltipItems[0];
               return labels[item.dataIndex];
-            },
-            label: (context) => {
-              const value = context.raw as number;
-              return `Teacher Score: ${value.toFixed(1)}`;
             }
           }
         }
@@ -484,7 +409,6 @@ renderChart(labels: string[], values: number[]) {
     }
   });
 }
-
 
   renderRatingChart(avg: any, label: any) {
   const ctx = document.getElementById('ratingChart') as HTMLCanvasElement;
@@ -532,7 +456,4 @@ getRatingAvg(): number {
 getLabel(): any  {
   return this.ratingChart?.data?.labels?.[0] ?? 0;
 }
-
-
-
 }

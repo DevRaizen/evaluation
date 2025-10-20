@@ -23,8 +23,8 @@ export class LoginComponent {
     
   }
   constructor(private sharedService: SharedService, private router: Router) {
-   const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
+  const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
           if (storedUser) {
             try {
               const parsedUser = JSON.parse(storedUser);
@@ -43,6 +43,10 @@ export class LoginComponent {
                 case 'Teacher':
                   this.sharedService.Teacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
+                  break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
                   break;
                 default:
             
@@ -97,6 +101,9 @@ export class LoginComponent {
                   } else if (userType === 'Teacher') {
                     this.sharedService.Teacher = userData;
                     this.router.navigate(['/tdashboard']);
+                  }else if (userType === 'Principal') {
+                    this.sharedService.Principal = userData;
+                    this.router.navigate(['/pdashboard']);
                   }
 
               } else {

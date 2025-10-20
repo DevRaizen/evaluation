@@ -139,12 +139,12 @@
                 </tr>
             </thead>
             <tbody>
-                <ng-container *ngFor="let group of questions">
+                <ng-container *ngFor="let group of questions; let x = index">
                 <ng-container *ngFor="let q of group.list; let i = index">
-                    <tr class="border-b">
+                    <tr  class="border-b">
                     <!-- Category Dropdown (only on first row) -->
                     <td *ngIf="i === 0" [attr.rowspan]="group.list.length" class="px-4 py-2 align-top border">
-                        <select [(ngModel)]="group.category" class=" rounded px-2 py-1 w-full " disabled>
+                        <select [(ngModel)]="selectedCategory" class=" rounded px-2 py-1 w-full  " (change)="onCatChange()" >
                         <option *ngFor="let cat of categories" [value]="cat.categoryName" >{{ cat.categoryName }}</option>
                         </select>
                     </td>
@@ -173,6 +173,18 @@
                     </tr>
                 </ng-container>
                 </ng-container>
+                  
+                   <tr *ngIf="questions.length === 0 && selectedQID != null">
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                      <div class="flex flex-col items-center gap-2">
+                        <p>No questions found for this category.</p>
+                        <select [(ngModel)]="selectedCategory" class="rounded px-2 py-1 border w-1/2" (change)="onCatChange()">
+                          <option *ngFor="let cat of categories" [value]="cat.categoryName">{{ cat.categoryName }}</option>
+                        </select>
+                      </div>
+                    </td>
+                  </tr>
+                
                 <!-- Show Add Question Form -->
                     <tr *ngIf="showAddForm">
                     <td class="px-4 py-2 border" colspan="3">
@@ -186,6 +198,7 @@
 
                         <input [(ngModel)]="newQuestion.text" placeholder="Enter your question" class="border px-2 py-1 rounded w-full md:w-1/2" />
                         <select [(ngModel)]="newQuestion.type" class="border px-2 py-1 rounded w-full md:w-1/4">
+                          
                             <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
                         </select>
                         <button (click)="addNewQuestion()" class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">Add</button>
@@ -193,7 +206,7 @@
                         </div>
                     </td>
                     </tr>
-                    <!-- + Add Question Button -->
+                    <!--  Add Question Button -->
                     <tr *ngIf="!showAddForm && selectedQID">
                     <td colspan="3" class="px-4 py-2 text-center text-blue-500 cursor-pointer hover:underline"
                         (click)="showAddForm = true">
@@ -239,7 +252,7 @@
               </button>
             </ng-container>
 
-            <!-- When Editing -->
+            <!-- Edit -->
             <ng-container *ngIf="editMode[i]">
               <button class="text-green-600 text-xl" title="Save" (click)="saveSingleCategory(i)">
                 <i class="fas fa-check"></i>

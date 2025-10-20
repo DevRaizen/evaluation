@@ -33,7 +33,7 @@ export class EvalScedComponent implements OnInit{
     startDate: '',
     endDate: '',
     status: 'Active',
-    schoolYear: '2025', 
+    schoolYearID: 0, 
     adminId: '' 
   };
 
@@ -60,6 +60,10 @@ export class EvalScedComponent implements OnInit{
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
                   break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
+                  break;
                 default:
             
                   this.router.navigate(['/login']);
@@ -78,7 +82,7 @@ export class EvalScedComponent implements OnInit{
 
     ngOnInit(): void {
       this.getAllQuestionnaireIDs();
-      this.getSchoolYear();
+      this.getActiveSchoolYear();
       this.sharedService.getAllEvaluationSettings().subscribe({
         next: (res) =>{
           if(res.status === 'success'){
@@ -91,11 +95,11 @@ export class EvalScedComponent implements OnInit{
       })
     }
 
-      getSchoolYear(){
-    this.sharedService.getSchoolYear().subscribe({
+      getActiveSchoolYear(){
+    this.sharedService.getActiveSchoolYear().subscribe({
       next: (res) => {
         if(res.status === 'success'){
-          this.scheduleData.schoolYear = res.schoolYears[0];
+          this.scheduleData.schoolYearID = res.schoolYears[0];
         }
       },
       error: (err) =>{
@@ -177,7 +181,7 @@ getAllQuestionnaireIDs() {
   this.sharedService.getAllQuestionnaireIDs().subscribe({
     next: (res) => {
       console.log('All QIDs:', res); 
-      this.questionnaireIDs = res;
+      this.questionnaireIDs = res.map((q: any) => q.QID);
     },
     error: (err) => {
       console.error('Failed to fetch QIDs:', err);
@@ -230,7 +234,7 @@ onSubmit(form: NgForm) {
         endDate: this.scheduleData.endDate,
         status: this.scheduleData.status,
         targetGrades: this.scheduleData.targetGrades, 
-        schoolYear: this.scheduleData.schoolYear,
+        schoolYearID: this.scheduleData.schoolYearID,
         adminID: this.scheduleData.adminId
       };
 
@@ -241,7 +245,9 @@ onSubmit(form: NgForm) {
             this.closeScheduleModal();
             this.ngOnInit();
           }else{
-             this.errorMessage = "Unexpected response from server.";
+             this.errorMessage = res.message;
+             this.closeScheduleModal();
+             this.ngOnInit();
           }
         },
         error: (err) => {

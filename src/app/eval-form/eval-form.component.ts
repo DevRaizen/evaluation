@@ -35,10 +35,10 @@ export class EvalFormComponent implements OnInit {
     newQuestion = {
       category: null,
       text: '',
-      type: 'Likert Scale'
+      type: 'likert' // changeable to Likert
     };
     selectedQID: number | null = null;
-    
+    selectedCategory = "";
 
     constructor(private router:Router, private sharedService: SharedService){
       this.avatar = this.sharedService.defaultAvatar;
@@ -62,6 +62,10 @@ export class EvalFormComponent implements OnInit {
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
                   this.router.navigate(['/tdashboard']);
+                  break;
+                case 'Principal':
+                  this.sharedService.Principal = parsedUser;
+                  this.router.navigate(['/pdashboard']);
                   break;
                 default:
             
@@ -93,6 +97,7 @@ getAllCategories() {
       }));
       this.originalCategories = [...this.categories];
       this.editMode = new Array(this.categories.length).fill(false);
+      this.selectedCategory = this.categories[0].categoryName;
       console.log(res.cat.CategoryName);
     },
     error: (err) => {
@@ -106,7 +111,7 @@ getAllQuestionnaireIDs() {
   this.sharedService.getAllQuestionnaireIDs().subscribe({
     next: (res) => {
       console.log('All QIDs:', res); 
-      this.questionnaireIDs = res;
+      this.questionnaireIDs = res.map((q: any) => q.QID);
     },
     error: (err) => {
       console.error('Failed to fetch QIDs:', err);
@@ -114,21 +119,25 @@ getAllQuestionnaireIDs() {
   });
 }
 
-fetchQuestionsByQID(qid: number) {
+fetchQuestionsByQID(qid: number, filterCategory?: string) {
   this.sharedService.getQuestionsByQID(qid).subscribe({
     next: (res) => {
-      // Transform response into grouped by category format
       const grouped: {
         category: string;
         list: { text: string; type: string }[];
       }[] = [];
 
-      res.questions.forEach((q: any) => {
+      res.questions.forEach((q: any) => { 
+        if (filterCategory && q.categoryName !== filterCategory) return; // 🔥 filtering
+
         let group = grouped.find(g => g.category === q.categoryName);
+        console.log(group,"asd")
         if (!group) {
           group = { category: q.categoryName, list: [] };
           grouped.push(group);
+          console.log(grouped)
         }
+        console.log(group,'create')
         group.list.push({
           text: q.questionText,
           type: q.type
@@ -136,15 +145,10 @@ fetchQuestionsByQID(qid: number) {
       });
 
       this.questions = grouped;
-      console.log(this.questionTypes)
-      
-    },
-    error: (err) => {
-      console.error('Failed to fetch questions:', err);
-      this.errorMessage = 'Could not load questions.';
     }
   });
 }
+
 
 
 prepareNewQuestionnaire() {
@@ -204,10 +208,16 @@ saveQuestionnaire() {
 
 onQIDChange() {
   if (this.selectedQID !== null) {
-    this.fetchQuestionsByQID(this.selectedQID);
+    this.fetchQuestionsByQID(this.selectedQID,this.selectedCategory);
   }
 }
 
+onCatChange() {
+  if (this.selectedQID !== null) {
+    this.fetchQuestionsByQID(this.selectedQID,this.selectedCategory);
+
+  }
+}
 
     // Question Section
   addNewQuestion() {
@@ -236,6 +246,7 @@ onQIDChange() {
     next: (res) => {
       console.log("Saved to DB:", res);
       this.errorMessage = "Question saved successfully.";
+      this.fetchQuestionsByQID(this.selectedQID!,this.selectedCategory)
     },
     error: (err) => {
       console.error("Failed to save question:", err);
@@ -243,12 +254,13 @@ onQIDChange() {
     }
   });
     // Reset and hide form
-    this.newQuestion = { category: null, text: '', type: 'Likert Scale' };
+    this.newQuestion = { category: null, text: '', type: 'likert' };
     this.showAddForm = false;
   }
 
+
   cancelAdd() {
-    this.newQuestion = { category: null, text: '', type: 'Likert Scale' };
+    this.newQuestion = { category: null, text: '', type: 'likert' };
     this.showAddForm = false;
   }
 
@@ -278,7 +290,7 @@ addCategory() {
         this.editMode.push(false);
         this.newCategory = '';
         this.errorMessage = "Category Added Successfully";
-        
+        this.showCategoryModal = false;
       } else if (res.status === 'exists') {
         this.errorMessage = "Category already exists.";
       } else {
@@ -308,7 +320,6 @@ editCategory(index: number, inputRef: HTMLInputElement) {
 
 deleteCategory(index: number) {
   const catID = this.categories[index].catID;
-
   if (catID > 0) {
     this.sharedService.deleteCategoryFromDB(catID).subscribe({
       next: (res) => {
@@ -316,6 +327,7 @@ deleteCategory(index: number) {
           this.categories.splice(index, 1);
           this.editMode.splice(index, 1);
           this.errorMessage = "Category Deleted Successfully";
+          
         } else {
           alert(res.message || "Error deleting category.");
         }
@@ -373,6 +385,7 @@ cancelEditCategory(index: number) {
 openDeleteModal(id: number) {
   this.itemToDeleteId = id;
   this.showDeleteModal = true;
+  this.showCategoryModal = false;
 }
 
 closeDeleteModal() {
@@ -383,16 +396,33 @@ closeDeleteModal() {
 confirmDelete() {
   const index = this.itemToDeleteId!;
   const catID = this.categories[index].catID;
+  const deletedCategory = this.categories[index].categoryName;
 
   if (catID > 0) {
     this.sharedService.deleteCategoryFromDB(catID).subscribe({
       next: (res) => {
         if (res.status === 'success') {
+          // ✅ Remove from UI
           this.categories.splice(index, 1);
           this.editMode.splice(index, 1);
-          this.closeDeleteModal()
-          this.errorMessage ="Category Deleted Successfully";
-          this.ngOnInit();
+
+          this.closeDeleteModal();
+          this.errorMessage = "Category Deleted Successfully";
+
+          // ✅ Reset selectedCategory if it was deleted
+          if (this.selectedCategory === deletedCategory) {
+            if (this.categories.length > 0) {
+              this.selectedCategory = this.categories[0].categoryName;
+
+              // 🔥 Explicitly reload questions with selected QID + category
+              if (this.selectedQID !== null) {
+                this.fetchQuestionsByQID(this.selectedQID, this.selectedCategory);
+              }
+            } else {
+              this.selectedCategory = '';
+              this.questions = [];
+            }
+          }
         } else {
           alert(res.message || "Error deleting category.");
         }

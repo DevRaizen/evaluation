@@ -53,12 +53,9 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="text-sm  text-gray-700 tracking-wide ">Grade Level</label>
-              <select name="grade" [(ngModel)]="Grade" #grade="ngModel" (ngModelChange)="onGradeChange()" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+              <select name="grade" [(ngModel)]="selectedGrade" #grade="ngModel" (ngModelChange)="onGradeChange()" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
                 <option value="">Select Grade</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
+                <option *ngFor="let g of Grade" [value]="g">{{g}}</option>
               </select>
               <div *ngIf="grade.invalid && grade.touched" class="text-red-500 text-sm mt-1">
                   Please Select Grade Level.
@@ -69,26 +66,13 @@
               <label class="text-sm  text-gray-700 tracking-wide ">Section</label>
               <select name="section" [(ngModel)]="Section" #section="ngModel" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
                 <option value="">Select Section</option>
-               <option *ngFor="let sec of getSectionsForGrade()" [value]="sec">{{ sec }}</option>
+               <option *ngFor="let section of allSections[selectedGrade]" [value]="section">{{ section }}</option>
               </select>
               <div *ngIf="section.invalid && section.touched" class="text-red-500 text-sm mt-1">
                   Please Select Section.
               </div>
             </div>
 
-          </div>
-
-          <div class="relative">
-            <label class="text-sm  text-gray-700 tracking-wide ">Phone Number</label>
-            <input name="pn" [(ngModel)]="PhoneNumber" #pn="ngModel" required type="number" placeholder="09676123213" class="input-no-spinner w-full px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" />
-            <div class="absolute left-2 top-2/3 transform -translate-y-1/2 text-gray-400 mt-1">
-              <img src="/contact.png" alt="Logo" class="inline-block mb-1">
-              <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
-            </div>
-          </div>
-
-          <div *ngIf="pn.invalid && pn.touched" class="text-red-500 text-sm mt-1">
-                  Phone Number is required.
           </div>
 
           <div class="space-y-2">

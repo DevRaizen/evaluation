@@ -111,67 +111,152 @@
             />
           </div>
         </div>
-      
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+
+
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg shadow border-t-8 border-[#8C2224]">
+          <div class="col-span-2 text-center p-4 text-lg font-bold">
+            <p>Total Account Registered</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4 ">
+          <!-- Students -->
+          <div class="grid grid-cols-2 gap-2 items-center bg-white p-4 text-center relative group">
             <img src="/student.png" alt="" class="w-8 h-8 mx-auto" />
-            <div class="font-bold border-l-2 border-gray-200">Students<br>{{studentcount}}</div>
+            <div class="font-bold border-l-2 border-gray-200 sm:text-sm">
+              Students<br>{{studentcount}}
+            </div>
+            <!-- Tooltip -->
+            <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
+                        hidden group-hover:block bg-gray-800 text-white text-xs 
+                        rounded-md px-3 py-1 whitespace-nowrap shadow-lg">
+              Total number of students enrolled
+            </div>
           </div>
-          <div class= "grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+          <!-- Teachers -->
+          <div class="grid grid-cols-2 gap-2 items-center bg-white p-4 text-center relative group">
             <img src="/teacher.png" alt="" class="w-8 h-8 mx-auto" />
-            <div class="font-bold border-l-2 border-gray-200" >Teachers<br>{{teachercount}}</div>
+            <div class="font-bold border-l-2 border-gray-200  ">
+              Teachers<br>{{teachercount}}
+            </div>
+          <!-- Tooltip -->
+          <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
+                      hidden group-hover:block bg-gray-800 text-white text-xs 
+                      rounded-md px-3 py-1 whitespace-nowrap shadow-lg">
+            Total number of teachers
           </div>
-          <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]">
+        </div>
+      </div>
+        </div>
+     
+        <div class="bg-white rounded-lg shadow border-t-8 border-[#8C2224]">
+            <div>
+              <p class="col-span-2 text-center p-4 text-lg font-bold">
+                 Total Kemmemem
+              </p>
+            </div>
+               <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4">
+              <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
                 <div class="text-2xl">✅</div>
-                <div class="font-bold border-l-2 border-gray-200" >Completion<br>95%</div>
+                <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Completion<br>{{ ((totalSubCount / totalStudentCount) * 100) | number:'1.0-0' }}%</div>
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
+                        hidden group-hover:block bg-gray-800 text-white text-xs 
+                        rounded-md px-3 py-1 whitespace-nowrap shadow-lg">
+                        Total number of students enrolled
+                </div>
             
           </div>
-          <div class="grid grid-cols-2  gap-3 items-center bg-white p-4 rounded-lg shadow text-center border-l-8 border-[#8C2224]  ">
+          <div class="grid grid-cols-2  gap-3 items-center bg-white p-4 rounded-lg text-center  ">
             <div class="text-2xl">⏳</div>
-            <div class="font-bold border-l-2 border-gray-200">Time Remaining<br>4D</div>
+            <div class="font-bold border-l-2 border-gray-200 sm:text-sm">Time Remaining<br>{{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m</div>
           </div>
+          </div>
+        </div>
+
+       
+        
           
         </div>
 
         <!-- Action Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-6">
-          <div class="bg-white p-4 rounded shadow text-center">
-            <div class="font-bold">Total Evaluation</div>
-            <div class="grid grid-cols-2 mt-4 ">
-              <img src="/tot.png" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
-              <div class="text-2xl lg:mr-10">1025</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+          <div class="bg-white">
+            <div class="text-lg text-center font-semibold ">Total Evaluation</div>
+
+            
+
+            <div class="grid grid-flow-row px-6 pb-2">
+              
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span>Grade 7</span>
+                  <span>{{subGrade7}}/{{countGrade7}}</span>
+                </div>
+
+                  <div class="w-full bg-gray-200 rounded h-2">
+                    <div class="bg-yellow-400 h-2 rounded"
+                        [style.width.%]="(subGrade7 / countGrade7) * 100">
+                    </div>
+                  </div>
+                </div>
+
+          
+               <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span>Grade 8</span>
+                  <span>{{subGrade8}}/{{countGrade8}}</span>
+                </div>
+
+                  <div class="w-full bg-gray-200 rounded h-2">
+                    <div class="bg-yellow-400 h-2 rounded"
+                        [style.width.%]="(subGrade8 / countGrade8) * 100">
+                    </div>
+                  </div>
+                </div>
+               
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span>Grade 9</span>
+                  <span>{{subGrade9}}/{{countGrade9}}</span>
+                </div>
+
+                  <div class="w-full bg-gray-200 rounded h-2">
+                    <div class="bg-yellow-400 h-2 rounded"
+                        [style.width.%]="(subGrade9 / countGrade9) * 100">
+                    </div>
+                  </div>
+                </div>
+            
+                <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span>Grade 10</span>
+                  <span>{{subGrade10}}/{{countGrade10}}</span>
+                </div>
+
+                  <div class="w-full bg-gray-200 rounded h-2">
+                    <div class="bg-yellow-400 h-2 rounded"
+                        [style.width.%]="(subGrade10 / countGrade10) * 100">
+                    </div>
+                  </div>
+                </div>
             </div>
+         
           </div>
+       
           
-          
-          <div class="bg-white p-4 rounded shadow text-center">
-            <div class="font-bold">Average Score</div>
-            <div class="grid grid-cols-2 mt-4">
-              <img src="/rating.jpg" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
-              <div class="text-2xl lg:mr-10">8.5</div>
-            </div>
-          </div>
-          
-          <div class="bg-white p-4 rounded shadow text-center">
-            <div class="font-bold">Unsubmitted</div>
-            <div class="grid grid-cols-2 gap-1 mt-4">
-              <img src="/unsub.png" alt="" class="w-8 h-8 mx-auto lg:ml-10" />
-              <div class="text-2xl lg:mr-10">123</div>
-            </div>
-          </div>
-          
-          <div class="bg-white p-4 rounded shadow text-center cursor-pointer md:text-lg">
+          <div class="grid grid-cols-3 gap-2">
+                  <div class="bg-white p-8 rounded shadow text-center cursor-pointer md:text-lg">
             <div class="font-bold text-sm">Create Form</div>
             <img src="/form.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
-          <div class="bg-white p-4 rounded shadow text-center cursor-pointer">
+          <div class="bg-white p-8 rounded shadow text-center cursor-pointer">
             <div class="font-bold text-sm">Set Schedule</div>
             <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
-          <div class="bg-white p-4 rounded shadow text-center cursor-pointer">
+          <div class="bg-white p-8 rounded shadow text-center cursor-pointer">
             <div class="font-bold text-sm">Add Account</div>
             <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
+          </div>
+        
         </div>
       
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -183,35 +268,34 @@
                 <p class="text-xs text-gray-500">All the data in percentage (%)</p>
               </div>
 
-              <div class="flex flex-col lg:flex-row justify-center items-start space-y-4 lg:space-y-0 lg:space-x-4">
+              <div class="grid grid-cols-3 gap-2 px-4 ">
                 <!-- LEFT: Labels -->
-                <div class="flex flex-col space-y-4 w-full lg:w-1/3 ">
-                  <div *ngFor="let label of barChartData.labels let i = index" class="flex items-center space-x-2">
-                    <div class="w-5 h-5 rounded-full mb-3" [ngStyle]="{ 'background-color': getBackgroundColor(i) }"></div>
-                    <div class="text-sm text-gray-700 font-bold">
-                      {{ label }}
-                      <div *ngIf="i === 0; else secblock" class="text-sm text-gray-700 font-normal">
-                        1st Highest Rank
-                      </div>
-                      <ng-template #secblock>
-                        <div *ngIf="i == 1; else terdblock" class="text-sm text-gray-700 font-normal">2nd Highest Rank</div>
-                      </ng-template>
-              
-                      <ng-template #terdblock>
-                        <div class="text-sm text-gray-700 font-normal">3rd Highest Rank</div>
-                      </ng-template>
+                <div class="col-span-1">
+                <div *ngFor="let teacher of topTeachers; let i = index" class="flex items-center space-x-2 mb-2 ">
+                  <!-- Dynamic color box -->
+                  <div class="w-5 h-5 rounded-full"
+                      [ngStyle]="{ 'background-color': getBarColor(teacher.HighestScore) } "></div>
+
+                  <!-- Teacher info -->
+                  <div class="lg:text-sm md:text-xs sm:text-xs text-gray-700 font-bold ">
+                    <div class=" text-sm hidden lg:block">
+                      {{teacher.TeacherName}}
+                    </div>
+                    <div class=" text-xs hidden lg:block">
+                      {{ i === 0 ? '1st Highest Rank' : i === 1 ? '2nd Highest Rank' : '3rd Highest Rank' }}
+                    </div>
+                    <div class="text-xs text-gray-500 italic">
+                       {{ teacher.HighestCategory }}
                     </div>
                   </div>
                 </div>
+              </div>
               
                 <!-- RIGHT: Chart -->
-                <div class="lg:w-[400px] flex justify-center items-center">
-                  <canvas baseChart
-                          [data]="barChartData"
-                          [options]="barChartOptions"
-                          [type]="barChartType"
-                          [plugins]="barChartPlugins">
-                  </canvas>
+                <div class="col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2">
+                  <div class="w-full h-[200px] sm:h-[200px] md:h-[220px] lg:h-[200px]">
+                    <canvas id="topTeachersChart" class="w-full h-full"></canvas>
+                  </div>
                 </div>
             
               </div>
@@ -242,32 +326,21 @@
           <!-- Right Column: Top Scorer with same height as chart section -->
           <div class="bg-white p-3 rounded shadow flex flex-col justify-between text-xs h-72">
             <div class="flex justify-between items-center mb-2">
-              <h2 class="font-bold">Top Scorer</h2>
-              <select class="text-xs border rounded-2xl p-1 bg-gray-100">
-                <option>2018 - 2019</option>
-                <option>2019 - 2020</option>
-                <option>2020 - 2021</option>
+              <h2 class="font-bold">Top Ratings</h2>
+              <select (change)="onSchoolYearChange()"  [(ngModel)]="selectedSchoolYearID" class="text-xs border rounded-2xl p-1 bg-gray-100">
+               <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option>
               </select>
             </div>
-            <div class="grid grid-cols-3 gap-2 h-60">
-              <div class="bg-[#8C2224] text-white p-2 rounded text-center">
-                <img [src]="avatar" class="mx-auto rounded-full h-36 mb-1" />
-                <p class="text-lg">Jane Cooper</p>
-                <p class="text-yellow-300 font-bold text-sm">99.99%</p>
-                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">1st</p>
+            <div  class="grid grid-cols-3 gap-2 h-60">
+              <div *ngFor="let top of topTeachers; let i = index" class="bg-[#8C2224] text-white p-2 rounded text-center">
+                <img [src]="top.TeacherImage === '/user.png' ? '/user.png' : url + top.TeacherImage" class="mx-auto rounded-full h-32 w-32 mb-1" />
+                <p class="text-lg">{{top.TeacherName}}</p>
+                <p class="text-yellow-300 font-bold text-sm">{{top.FinalAvg}}</p>
+                 <p class="bg-yellow-300 text-black rounded px-1 mt-1 inline-block">
+                  {{ i + 1 }}{{ i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th' }}
+                </p>
               </div>
-              <div class="bg-[#8C2224] text-white p-2 rounded text-center">
-                <img [src]="avatar" class="mx-auto rounded-full mb-1 h-36" />
-                <p class="text-lg">Eleanor Pena</p>
-                <p class="text-yellow-300 font-bold text-sm">99.76%</p>
-                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">2nd</p>
-              </div>
-              <div class="bg-[#8C2224] text-white p-2 rounded text-center">
-                <img [src]="avatar" class="mx-auto rounded-full mb-1 h-36" />
-                <p class="text-lg">Devon Lane</p>
-                <p class="text-yellow-300 font-bold text-l">99.50%</p>
-                <p class="bg-yellow-400 text-black rounded px-1 mt-1 inline-block">3rd</p>
-              </div>
+             
             </div>
           </div>
         </div>
