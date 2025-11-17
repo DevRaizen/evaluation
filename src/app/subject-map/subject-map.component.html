@@ -245,15 +245,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let assignment of filteredAssignments()" class="border-b">
-          <td class="py-2 px-4 flex items-center gap-2">
+        <tr *ngFor="let assignment of filteredAssignments(); let i = index" class="border-b">
+          <td *ngIf="i === 0" class="py-2 px-4 flex items-center gap-2">
             <img [src]="assignment.imageUrl" class="w-6 h-6 rounded-full" />
             {{ assignment.name }}
           </td>
           <td class="py-2 px-4">{{ assignment.subject }}</td>
           <td class="py-2 px-4">{{ assignment.section }}</td>
           <td class="py-2 px-4 flex gap-2">
-            <button class="bg-yellow-400 px-2 py-1 rounded text-sm">Edit</button>
+            <button class="bg-yellow-400 px-2 py-1 rounded text-sm hidden">Edit</button>
             <button class="bg-yellow-400 px-2 py-1 rounded text-sm">Delete</button>
           </td>
         </tr>

@@ -12,6 +12,7 @@ export class SharedService {
   Lname?: string;
   StudId?: string;
   Grade?: string;
+  Status?: string;
   AccID?: number;
   Section?: string;
   Email?: string;
@@ -24,6 +25,7 @@ Admin: {
   Mname?: string;
   Lname?: string;
   AdminID?: string;
+  Status?: string;
   AccID?: number;
   Email?: string;
   Password?: string;
@@ -37,6 +39,7 @@ Teacher: {
   Mname?: string;
   Lname?: string;
   Email?: string;
+  Status?: string;
   PhoneNumber?: string;
   Password?: string;
   UserType?: string;
@@ -49,6 +52,7 @@ Principal: {
   Mname?: string;
   Lname?: string;
   Email?: string;
+  Status?: string;
   PhoneNumber?: string;
   Password?: string;
   UserType?: string;
@@ -64,7 +68,9 @@ CurrentAdmin: {
   Password?: string;
   UserType?: string;
 } = {};
-
+schedmod: boolean = false;
+addaccmod: boolean = false;
+addquesmod: boolean = false;
  CurrentStudent: {
   Fname?: string;
   Mname?: string;
@@ -77,6 +83,7 @@ CurrentAdmin: {
   Email?: string;
   Password?: string;
   UserType?: string;
+  SchoolYearID?: number;
 } = {};
 
 CurrentTeacher: {
@@ -86,6 +93,19 @@ CurrentTeacher: {
   Mname?: string;
   Lname?: string;
   Email?: string;
+  Password?: string;
+  UserType?: string;
+} = {};
+
+CurrentPrincipal: {
+  PrincipalID?: string;
+  AccID?: number;
+  Fname?: string;
+  Mname?: string;
+  Lname?: string;
+  Email?: string;
+  Status?: string;
+  PhoneNumber?: string;
   Password?: string;
   UserType?: string;
 } = {};
@@ -139,7 +159,7 @@ CurrentTeacher: {
 
 sendAdminInfoToDB() {
   const url = `${this.burl}manageuser.php` 
-  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php'; 
+  //const url = ' '; 
   const adminData = {
     action: 'register_admin',
     fname: this.Admin.Fname,
@@ -148,10 +168,41 @@ sendAdminInfoToDB() {
     adminid: this.Admin.AdminID,
     email: this.Admin.Email,
     password: this.Admin.Password,
-    usertype: this.Admin.UserType
+    usertype: this.Admin.UserType,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+      AccID: this.CurrentAdmin.AccID
   };
   return this.http.post(url, adminData);
 }
+
+getPendingStudents() {
+  const url = `${this.burl}api.php`; 
+  return this.http.post(url, { action: 'get_pending_students' });
+}
+ approveStudent(studID: string) {
+   const url = `${this.burl}api.php`; 
+    const data = {
+      action: 'approve_student',
+      StudID: studID,
+      Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+      AccID: this.CurrentAdmin.AccID
+
+    };
+    return this.http.post(url, data);
+  }
+
+ 
+  rejectStudent(studID: string){
+    const url = `${this.burl}api.php`; 
+    const data = {
+      action: 'reject_student',
+      StudID: studID,
+      Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+      AccID: this.CurrentAdmin.AccID
+    };
+    return this.http.post(url, data);
+  }
+
 
 sendTeacherInfoToDB() {
   const url = `${this.burl}manageuser.php` 
@@ -164,7 +215,9 @@ sendTeacherInfoToDB() {
     teacherid: this.Teacher.TeacherID,
     email: this.Teacher.Email,
     password: this.Teacher.Password,
-    usertype: this.Teacher.UserType
+    usertype: this.Teacher.UserType,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post(url, teacherData);
 }
@@ -179,7 +232,9 @@ sendPrincipalInfoToDB() {
     principalid: this.Principal.PrincipalID,
     email: this.Principal.Email,
     password: this.Principal.Password,
-    usertype: this.Principal.UserType
+    usertype: this.Principal.UserType,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post(url, principalData);
 }
@@ -254,6 +309,15 @@ getStudCountbyGrade() {
   };
   return this.http.post<any>(url, data);
 }
+getStudCountbyGradereport(SchoolYearID: number) {
+  const url = `${this.burl}gen-report.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/admindashboard.php';
+  const data = {
+    action: 'count_students_by_grade',
+    SchoolYearID: SchoolYearID
+  };
+  return this.http.post<any>(url, data);
+}
 
 getAccount(){
   const url = `${this.burl}manageuser.php`; 
@@ -287,9 +351,12 @@ updateStudent() {
     lname: this.Student.Lname,
     grade: this.Student.Grade,
     section: this.Student.Section,
+    status: this.Student.Status,
     email: this.Student.Email,
     accid: this.Student.AccID,
-    password: this.Student.Password
+    password: this.Student.Password,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post<any>(url, studentData);
 }
@@ -306,9 +373,12 @@ updateTeacher() {
     lname: this.Teacher.Lname,
     phone: this.Teacher.PhoneNumber,
     email: this.Teacher.Email,
+    status: this.Teacher.Status,
     accid: this.Teacher.AccID,
     usertype: this.Teacher.UserType,
-    password: this.Teacher.Password
+    password: this.Teacher.Password,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post<any>(url, teacherData);
 }
@@ -326,9 +396,63 @@ updateAdmin() {
     email: this.Admin.Email,
     accid: this.Admin.AccID,
     usertype: this.Admin.UserType,
-    password: this.Admin.Password
+    password: this.Admin.Password,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post<any>(url, adminData);
+}
+
+updatePrincipal() {
+  const url = `${this.burl}manageuser.php`;
+  const principalData = {
+    action: 'updatePrincipal',
+    principalid: this.Principal.PrincipalID,
+    fname: this.Principal.Fname,
+    mname: this.Principal.Mname,
+    lname: this.Principal.Lname,
+    email: this.Principal.Email,
+    status: this.Principal.Status,
+    accid: this.Principal.AccID,
+    usertype: this.Principal.UserType,
+    password: this.Principal.Password,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
+  };
+  return this.http.post<any>(url, principalData);
+}
+
+deleteAccount(AccID: number) {
+  const url = `${this.burl}manageuser.php`; 
+  //const url = 'http://localhost/teacher-evaluation-backend/manageuser.php';
+  const payload = {
+    action: 'deleteAccount',
+    accid: AccID,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
+  };
+  return this.http.post<any>(url, payload);
+}
+
+updateEmail(AccID: number,NewEmail: string){
+ const url = `${this.burl}adminsettings.php`;
+  const payload = {
+    action: 'updateEmail',
+    newemail: NewEmail,
+    accid: AccID
+}
+
+return this.http.post<any>(url, payload);
+}
+
+updatePassword(AccID: number,NewPass: string){
+ const url = `${this.burl}adminsettings.php`;
+  const payload = {
+    action: 'updatePassword',
+    newpassword: NewPass,
+    accid: AccID
+}
+
+return this.http.post<any>(url, payload);
 }
 
 getAllQuestionnaireIDs() {
@@ -365,10 +489,33 @@ saveQuestionnaire(qid: number, questions: any[]) {
   const payload = {
     action: 'saveQuestionnaire',
     QID: qid,
-    questions: questions
+    questions: questions,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
   return this.http.post<any>(url, payload);
 }
+
+
+deleteQuestion(quesID: string) {
+  const url = `${this.burl}questions.php`;
+  const payload = {
+    action: 'deleteQuestion',
+    QuesID: quesID
+  };
+  return this.http.post<any>(url, payload);
+}
+
+updateQuestionText(QuesID: number, questionText: string) {
+  const url = `${this.burl}questions.php`;
+  const payload = {
+    action: 'updateQuestionText',
+    QuesID,
+    questionText
+  }
+  return this.http.post<any>(url,payload );
+}
+
 
 addSingleQuestionToQuestionnaire(qid: number, question: { text: string, type: string, category: string }) {
   const url = `${this.burl}questions.php`;
@@ -376,7 +523,8 @@ addSingleQuestionToQuestionnaire(qid: number, question: { text: string, type: st
   const payload = {
     action: 'addSingleQuestion',
     QID: qid,
-    question: question
+    question: question,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname
   };
 
   return this.http.post<any>(url, payload);
@@ -447,7 +595,9 @@ createSchedule(scheduleData: {
       status: scheduleData.status,
       targetGrades: scheduleData.targetGrades,
       schoolYearID: scheduleData.schoolYearID,
-      adminID: scheduleData.adminID
+      adminID: scheduleData.adminID,
+      Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+      AccID: this.CurrentAdmin.AccID
     }
   };
 
@@ -473,12 +623,25 @@ getAllEvaluationSettings(){
 
   return this.http.post<any>(url,payload);
 }
+
+getgenAllEvaluationSettings(){
+   const url = `${this.burl}gen-report.php`;
+  //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
+  const payload = {
+    action: 'getEvaluationAllSettings'
+  };
+
+  return this.http.post<any>(url,payload);
+}
+
 saveSettings(schedule: any){
    const url = `${this.burl}evalSched.php`;
   //const url = 'http://localhost/teacher-evaluation-backend/evalSched.php';
   const payload = {
     action: 'updateEvaluationSettings',
-    schedule: schedule
+    schedule: schedule,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
   };
 
   return this.http.post<any>(url,payload);
@@ -554,6 +717,46 @@ getActiveSchoolYear(){
   return this.http.post<any>(url,payload)
 }
 
+getSchoolYears(){
+   const url = `${this.burl}adminsettings.php`;
+    const payload ={
+    action: 'getSchoolYears',
+  };
+
+  return this.http.post<any>(url,payload)
+}
+
+addSchoolYear(schoolYear: string) {
+  const url = `${this.burl}adminsettings.php`;
+  const payload = {
+    action: 'addSchoolYear',
+    SchoolYear: schoolYear,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
+  }
+  return this.http.post<any>(url, payload);
+}
+
+getActiveSchoolYears() {
+  const url = `${this.burl}adminsettings.php`;
+  const payload = {
+    action: 'getActiveSchoolyear'
+  }
+  return this.http.post<any>(url, payload);
+}
+
+setActiveSchoolYear(SchoolYearID: number) {
+   const url = `${this.burl}adminsettings.php`;
+    const payload = {
+    action: 'setActiveSchoolYear',
+    NewActiveID: SchoolYearID,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
+  }
+  return this.http.post<any>(url, payload);
+}
+
+
 saveSubjectMapping(load: any) {
   const url = `${this.burl}tsubjectmap.php`;
 
@@ -563,7 +766,9 @@ saveSubjectMapping(load: any) {
       subjectID: load.subjectID,
       grade: load.grade,
       sections: load.sections,
-      schoolYearID: load.schoolYearID
+      schoolYearID: load.schoolYearID,
+      Teacher: this.CurrentTeacher.Fname + ' ' + this.CurrentTeacher.Mname + ' ' + this.CurrentTeacher.Lname,
+      AccID: this.CurrentTeacher.AccID
   };
 
   return this.http.post<any>(url,payload);
@@ -606,7 +811,9 @@ Optionalanswers: {
   const url = `${this.burl}evaluation.php`;
   const body = {
     action: 'submitEvaluation',
-    ...payload
+    ...payload,
+    Student: this.CurrentStudent.Fname + ' ' + this.CurrentStudent.Mname + ' ' + this.CurrentStudent.Lname,
+    AccID: this.CurrentStudent.AccID
   };
 
   return this.http.post<any>(url, body);
@@ -675,13 +882,13 @@ getGradeLevels() {
   return this.http.post<any>(url, payload);
 }
 
-getEvaluationAverageByGrade(schoolYearID: string, gradeLevel: string, esetId: string) {
+getEvaluationAverageByGrade(schoolYearID: string, gradeLevel: string, QID: string) {
   const url = `${this.burl}gen-report.php`;
   const payload = {
     action: 'getEvaluationAverageByGrade',
     SchoolYearID: schoolYearID,
     GradeLevel: gradeLevel,
-    ESetID: esetId
+    QID: QID
   };
   return this.http.post<any>(url, payload);
 }
@@ -697,7 +904,7 @@ getTrendAnalysisByGrade(gradeLevel: string) {
 getEvaluationResponseCountByGrade(
   schoolYearID: string,
   gradeLevel: string,
-  evalSetID: string
+  QID: string
 ) {
 
    const url = `${this.burl}gen-report.php`;
@@ -705,29 +912,29 @@ getEvaluationResponseCountByGrade(
     action: 'getEvaluationResponseCountByGrade',
     SchoolYearID: schoolYearID,
     GradeLevel: gradeLevel,
-    ESetID: evalSetID
+    QID: QID
   };
 
   return this.http.post<any>(url, payload);
 }
 
-getEvaluationCategoryBreakdownByGrade(schoolYearID: string, gradeLevel: string, esetId: string){
+getEvaluationCategoryBreakdownByGrade(schoolYearID: string, gradeLevel: string,QID: string){
   const url = `${this.burl}gen-report.php`;
   const payload = {
     action: 'getEvaluationCategoryBreakdownByGrade',
     SchoolYearID: schoolYearID,
     GradeLevel: gradeLevel,
-    ESetID: esetId
+    QID: QID
   }
   return this.http.post<any>(url, payload);
 }
 
-getSubmissionCountByGrade(schoolYearID: string, esetId: string) {
+getSubmissionCountByGrade(schoolYearID: string, QID: string) {
   const url = `${this.burl}gen-report.php`; // adjust to your PHP file
   const payload = {
     action: 'getSubmissionCountByGrade',
     SchoolYearID: schoolYearID,
-    ESetID: esetId
+    QID: QID
   };
   return this.http.post<any>(url, payload);
 }
@@ -760,6 +967,74 @@ const url = `${this.burl}admindashboard.php`;
       ESetID: ActiveSet
     }
   return this.http.post<any>(url,payload);
+}
+
+ saveNewQuestionnaire(title: string, questions: any[]){
+    const url = `${this.burl}questions.php`;
+    const payload = {
+      action: 'saveNewQuestionnaire',
+      title,
+      questions,
+      Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+      AccID: this.CurrentAdmin.AccID
+    };
+    return this.http.post<any>(url, payload);
+  }
+
+ getLogs() {
+  const url = `${this.burl}adminsettings.php`
+  const payload = { action: 'getLogs' };
+  return this.http.post<any>(url, payload);
+}
+
+addSection(grade: string, sectionName: string) {
+  const url = `${this.burl}adminsettings.php`
+  const payload = {
+    action: 'addSection',
+    grade,
+    sectionName,
+    Admin: this.CurrentAdmin.Fname + ' ' + this.CurrentAdmin.Mname + ' ' + this.CurrentAdmin.Lname,
+    AccID: this.CurrentAdmin.AccID
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+
+// shared.service.ts
+renewEnrollment(accID: number, studID: string, yearLevel: string, section: string) {
+  const url = `${this.burl}stdashboard.php`
+  const payload = {
+    action: 'renewEnrollment',
+    accID,
+    studID,
+    yearLevel,
+    section
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+getExistingQuestions() {
+  const url  = `${this.burl}questions.php`
+  const payload = { action: 'getExistingQuestions' };
+  return this.http.post<any>(url, payload);
+}
+
+deleteSubjectMapping(mapping: any) {
+  const url = `${this.burl}tsubjectmap.php`;
+
+  const payload = {
+    action: 'deleteSubjectMapping',
+    teacherID: mapping.teacherID,
+    subjectID: mapping.subjectID,
+    sectionName: mapping.sectionName,
+    schoolYearID: mapping.schoolYearID,
+    Teacher: this.CurrentTeacher.Fname + ' ' + this.CurrentTeacher.Mname + ' ' + this.CurrentTeacher.Lname,
+    AccID: this.CurrentTeacher.AccID
+  };
+
+  return this.http.post<any>(url, payload);
 }
 
 

@@ -10,9 +10,11 @@ import { ApiService } from '../api.service';
   styleUrl: './stdashboard.component.css'
 })
 export class StdashboardComponent implements OnInit {
+  showSchoolYearModal = false;
   result: any;
   imgurl = "";
   errorMessage = "";
+  successMessage = "";
   Student: {
   Fname?: string;
   Mname?: string;
@@ -25,6 +27,7 @@ export class StdashboardComponent implements OnInit {
   Email?: string;
   Password?: string;
   UserType?: string;
+  SchoolYearID?: number;
 } = {};
   totalSumittedEval = 0;
   EvaluationSettings: any[] = [];
@@ -38,7 +41,7 @@ export class StdashboardComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null = null;
   today = new Date(Date.now() + (8 * 60 * 60 * 1000));
   duration: { days: number; hours: number; mins: number } = { days: 0, hours: 0, mins: 0 };
-
+  activeSchoolYear?: number;
 
   constructor(private router: Router, private sharedService: SharedService){
         this.imgurl = this.sharedService.burl;
@@ -103,8 +106,25 @@ export class StdashboardComponent implements OnInit {
     this.getProfile();
     this.getStudentTeacher();
     this.getEvalSet();
+     this.getYearSection()
     
-   
+    this.sharedService.getActiveSchoolYear().subscribe({
+      next:(res) =>{
+            if(res.status === "success"){
+              this.activeSchoolYear = res.schoolYears.length > 0 ? res.schoolYears[0].SchoolYearID : null;
+              console.log("activeschoolyeaer",this.activeSchoolYear)
+              console.log(this.Student.SchoolYearID)
+
+             if (this.Student.SchoolYearID !== this.activeSchoolYear &&
+              ['7', '8', '9'].includes(this.Student.Grade!)) {
+            this.showSchoolYearModal = true;
+          }
+            }
+      },
+      error:(err)=>{
+
+      }
+    })
   }
 
   onFileSelected(event: Event): void {
@@ -213,7 +233,7 @@ getProfile(){
         }
       },
       error: (err) => {
-        this.errorMessage = "sira database";
+        this.errorMessage = "sira database teacher to";
         console.log(err);
       }
     });
@@ -322,7 +342,7 @@ getProfile(){
         this.router.navigate(['steval-form']);
       }
     goToSettings() {
-        this.router.navigate(['/stsettings']);
+        this.router.navigate(['/stsetting']);
       }
 
     logout(){
@@ -341,4 +361,96 @@ getProfile(){
     closeLogoutModal() {
       this.showLogoutModal = false;
     }
+
+      getYearSection(){
+    this.sharedService.getYearSec().subscribe({
+      next: (res) =>{
+        if(res.status === "success"){
+          const data = res.yearsec;
+
+          data.forEach((item:any)=>{
+            const grade = item.YearLevel;
+            const section = item.SectionName
+
+            if(!this.allSections[grade]){
+              this.allSections[grade] = [];
+            }
+            this.allSections[grade].push(section);
+            console.log(this.allSections);
+          })
+
+          this.Grade = Object.keys(this.allSections).map(key => String(key));
+        }
+      },
+      error: (err) => {
+
+      }
+    });
+  }
+  getSectionsForGrade(): string[] {
+  return this.allSections[this.selectedGrade] || [];
+}
+onGradeChange() {
+  const availableSections = this.getSectionsForGrade();
+
+    if (!availableSections.includes(this.Section)) {
+    this.selectedSection = ""; 
+  }
+
+  
+  
+}
+
+Grade: string[] = []
+selectedSection: string = '';
+selectedGrade: string = '';
+allSections: { [key: string]: string[] } = {};
+ 
+  Section = '';
+
+validation = false;
+confirmSchoolYear(gradeRef: any, sectionRef: any) {
+  // Mark as touched to trigger validation messages
+  gradeRef.control.markAsTouched();
+  sectionRef.control.markAsTouched();
+
+  // Required validation
+  if (!this.selectedGrade || !this.selectedSection) return;
+
+  // Custom validation: selected grade must be < current grade
+ 
+
+  console.log(' Proceed: Grade', this.selectedGrade, 'Section', this.selectedSection);
+
+
+    this.sharedService.renewEnrollment(this.Student.AccID!, this.Student.StudID!, this.selectedGrade, this.selectedSection).subscribe({
+    next: (res) => {
+      if (res.status === 'success') {
+        this.successMessage = 'Enrollment renewed successfully!'
+      } else {
+        alert(res.message);
+      }
+    },
+    error: (err) => console.error(err)
+  });
+
+}
+
+getFilteredGrades(): String[] {
+  const currentGrade = String(this.Student.Grade);
+
+
+  const currentIndex = this.Grade.indexOf(currentGrade);
+  if (currentIndex === -1) return [];
+
+
+  const filtered = [this.Grade[currentIndex]];
+  if (this.Grade[currentIndex + 1]) {
+    filtered.push(this.Grade[currentIndex + 1]);
+  }
+
+  return filtered;
+}
+
+    
 }

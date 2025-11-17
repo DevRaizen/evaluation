@@ -49,13 +49,13 @@
             Dashboard
           </div>
         </a>
-        <a class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a class=" items-center gap-2 px-3 py-2 hover:bg-white/10 rounded hidden">
           <i class="fas fa-cog"></i>
           Settings
         </a>
       </nav>
         <div class="p-4 mt-16">
-          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+          <button (click)="openLogoutModal()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
             Log Out
           </button>
         </div>
@@ -76,16 +76,7 @@
         
           <!-- Right Icons -->
              <div class="flex items-center space-x-4">
-            <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
-            <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              🔔
-            </div>
+            
             <img
               [src]="avatar"  
               alt="Profile"
@@ -109,11 +100,12 @@
         
           <div class="grid grid-flow-col gap-4 md:ml-auto sm:ml-0 ">
                 <p class="text-lg text-gray-500 mt-1">School Year</p>
-                 <div>
+                    <div class="flex gap-2">
                         <select  (change)="onSchoolYearChange()" [(ngModel)]="selectedSchoolYearID" class="border border-gray-300 rounded px-3 py-2 md:w-48">
                            <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option>
                         </select>
                         <i class="fas fa-angle-bottommm"></i>
+                        <button (click)="downloadPDFReport()" class="bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 font-semibold">Export</button>
                     </div>
             </div>
         </div>
@@ -144,9 +136,9 @@
                     </div>
                   </div>
                   <div *ngIf="teacherData.length > 0" >
-                        <p class="lg:text-lg sm:text-sm font-medium text-gray-500">Highest Rated in</p>
-                        <p class="lg:text-2xl sm:text-lg font-bold text-gray-800"> {{ getLabel() }}</p>
-                        <p class="lg:text-xl sm:text-sm text-gray-500">🤓 You received the 6th highest rating!</p>
+                        <p class="lg:text-xl sm:text-sm font-bold text-black">Performance Average</p>
+            
+                        <p class="lg:text-lg sm:text-sm font-bold text-gray-500">You received the highest rating in  {{ getLabel() }}!</p>
                     </div>
                      <div *ngIf="teacherData.length === 0" >
                         <p class="lg:text-lg sm:text-sm font-medium text-gray-500">No Ratings</p>
@@ -198,3 +190,62 @@
   </body>
 </html>
 
+
+ <!-- Overlay -->
+<div *ngIf="showLogoutModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+  <!-- Modal Container -->
+  <div class="bg-gray-100 w-[450px] rounded-lg shadow-lg overflow-hidden">
+    
+    <!-- Header -->
+    <div class="bg-[#8C2224] px-5 py-3 flex justify-between items-center">
+      <h2 class="text-white font-semibold">Log Out</h2>
+      <button (click)="closeLogoutModal()" class="text-white text-xl font-bold hover:text-gray-300">&times;</button>
+    </div>
+    
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <h3 class="text-lg font-semibold mb-6">Do you want to log out?</h3>
+      <div class="flex justify-center gap-4">
+        <button (click)="closeLogoutModal()"
+                class="bg-white border  text-gray-700 px-6 py-2 rounded hover:bg-gray-200">
+          No
+        </button>
+        <button (click)="logout()"
+                class="bg-yellow-400 text-white font-medium px-6 py-2 rounded hover:bg-yellow-500">
+          Yes
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+
+
+
+<!-- Preview Modal -->
+<div *ngIf="showPDFPreview" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-[80%] h-[90%] flex flex-col">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-xl font-semibold">PDF Preview</h2>
+      <button (click)="closePDFPreview()" class="text-gray-600 hover:text-black text-2xl">×</button>
+    </div>
+
+    <!-- PDF Viewer -->
+    <div class="flex-1 overflow-hidden">
+      <iframe *ngIf="pdfBlobUrl" [src]="pdfBlobUrl" class="w-full h-full"></iframe>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="p-4 flex justify-end gap-3 border-t">
+      <button (click)="closePDFPreview()" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-black">
+        Back
+      </button>
+      <button (click)="confirmDownload()" class="px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-500 font-semibold">
+        Download
+      </button>
+    </div>
+  </div>
+</div>

@@ -15,6 +15,7 @@ export class LoginComponent {
   Email!: string;
   Password!: string;
   errorMessage?: string;
+  successMessage?: string;
   user: string | null = null;
   showPassword = false;
 

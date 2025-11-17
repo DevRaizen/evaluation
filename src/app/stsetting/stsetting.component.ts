@@ -3,60 +3,66 @@ import { Router } from '@angular/router';
 import { SharedService } from '../shared.service';
 
 @Component({
-  selector: 'app-tsettings',
+  selector: 'app-stsetting',
   standalone: false,
-  templateUrl: './tsettings.component.html',
-  styleUrl: './tsettings.component.css'
+  templateUrl: './stsetting.component.html',
+  styleUrl: './stsetting.component.css'
 })
-export class TsettingsComponent implements OnInit{
-    showLogoutModal = false;
+export class StsettingComponent implements OnInit {
    isSidebarOpen = false;
     selected = 'weekly'; 
     successMessage = "";
     errorMessage = ""
-      Teacher: {
-    TeacherID?: string;
-    AccID?: number;
-    Fname?: string;
-    Mname?: string;
-    Lname?: string;
-    Email?: string;
-    PhoneNumber?: string;
-    Password?: string;
-    UserType?: string;
-  } = {};
+      Student: {
+  Fname?: string;
+  Mname?: string;
+  Lname?: string;
+  StudID?: string;
+  Grade?: string;
+  AccID?: number;
+  Section?: string;
+  PhoneNumber?: string;
+  Email?: string;
+  Password?: string;
+  UserType?: string;
+  SchoolYearID?: number;
+} = {};
+  showLogoutModal = false;
   avatar = ""
-  imagePreview = ""
-     constructor(private router: Router, private sharedService: SharedService){
+      constructor(private router: Router, private sharedService: SharedService){
         this.avatar = this.sharedService.defaultAvatar;
-        this.imagePreview = this.sharedService.defaultAvatar;
-    const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+      
+
+        const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
           if (storedUser) {
             try {
               const parsedUser = JSON.parse(storedUser);
               const userType = parsedUser.UserType;
 
+
               switch (userType) {
                 case 'Student':
                   this.sharedService.CurrentStudent = parsedUser;
-                  this.router.navigate(['/stdashboard']);
+                  this.router.navigate(['/stsetting']);
+                  this.Student = this.sharedService.CurrentStudent;
+                  console.log(this.Student);
+                  
                   break;
                 case 'Admin':
-                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.sharedService.Admin = parsedUser;
                   this.router.navigate(['/dashboard']);
                   break;
                 case 'Teacher':
-                  this.sharedService.CurrentTeacher = parsedUser;
-                  this.router.navigate(['/tsettings']);
-                  this.Teacher = this.sharedService.CurrentTeacher; 
+                  this.sharedService.Teacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
                   break;
                 case 'Principal':
                   this.sharedService.Principal = parsedUser;
                   this.router.navigate(['/pdashboard']);
                   break;
                 default:
-            
+                  // Unknown role, redirect to login
                   this.router.navigate(['/login']);
                   break;
               }
@@ -69,17 +75,26 @@ export class TsettingsComponent implements OnInit{
             // No user found
             this.router.navigate(['/login']);
           }
-    }
+
+            const evaluating = this.sharedService.getWithExpiry(`Evaluating_${this.Student.StudID}`);
+            if(evaluating){
+              try{
+                   this.router.navigate(['/steval-form']);
+                   return
+              } catch (e){
+                console.error('Error parsing user from storage:', e);
+              }
+            }
+  }
 
     ngOnInit(): void {
        this.getProfile()
     }
-     getProfile(){
+   getProfile(){
      const payload = {
-      userid: this.Teacher.TeacherID,
-      userRole: this.Teacher.UserType
+      userid: this.Student.StudID,
+      userRole: this.Student.UserType
      }
-
      console.log(payload);
     this.sharedService.getProfile(payload).subscribe({
       next: (res) =>{
@@ -87,20 +102,16 @@ export class TsettingsComponent implements OnInit{
         if(res && res.status === 'success' && res.image){
           if (res.image === '/user.png') {
             this.avatar = res.image;
-           
           
         } else {
           this.avatar = `${this.sharedService.burl}${res.image}`;
-        
-          
         }
         }else{
-          this.avatar = this.sharedService.defaultAvatar;
-          
+          this.avatar = this.sharedService.defaultAvatar;      
         }
       },
       error: (err)=>{
-       
+       this.errorMessage ="di mo nakuhaprofile boi";
        console.log(err);
       }
     });
@@ -121,11 +132,11 @@ export class TsettingsComponent implements OnInit{
 
     // Router
       goToDashboard(){
-        this.router.navigate(['/tdashboard']);
-      }
-      goToSubjectMap() {
-        this.router.navigate(['/tsubject-map']);
-      }
+            this.router.navigate(['/stdashboard']);
+          }
+        goToEvalForm() {
+            this.router.navigate(['steval-form']);
+          }
       goToSettings() {
         this.router.navigate(['/tsettings']);
       }
@@ -153,7 +164,7 @@ cancelEmailEdit() {
 }
 
 saveEmail() {
-  this.sharedService.updateEmail(this.Teacher.AccID!, this.Teacher.Email!).subscribe({
+  this.sharedService.updateEmail(this.Student.AccID!, this.Student.Email!).subscribe({
     next: (res) => {
       if (res.status === 'success') {
         this.successMessage = 'Email updated successfully!';
@@ -185,7 +196,7 @@ savePassword() {
     return;
   }
 
-  this.sharedService.updatePassword(this.Teacher.AccID!, this.newPassword).subscribe({
+  this.sharedService.updatePassword(this.Student.AccID!, this.newPassword).subscribe({
   next: (res) =>{
         if(res.status === "success"){
           this.successMessage = "Password Updated Successfully"

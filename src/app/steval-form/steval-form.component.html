@@ -56,7 +56,7 @@
           </div>
           <i class="fas fa-angle-right"></i>
         </a>
-        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToSettings()" class="items-center gap-2 px-3 py-2 hover:bg-white/10 rounded flex">
           <i class="fas fa-cog"></i>
           Settings
         </a>
@@ -71,7 +71,7 @@
 
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Dashboard -->
@@ -84,15 +84,7 @@
           <!-- Right Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
-            <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              🔔
-            </div>
+           
             <img
               [src]="avatar"  
               alt="Profile"
@@ -130,17 +122,16 @@
     <!-- Directions -->
     <p class="text-sm text-gray-700 bg-white py-4 rounded shadow">
         <span class="font-semibold">Direction:</span>
-        Evaluate your subject teachers objectively using the following descriptors as 5 being the highest score and 1 being the lowest.
+        Evaluate your subject teachers objectively using the following descriptors as 4 being the highest score and 1 being the lowest.
     </p>
 <div class="overflow-x-auto max-h-80 ">
   <div class="rounded-lg shadow-sm bg-white border border-gray-300">
     <table class="min-w-full text-sm border-collapse">
       <thead class="bg-gray-100">
         <tr class="text-gray-700">
-          <th class="border border-gray-300 p-3 text-left text-lg font-semibold w-[60%]">{{questions[currentCategoryIndex].category}}{{questions[currentCategoryIndex].catID}}</th>
+          <th class="border border-gray-300 p-3 text-left text-lg font-semibold w-[60%]">{{questions[currentCategoryIndex].category}}</th>
           <th class="border border-gray-300 p-3 text-center ">Strongly Agree</th>
           <th class="border border-gray-300 p-3 text-center ">Agree</th>
-          <th class="border border-gray-300 p-3 text-center ">Neutral</th>
           <th class="border border-gray-300 p-3 text-center ">Disagree</th>
           <th class="border border-gray-300 p-3 text-center ">Strongly Disagree</th>
           <th class="border border-gray-300 p-3 text-center ">Comments/Remarks</th>
@@ -149,39 +140,46 @@
       <tbody class="bg-white">
         <tr *ngFor="let question of questions[currentCategoryIndex].list; let i = index" >
           <td class="border border-gray-300 p-3 text-gray-800">
-            {{ question.questionText }} {{question.QuesID}}
+            {{ question.questionText }}
           </td>
 
           <!-- Likert-type question -->
-          <ng-container *ngIf="question.type === 'likert'">
-            <td *ngFor="let score of [5,4, 3, 2, 1]" class="border border-gray-300 text-center">
+          <ng-container *ngIf="question.type === 'Likert Scale'">
+            <td *ngFor="let score of [4, 3, 2, 1]" class="border border-gray-300 text-center">
               <input type="radio" name="q{{ question.QuesID }}" [value]="score" 
                        (change)="onAnswer()"
                       [(ngModel)]="answers[questions[currentCategoryIndex].catID][question.QuesID]" 
                       class="accent-[#6A1321] h-5 w-5" />
             </td> 
             <td class="border border-gray-300 text-center">
-                <input 
-                  type="text"
-                  placeholder="Write your comment..."
-                  [(ngModel)]="Optionalanswers[questions[currentCategoryIndex].catID][question.QuesID]"
-                    (change)="onAnswer()"
-                  class="w-40 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
-                />
+                <textarea
+             
+                placeholder="Write your comment"
+                [(ngModel)]="Optionalanswers[questions[currentCategoryIndex].catID][question.QuesID]"
+                (input)="autoResizeOptional($event)"
+                (change)="onAnswer()"
+                class="w-full min-w-40 px-3 py-2 border border-gray-300 rounded-md resize-none overflow-hidden 
+                      focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300 text-sm 
+                      transition-all duration-200"
+                rows="1"
+              ></textarea>
+
             </td>
              
           </ng-container>
 
           <!-- Comment-type question -->
-          <ng-container *ngIf="question.type === 'comment'">
+          <ng-container *ngIf="question.type === 'Comment'">
             <td class="border border-gray-300 text-center" colspan="6">
-              <input
-                type="text"
+              <textarea
+              #autoResizeTextarea
                 placeholder="Write your comment..."
-                 [(ngModel)]="answers[questions[currentCategoryIndex].catID][question.QuesID]"
-                  (change)="onAnswer()"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-yellow-300"
-              />
+                [(ngModel)]="answers[questions[currentCategoryIndex].catID][question.QuesID]"
+                (input)="autoResizeMain($event)"
+                (change)="onAnswer()"
+                class="w-full px-3 py-2 border rounded-md resize-none overflow-hidden focus:outline-none focus:ring focus:ring-yellow-300 transition-all duration-200"
+                rows="1"
+              ></textarea>
             </td>
           </ng-container>
         </tr>
@@ -249,5 +247,23 @@
       </div>
     </div>
     
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚠️ Warning</h3>
+      <button (click)="errorMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
+      <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
   </div>
 </div>

@@ -21,6 +21,8 @@ import { StdashboardComponent } from './stdashboard/stdashboard.component';
 import { StevalFormComponent } from './steval-form/steval-form.component';
 import { ViewTeacherReportComponent } from './view-teacher-report/view-teacher-report.component';
 import { PdashboardComponent } from './pdashboard/pdashboard.component';
+import { StsettingComponent } from './stsetting/stsetting.component';
+
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirect to login on load
@@ -45,10 +47,12 @@ const routes: Routes = [
   { path: 'steval-form', component: StevalFormComponent},
   { path: 'view-teacher-report', component: ViewTeacherReportComponent},
   { path: 'pdashboard', component:PdashboardComponent},
+  { path: 'stsetting', component:StsettingComponent},
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload' })],
+  
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

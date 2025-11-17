@@ -68,7 +68,7 @@
       </div>
     </aside>
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Dashboard -->
@@ -80,16 +80,7 @@
         
           <!-- Right Icons -->
           <div class="flex items-center space-x-4">
-            <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
-            <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              🔔
-            </div>
+        
             <img
               [src]="imagePreview || avatar"  
               alt="Profile"
@@ -126,11 +117,12 @@
                 
             <div class="grid grid-flow-col gap-4 md:ml-auto sm:ml-0 ">
                 <p class="text-lg text-gray-500 mt-1">School Year</p>
-                 <div>
+                 <div class="flex gap-2">
                        <select (change)="onSchoolYearChange()" [(ngModel)]="selectedSchoolYearID" class="border border-gray-300 rounded px-3 py-2 md:w-48">
                         <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option>
                       </select>
                         <i class="fas fa-angle-bottommm"></i>
+                        <button (click)="downloadPDFReport()" class="bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 font-semibold">Export</button>
                     </div>
             </div>
             </div>
@@ -147,9 +139,9 @@
                         </div>
                     </div>
                     <div *ngIf="teacherData.length > 0" >
-                        <p class="lg:text-lg sm:text-sm font-medium text-gray-500">Highest Rated in</p>
-                        <p class="lg:text-2xl sm:text-lg font-bold text-gray-800"> {{ getLabel() }}</p>
-                        <p class="lg:text-xl sm:text-sm text-gray-500">🤓 You received the 6th highest rating!</p>
+                        <p class="lg:text-xl sm:text-sm font-bold text-black">Performance Average</p>
+            
+                        <p class="lg:text-lg sm:text-sm font-bold text-gray-500">You received the highest rating in  {{ getLabel() }}!</p>
                     </div>
                      <div *ngIf="teacherData.length === 0" >
                         <p class="lg:text-lg sm:text-sm font-medium text-gray-500">No Ratings</p>
@@ -271,6 +263,34 @@
       <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
       <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
         Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Preview Modal -->
+<div *ngIf="showPDFPreview" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-[80%] h-[90%] flex flex-col">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-xl font-semibold">PDF Preview</h2>
+      <button (click)="closePDFPreview()" class="text-gray-600 hover:text-black text-2xl">×</button>
+    </div>
+
+    <!-- PDF Viewer -->
+    <div class="flex-1 overflow-hidden">
+      <iframe *ngIf="pdfBlobUrl" [src]="pdfBlobUrl" class="w-full h-full"></iframe>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="p-4 flex justify-end gap-3 border-t">
+      <button (click)="closePDFPreview()" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-black">
+        Back
+      </button>
+      <button (click)="confirmDownload()" class="px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-500 font-semibold">
+        Download
       </button>
     </div>
   </div>

@@ -4,7 +4,9 @@ import { ChartOptions, ChartType, ChartData } from 'chart.js';
 import { Chart } from 'chart.js/auto';
 import { SharedService } from '../shared.service';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
+import jsPDf from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-gen-report',
   standalone: false,
@@ -19,7 +21,7 @@ export class GenReportComponent implements OnInit {
       GradeLevels: string[] = [];
       selectedGradeLevel: string = 'All';
       evaluationSettings: any[] = [];
-      selectedEvaluationSet: string = '';
+      selectedQID: any;
       avatar = ""
       
       selectedSchoolYear: any;
@@ -32,7 +34,7 @@ export class GenReportComponent implements OnInit {
     submissionCounts: { [key: string]: number } = {};
     
 
-      constructor(private router: Router, private sharedService: SharedService){ 
+      constructor(private router: Router, private sharedService: SharedService,private sanitizer: DomSanitizer){ 
         this.avatar = this.sharedService.defaultAvatar;
         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
@@ -78,7 +80,7 @@ export class GenReportComponent implements OnInit {
       ngOnInit(): void {
         this.getSchoolYear();
         this.getGradeLevels();
-        this.getEvaluationAllSettings();
+        this.getAllQuestionnaireIDs()
         Chart.register(ChartDataLabels);
         setTimeout(() => {
           this.loadGradeEvaluation();
@@ -87,6 +89,13 @@ export class GenReportComponent implements OnInit {
           this.loadCategoryBreakdown()
           this.loadCounts()
         }, 500);
+        this.sharedService.getPendingStudents().subscribe((res: any) => {
+            if (res.status === 'success') {
+              this.pendingList = res.data;
+              console.log(this.pendingList)
+            }
+          });
+        setTimeout(() => this.skipAnimation = false);
       }
 
       
@@ -120,6 +129,8 @@ getSchoolYear() {
         this.loadEvaluationResponseCount() 
         this.loadCategoryBreakdown()
         this.loadCounts()
+        
+        
         console.log("Selected School Year:", this.selectedSchoolYear);
 
         }
@@ -141,6 +152,26 @@ getSchoolYear() {
 
         }
 
+        questionnaires: { QID: number; QTitle: string }[] = [];
+        getAllQuestionnaireIDs() {
+        this.sharedService.getAllQuestionnaireIDs().subscribe({
+          next: (res) => {
+            console.log('All Questionnaires:', res); 
+            this.questionnaires = res.map((q: any) => ({
+              QID: q.QID,
+              QTitle: q.QTitle // make sure your backend returns QTitle
+            }));
+               if (this.questionnaires.length > 0) {
+                this.selectedQID = this.questionnaires[0].QID;
+              } else {
+                this.selectedQID = null;
+              }
+          },
+          error: (err) => {
+            console.error('Failed to fetch Questionnaires:', err);
+          }
+        });
+      }
 
      
 
@@ -161,31 +192,11 @@ getSchoolYear() {
         });
       }
 
-      getEvaluationAllSettings() {
-        this.sharedService.getAllEvaluationSettings().subscribe({
-        next: (res) => {
-          if (res.status === 'success') {
-            this.evaluationSettings = res.evalsettings;
-
-            // auto-select the latest evaluation (first item)
-            if (this.evaluationSettings.length > 0) {
-              this.selectedEvaluationSet = this.evaluationSettings[0].ESetID;
-            }
-
-            console.log('Evaluation Settings:', this.evaluationSettings);
-          } else {
-            this.evaluationSettings = [];
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching evaluation settings:', err);
-        }
-      });
-    }
+   
 
 gradeEvaluationData: any[] = [];
     loadGradeEvaluation() {
-  this.sharedService.getEvaluationAverageByGrade(this.selectedSchoolYearID, this.selectedGradeLevel, this.selectedEvaluationSet)
+  this.sharedService.getEvaluationAverageByGrade(this.selectedSchoolYearID, this.selectedGradeLevel, this.selectedQID)
     .subscribe({
       next: (res) => {
         if (res.status === 'success' && res.data.length > 0) {
@@ -252,14 +263,15 @@ loadEvaluationResponseCount() {
     .getEvaluationResponseCountByGrade(
       this.selectedSchoolYearID,
       this.selectedGradeLevel,
-      this.selectedEvaluationSet
+      this.selectedQID
     )
     .subscribe({
       next: (res) => {
         if (res.status === 'success' && res.responses.length > 0) {
           // ✅ Assign only the integer value
-          this.responseCount = res.responses[0].TotalEvaluations;
-          console.log("✅ Evaluation Count:", this.responseCount);
+      this.responseCount = res.responses[0].TotalResponses;
+console.log("✅ Evaluation Count:", this.responseCount);
+
         } else {
           // ✅ Reset to zero if no data
           this.responseCount = 0;
@@ -278,7 +290,7 @@ loadCategoryBreakdown() {
     .getEvaluationCategoryBreakdownByGrade(
       this.selectedSchoolYearID,
       this.selectedGradeLevel,
-      this.selectedEvaluationSet
+      this.selectedQID
     )
     .subscribe({
       next: (res) => {
@@ -288,7 +300,7 @@ loadCategoryBreakdown() {
             AvgScore: parseFloat(cat.AvgScore).toFixed(1) // ensures "5.0"
           }));
 
-          console.log(res.overallAverage)
+          console.log(res.overallAverage,"average category")
           console.log("📊 Category Breakdown:", this.categoryBreakdown);
           
         
@@ -306,7 +318,7 @@ loadCategoryBreakdown() {
 
 loadCounts() {
   // Fetch max students first
-  this.sharedService.getStudCountbyGrade().subscribe({
+  this.sharedService.getStudCountbyGradereport(this.selectedSchoolYearID).subscribe({
     next: (res) => {
       if (res.status === 'success') {
         this.gradeCounts = res.counts;
@@ -320,7 +332,7 @@ loadCounts() {
 }
 
 loadSubmissionCounts() {
-  this.sharedService.getSubmissionCountByGrade(this.selectedSchoolYearID, this.selectedEvaluationSet)
+  this.sharedService.getSubmissionCountByGrade(this.selectedSchoolYearID, this.selectedQID)
     .subscribe({
       next: (res: any) => {
         if (res.status === 'success') {
@@ -339,6 +351,44 @@ loadSubmissionCounts() {
       closeSidebar() {
         this.isSidebarOpen = false;
       }
+
+      
+    successMessage =""
+    pendingList: any[] = [];
+    isNotifOpen: boolean = false;
+    skipAnimation = true;
+    toggleNotif() {
+      this.isNotifOpen = !this.isNotifOpen;
+    }
+
+    closeNotif() {
+      this.isNotifOpen = false;
+    }
+
+  approveStudent(studID: string) {
+    this.sharedService.approveStudent(studID).subscribe((res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = '✅ Student approved successfully';
+        this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+        this.isNotifOpen = false;
+      } else {
+        alert('❌ ' + res.message);
+      }
+    });
+  }
+
+    rejectStudent(studID: string) {
+        this.sharedService.rejectStudent(studID).subscribe((res: any) => {
+          if (res.status === 'success') {
+             this.successMessage = 'Student rejected and deleted';
+            this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+            this.isNotifOpen = false;
+          } else {
+            alert('❌ ' + res.message);
+          }
+        });
+      }
+
 
       // Router
       goToDashboard(){
@@ -372,7 +422,7 @@ loadSubmissionCounts() {
   const formattedAvg = parseFloat(avg).toFixed(1);
   const numericAvg = parseFloat(formattedAvg);
 
-  const remaining = 5.0 - numericAvg;
+  const remaining = 4.0 - numericAvg;
   
 
   if (this.ratingChart) {
@@ -468,7 +518,7 @@ loadSubmissionCounts() {
       scales: {
         y: {
           beginAtZero: true,
-          max: 5,
+          max: 4,
              ticks: {
             stepSize: 1,
             padding: 10, // ✅ adds extra space between labels and chart area
@@ -550,6 +600,155 @@ showLogoutModal = false;
       });
 
       }
+pdfBlobUrl: SafeResourceUrl | null = null;
+  showPDFPreview = false;
+  
+  downloadPDFReport() {
+    const doc = new jsPDf('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // === HEADER BAR ===
+    doc.setFillColor(140, 34, 36); // #8C2224
+    doc.rect(0, 0, pageWidth, 30, 'F');
+
+    // === LOGO ===
+    const logoPath = '/stroselogo.png';
+    try {
+      doc.addImage(logoPath, 'PNG', 30, 5, 40, 20);
+    } catch (e) {
+      console.warn('Logo not found or not loaded yet.');
+    }
+
+    // === SCHOOL NAME ===
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('times', 'bold');
+    doc.setFontSize(17);
+    doc.text('Saint Rose of Lima Catholic School', pageWidth / 2 + 10, 15, { align: 'center' });
+
+    // === REPORT TITLE ===
+    doc.setFont('times', 'italic');
+    doc.setFontSize(13);
+    doc.text('Faculty Evaluation Summary Report', pageWidth / 2 + 10, 23, { align: 'center' });
+
+    // === METADATA SECTION ===
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('times', 'normal');
+    doc.setFontSize(12);
+
+    const schoolYearObj = this.SchoolYear?.find((sy: any) => sy.SchoolYearID === this.selectedSchoolYearID);
+    const schoolYearLabel = schoolYearObj?.SchoolYear || schoolYearObj?.SchoolYearName || 'N/A';
+
+    const evalFormObj = this.questionnaires?.find((es: any) => es.QID === this.selectedQID);
+    const evalFormLabel = evalFormObj?.QTitle || 'N/A';
+
+    const gradeLevel = this.selectedGradeLevel || 'All';
+    const generatedDate = new Date().toLocaleString();
+
+    let y = 45;
+    const info = [
+      ['School Year:', schoolYearLabel],
+      ['Evaluation Form:', evalFormLabel],
+      ['Grade Level:', gradeLevel],
+      ['Generated On:', generatedDate]
+    ];
+
+    info.forEach(([label, value]) => {
+      doc.setFont('times', 'bold');
+      doc.text(label, 14, y);
+      doc.setFont('times', 'normal');
+      doc.text(value, 60, y);
+      y += 7;
+    });
+
+    doc.setDrawColor(140, 34, 36);
+    doc.line(14, y, pageWidth - 14, y);
+    y += 10;
+
+    // === AVERAGE RATING OVERVIEW ===
+    const avgRating = this.getRatingAvg?.() || 0;
+    const numericAvg = Number(avgRating) || 0;
+
+    doc.setFont('times', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(140, 34, 36);
+    doc.text('Average Rating Overview', 14, y);
+    y += 8;
+
+    doc.setDrawColor(140, 34, 36);
+    doc.setFillColor(250, 243, 243);
+    doc.roundedRect(14, y, pageWidth - 28, 30, 3, 3, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(20);
+    doc.text(`${numericAvg.toFixed(1)}`, pageWidth / 2, y + 20, { align: 'center' });
+    y += 45;
+
+    if (this.trendChart) {
+      const trendImg = this.trendChart.toBase64Image();
+      doc.setFont('times', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(140, 34, 36);
+      doc.text('Trend Overview', 14, y);
+      y += 5;
+      doc.addImage(trendImg, 'PNG', 14, y, pageWidth - 28, 60);
+      y += 70;
+    }
+
+    if (this.categoryBreakdown?.length > 0) {
+      doc.setFont('times', 'bold');
+      doc.setFontSize(14);
+      doc.text('Category Breakdown', 14, y);
+      y += 3;
+
+      const tableBody = (this.categoryBreakdown ?? []).map((c: any) => [
+        c?.CategoryName ?? c?.Category ?? 'N/A',
+        `${Number(c?.AvgScore ?? 0).toFixed(1)}`
+      ]);
+
+      autoTable(doc, {
+        startY: y + 5,
+        head: [['Category', 'Average Score']],
+        body: tableBody,
+        theme: 'striped',
+        styles: { font: 'times', fontSize: 10, halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [140, 34, 36], textColor: [255, 255, 255] },
+        margin: { left: 14, right: 14 }
+      });
+    }
+
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFont('times', 'italic');
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text(
+        `Generated by EvalOn • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+        pageWidth / 2,
+        290,
+        { align: 'center' }
+      );
+    }
+
+    // === PREVIEW INSTEAD OF DOWNLOAD ===
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    this.pdfBlobUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
+    this.showPDFPreview = true;
+  }
+
+  closePDFPreview() {
+    this.showPDFPreview = false;
+    this.pdfBlobUrl = null;
+  }
+
+  confirmDownload() {
+    if (this.pdfBlobUrl) {
+      const a = document.createElement('a');
+      a.href = (this.pdfBlobUrl as string);
+      a.download = 'Faculty_Evaluation_Report.pdf';
+      a.click();
+    }
+  }
 
 }
       

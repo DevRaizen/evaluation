@@ -4,6 +4,8 @@ import { SharedService } from '../shared.service';
 import { NgForm } from '@angular/forms';
 import jsPDf from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-eval-sced',
@@ -22,7 +24,7 @@ export class EvalScedComponent implements OnInit{
     gradeSelectionInvalid = false;
     showScheduleModal = false;
     dateRangeInvalid = false;
-    questionnaireIDs: number[] = [];
+  questionnaires: { QID: number; QTitle: string }[] = [];
     selectedQID: number | null = null;
     EvaluationSettings: any[] = [];
 
@@ -38,7 +40,7 @@ export class EvalScedComponent implements OnInit{
   };
 
 
-    constructor(private router: Router, private sharedService:SharedService){
+    constructor(private router: Router, private sharedService:SharedService,private route: ActivatedRoute,private sanitizer: DomSanitizer){
         this.avatar = this.sharedService.defaultAvatar;
         const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
@@ -54,7 +56,8 @@ export class EvalScedComponent implements OnInit{
                   break;
                 case 'Admin':
                   this.sharedService.CurrentAdmin = parsedUser;
-                  this.router.navigate(['/eval-sced']);
+                    this.router.navigate(['/eval-sced']);
+                    this.showScheduleModal = this.sharedService.schedmod;
                   break;
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
@@ -81,6 +84,7 @@ export class EvalScedComponent implements OnInit{
     }
 
     ngOnInit(): void {
+       setTimeout(() => this.sharedService.schedmod = false,200);
       this.getAllQuestionnaireIDs();
       this.getActiveSchoolYear();
       this.sharedService.getAllEvaluationSettings().subscribe({
@@ -93,6 +97,13 @@ export class EvalScedComponent implements OnInit{
            this.errorMessage = "Database Error";
         }
       })
+      this.sharedService.getPendingStudents().subscribe((res: any) => {
+            if (res.status === 'success') {
+              this.pendingList = res.data;
+              console.log(this.pendingList)
+            }
+          });
+      setTimeout(() => this.skipAnimation = false);
     }
 
       getActiveSchoolYear(){
@@ -106,6 +117,7 @@ export class EvalScedComponent implements OnInit{
 
       }
     })
+      
   }
     EditSettings(id: number){
       this.editingRowId = id;
@@ -148,7 +160,11 @@ export class EvalScedComponent implements OnInit{
         next: (res)=>{
           if(res.status === 'success'){
             this.editingRowId = null;
-            this.errorMessage = "Updated Successfully";
+            this.successMessage = "Updated Successfully";
+            this.ngOnInit()
+          }else{
+            this.errorMessage = res.message;
+    
           }
         },
         error: (err) =>{
@@ -180,11 +196,14 @@ confirmDelete() {
 getAllQuestionnaireIDs() {
   this.sharedService.getAllQuestionnaireIDs().subscribe({
     next: (res) => {
-      console.log('All QIDs:', res); 
-      this.questionnaireIDs = res.map((q: any) => q.QID);
+      console.log('All Questionnaires:', res); 
+      this.questionnaires = res.map((q: any) => ({
+        QID: q.QID,
+        QTitle: q.QTitle // make sure your backend returns QTitle
+      }));
     },
     error: (err) => {
-      console.error('Failed to fetch QIDs:', err);
+      console.error('Failed to fetch Questionnaires:', err);
     }
   });
 }
@@ -256,45 +275,120 @@ onSubmit(form: NgForm) {
       }
       });
 
+      
+
   }
 
-  exportScheduletoPDF(){
-    const doc = new jsPDf();
+   pdfBlobUrl: SafeResourceUrl | null = null;
+  showPDFPreview = false;
 
-    doc.setFontSize(16);
-    doc.text('Evaluation Schedule Report',105,15,{align: 'center'});
+  exportScheduletoPDF() {
+    const doc = new jsPDf('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    const headers = [['Title','Start Date','End Date','Status','Target Grade']];
-    const data = this.EvaluationSettings.map(set =>[
+    // === HEADER BAR ===
+    doc.setFillColor(140, 34, 36); // red header
+    doc.rect(0, 0, pageWidth, 30, 'F');
+
+    // === LOGO ===
+    const logoPath = '/stroselogo.png';
+    try {
+      doc.addImage(logoPath, 'PNG', 30, 5, 40, 20);
+    } catch (e) {
+      console.warn('Logo not found or not loaded yet.');
+    }
+
+    // === SCHOOL NAME ===
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('times', 'bold');
+    doc.setFontSize(17);
+    doc.text('Saint Rose of Lima Catholic School', pageWidth / 2 + 10, 15, { align: 'center' });
+
+    // === REPORT TITLE ===
+    doc.setFont('times', 'italic');
+    doc.setFontSize(13);
+    doc.text('Evaluation Schedule Report', pageWidth / 2 + 10, 23, { align: 'center' });
+
+    // === REPORT INFO ===
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+
+    const generatedDate = new Date().toLocaleString();
+    let y = 45;
+    const info = [
+      ['Report Type:', 'Evaluation Schedule'],
+      ['Generated On:', generatedDate],
+    ];
+
+    info.forEach(([label, value]) => {
+      doc.setFont('times', 'bold');
+      doc.text(label, 14, y);
+      doc.setFont('times', 'normal');
+      doc.text(value, 60, y);
+      y += 7;
+    });
+
+    doc.setDrawColor(140, 34, 36);
+    doc.line(14, y, pageWidth - 14, y);
+    y += 10;
+
+    // === TABLE CONTENT ===
+    const headers = [['Title', 'Start Date', 'End Date', 'Status', 'School Year', 'Target Grade']];
+    const data = this.EvaluationSettings.map((set: any) => [
       set.Title,
       set.StartDate,
       set.EndDate,
       set.Status,
-      set.TargetGrade
+      set.SchoolYear,
+      set.TargetGrade,
     ]);
 
-     // Add table
     autoTable(doc, {
+      startY: y,
       head: headers,
       body: data,
-      startY: 25,
-      theme: 'grid',
-      headStyles: { fillColor: [140, 34, 36] },
-      styles: {
-        fontSize: 10,
-        cellPadding: 4,
-        halign: 'center'
+      theme: 'striped',
+      headStyles: {
+        fillColor: [140, 34, 36],
+        textColor: [255, 255, 255],
+        halign: 'center',
       },
-      didDrawPage: (data) => {
-        doc.setFontSize(10);
+      styles: {
+        font: 'times',
+        fontSize: 10,
+        halign: 'center',
+        valign: 'middle',
+      },
+      margin: { left: 14, right: 14 },
+      didDrawPage: (dataArg) => {
         const pageSize = doc.internal.pageSize;
         const pageHeight = pageSize.height || doc.internal.pageSize.getHeight();
-        doc.text('Saint Rose of Lima Catholic School', data.settings.margin.left, pageHeight - 10);
-      }
+
+        // === FOOTER ===
+        const pageNumber = doc.getCurrentPageInfo().pageNumber;
+        const totalPages = doc.internal.pages.length - 1;
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(120);
+        doc.text(
+          `Generated by EvalOn • Page ${pageNumber} of ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      },
     });
 
-    // Save the PDF
-    doc.save('Evaluation_Schedule.pdf');
+    // === PREVIEW PDF ===
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    this.pdfBlobUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
+    this.showPDFPreview = true;
+  }
+
+  closePDFPreview() {
+    this.showPDFPreview = false;
+    this.pdfBlobUrl = null;
   }
 
     openSidebar() {
@@ -322,6 +416,42 @@ onSubmit(form: NgForm) {
   closeDeleteModal() {
     this.showDeleteModal = false;
   }
+
+  successMessage =""
+    pendingList: any[] = [];
+    isNotifOpen: boolean = false;
+    skipAnimation = true;
+    toggleNotif() {
+      this.isNotifOpen = !this.isNotifOpen;
+    }
+
+    closeNotif() {
+      this.isNotifOpen = false;
+    }
+
+  approveStudent(studID: string) {
+    this.sharedService.approveStudent(studID).subscribe((res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = '✅ Student approved successfully';
+        this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+        this.isNotifOpen = false;
+      } else {
+        alert('❌ ' + res.message);
+      }
+    });
+  }
+
+    rejectStudent(studID: string) {
+        this.sharedService.rejectStudent(studID).subscribe((res: any) => {
+          if (res.status === 'success') {
+             this.successMessage = 'Student rejected and deleted';
+            this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+            this.isNotifOpen = false;
+          } else {
+            alert('❌ ' + res.message);
+          }
+        });
+      }
 
     goToDashboard(){
       this.router.navigate(['/dashboard']);

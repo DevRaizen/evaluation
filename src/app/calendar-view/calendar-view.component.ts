@@ -13,6 +13,8 @@ import { color } from 'chart.js/helpers';
   styleUrl: './calendar-view.component.css'
 })
 export class CalendarViewComponent implements OnInit {
+    avatar?: any;
+    url = ""
     isSidebarOpen = false;
     calendarOptions = {
       plugins: [dayGridPlugin],
@@ -21,7 +23,47 @@ export class CalendarViewComponent implements OnInit {
     };
     
     constructor(private router: Router, private sharedService: SharedService){
-        
+         this.avatar = this.sharedService.defaultAvatar;
+      
+      this.url = this.sharedService.burl;
+       const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
+
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              const userType = parsedUser.UserType;
+
+              switch (userType) {
+                case 'Student':
+                  this.sharedService.CurrentStudent = parsedUser;
+                  this.router.navigate(['/stdashboard']);
+                  break;
+                case 'Admin':
+                  this.sharedService.CurrentAdmin = parsedUser;
+                  this.router.navigate(['/calendar-view']);
+                  break;
+                case 'Teacher':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/tdashboard']);
+                  break;
+                case 'Principal':
+                  this.sharedService.CurrentTeacher = parsedUser;
+                  this.router.navigate(['/pdashboard']);
+                  break;
+                default:
+            
+                  this.router.navigate(['/login']);
+                  break;
+              }
+
+            } catch (e) {
+              console.error('Error parsing user from storage:', e);
+              this.router.navigate(['/login']);
+            }
+          } else {
+            // No user found
+            this.router.navigate(['/login']);
+          }
     }
 
     ngOnInit(): void {
@@ -50,7 +92,51 @@ export class CalendarViewComponent implements OnInit {
 
           }
         });
+        this.sharedService.getPendingStudents().subscribe((res: any) => {
+            if (res.status === 'success') {
+              this.pendingList = res.data;
+              console.log(this.pendingList)
+            }
+          });
+        setTimeout(() => this.skipAnimation = false);
     }
+
+    successMessage =""
+    pendingList: any[] = [];
+    isNotifOpen: boolean = false;
+    skipAnimation = true;
+    toggleNotif() {
+      this.isNotifOpen = !this.isNotifOpen;
+    }
+
+    closeNotif() {
+      this.isNotifOpen = false;
+    }
+
+  approveStudent(studID: string) {
+    this.sharedService.approveStudent(studID).subscribe((res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = '✅ Student approved successfully';
+        this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+        this.isNotifOpen = false;
+      } else {
+        alert('❌ ' + res.message);
+      }
+    });
+  }
+
+    rejectStudent(studID: string) {
+        this.sharedService.rejectStudent(studID).subscribe((res: any) => {
+          if (res.status === 'success') {
+             this.successMessage = 'Student rejected and deleted';
+            this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+            this.isNotifOpen = false;
+          } else {
+            alert('❌ ' + res.message);
+          }
+        });
+      }
+
 
     openSidebar() {
       this.isSidebarOpen = true;

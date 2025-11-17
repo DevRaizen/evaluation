@@ -86,7 +86,6 @@ export class RegisterComponent {
                 this.sharedService.sendVerificationEmail(this.Email!, code).subscribe({
                 next: (res: any) => {
                 if (res.success) {
-                  alert('Verification code sent to your email!');
                   localStorage.setItem('verificationCode', code);
                   this.router.navigate(['/verification']);
                 } else {

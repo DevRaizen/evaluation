@@ -4,12 +4,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Dashboard</title>
+    <title>Manage User</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   </head>
   <body class="bg-gray-100">
   
-  <div class="flex flex-col md:flex-row min-h-screen">
+  <div class="flex flex-col md:flex-row min-h-screen ">
   
     <div class="block bg-[#8C2224]">
       <div class="md:hidden p-4 w-fit">
@@ -43,26 +43,25 @@
 
     <!-- Navigation -->
     <nav class="mt-4 px-4 space-y-2">
-       
-         <a (click)="goToDashboard()" class="flex items-center justify-between  hover:bg-white/10 px-3 py-2 rounded font-semibold">
+         <a (click)="goToDashboard()" class="flex items-center justify-between hover:bg-white/10  text-white px-3 py-2 rounded font-semibold">
           <div class="flex items-center gap-2">
             <i class="fas fa-user"></i>
             Dashboard
           </div>
+          
         </a>
-         <a (click)="goToSubjectMap()" class="flex items-center justify-between hover:bg-white/10 px-3 py-2 rounded font-semibold">
-          <div class="flex items-center gap-2">
-            <i class="fas fa-book"></i>
-            Subject Mapping
-          </div>
+        <a (click)="goToEvalForm()" class="hidden items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+          <i class="fas fa-file-alt"></i>
+          Evaluation Form
         </a>
-         <a (click)="goToSettings()"  class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
+         <a (click)="goToSettings()" class="flex items-center justify-between  bg-yellow-400 text-black  px-3 py-2 rounded font-semibold">
           <div class="flex items-center gap-2">
             <i class="fas fa-cog"></i>
             Settings
           </div>
           <i class="fas fa-angle-right"></i>
         </a>
+       
       </nav>
         <div class="p-4 mt-52">
           <button (click)="openLogoutModal()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
@@ -72,23 +71,22 @@
       </div>
     </aside>
 
+
       <!-- Main Content -->
-      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
+      <main class=" flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
-          <!-- Left: Dashboard + Search -->
+          <!-- Dashboard -->
           <div class="flex items-center space-x-4">
             <!-- Dashboard Title -->
-            <h1 class="text-xl font-semibold">Settings</h1>
+            <h1 class="text-xl font-semibold text-black">Settings</h1>
 
           </div>
         
-          <!-- Right: Icons -->
+          <!-- Right Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            
-            <!-- Notification Icon -->
-            
+           
             <img
               [src]="avatar"  
               alt="Profile"
@@ -96,8 +94,8 @@
             />
           </div>
         </div>
-        
- <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
   <!-- LEFT COLUMN -->
   <div class="row-span-2">
     <div class="bg-white rounded-2xl shadow-lg p-6 h-auto md:h-[18rem] w-full max-w-2xl mx-auto">
@@ -109,7 +107,7 @@
         <div class="flex flex-col md:flex-row md:justify-between">
           <label class="text-lg font-medium">Name</label>
           <label class="text-lg text-gray-600 mt-1 md:mt-0">
-            {{ Teacher.Fname }} {{ Teacher.Mname }} {{ Teacher.Lname }}
+            {{ Student.Fname }} {{ Student.Mname }} {{ Student.Lname }}
           </label>
         </div>
 
@@ -121,7 +119,7 @@
               type="text"
               class="border rounded-lg px-3 py-2 w-full md:w-64 focus:outline-none focus:ring focus:ring-yellow-400"
               [readonly]="!editingEmail"
-              [(ngModel)]="Teacher.Email"
+              [(ngModel)]="Student.Email"
             />
 
             <ng-container *ngIf="!editingEmail; else emailActions">
@@ -193,12 +191,14 @@
   <!-- RIGHT COLUMN (placeholder for now) -->
   
 </div>
-
+      
+      
       </main>
     
     </div>
   </body>
 </html>
+
 
 <div *ngIf="showLogoutModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
   <!-- Modal Container -->

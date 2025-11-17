@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../shared.service';
+import {  ElementRef, QueryList, ViewChildren } from '@angular/core';
 
 @Component({
   selector: 'app-steval-form',
@@ -33,6 +34,18 @@ export class StevalFormComponent implements OnInit {
     questions: any [] = [];
 
     currentCategoryIndex = 0;  // start with first category
+ @ViewChildren('autoResizeTextarea') textareas!: QueryList<ElementRef<HTMLTextAreaElement>>;
+
+private reapplyAutoResize(): void {
+  setTimeout(() => {
+    this.textareas?.forEach((t) => {
+      const textarea = t.nativeElement;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
+  }, 0);
+}
+
 
 
 nextCategory() {
@@ -40,10 +53,13 @@ nextCategory() {
   const answered = this.getAnsweredCountForCategory(this.currentCategoryIndex);
 
   if (answered < totalQuestions) {
-    alert("Sagutan mo lahat bago mag next!");
+    this.errorMessage = "Sagutan mo lahat bago mag next!"
   } else {
     if (this.currentCategoryIndex < this.questions.length - 1) {
       this.currentCategoryIndex++;
+   
+      this.reapplyAutoResize();
+   
     }
   }
 }
@@ -54,7 +70,13 @@ prevCategory() {
     this.currentCategoryIndex--;
   }
   this.currentQuestion = this.getAnsweredCountForCategory(this.currentCategoryIndex)
+
+      this.reapplyAutoResize();
+      
+
 }
+
+
 
 answers: {
   [catID: number]: { [questionId: number]: number | string }
@@ -185,7 +207,7 @@ Optionalanswers: {
             group = { catID: q.catID, category: q.categoryName, list: [] };
             grouped.push(group);
 
-            // 🔑 Initialize answers storage for this category
+            
             this.answers[q.catID] = {};
             this.Optionalanswers[q.catID] = {};
           }
@@ -226,7 +248,7 @@ getAnsweredCountForCategory(categoryIndex: number): number {
        const totalQuestions = this.questions[this.currentCategoryIndex].list.length;
     const answered = this.getAnsweredCountForCategory(this.currentCategoryIndex)
       if(answered < totalQuestions){
-   alert( "You need to complete all the answer"); 
+   this.errorMessage = "You need to complete all the answers";
       }else{
         
              const payload = {
@@ -279,7 +301,7 @@ getAnsweredCountForCategory(categoryIndex: number): number {
         this.router.navigate(['/steval-form']);
       }
     goToSettings() {
-        this.router.navigate(['/stsettings']);
+        this.router.navigate(['/stsetting']);
       }
        logout(){
         this.sharedService.logout().subscribe(() => {
@@ -295,5 +317,16 @@ getAnsweredCountForCategory(categoryIndex: number): number {
     closeLogoutModal() {
       this.showLogoutModal = false;
     }
-     
+ autoResizeMain(event: Event): void {
+  const textarea = event.target as HTMLTextAreaElement;
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+autoResizeOptional(event: Event): void {
+  const textarea = event.target as HTMLTextAreaElement;
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
 }

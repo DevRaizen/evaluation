@@ -7,3 +7,14 @@
 .input-no-spinner {
   -moz-appearance: textfield;
 }
+
+aside {
+  height: 100vh;          /* Always fill the screen height */
+  overflow-y: auto;        /* Allow scrolling inside sidebar */
+  position: fixed;         /* Keep it fixed while scrolling the page */
+  top: 0;
+  left: 0;
+}
+.no-transition {
+  transition: none !important;
+}

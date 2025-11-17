@@ -19,7 +19,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
     studentcount: any = 0;
     teachercount: any = 0;
     isSidebarOpen = false;
-    
+    successMessage =""
+    pendingList: any[] = [];
+
     gradeCounts: { [grade: string]: number } = {};
     countGrade7 = 0;
     countGrade8 = 0;
@@ -111,6 +113,15 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
             }
           })
+
+          this.sharedService.getPendingStudents().subscribe((res: any) => {
+            if (res.status === 'success') {
+              this.pendingList = res.data;
+              console.log(this.pendingList)
+            }
+          });
+          setTimeout(() => this.skipAnimation = false);
+
     // ✅ Register the datalabels plugin
               // ✅ Register the datalabels plugin
     Chart.register(ChartDataLabels);
@@ -134,22 +145,24 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
     };
 
  SchoolYear: any[] = [];
+
 selectedSchoolYearID: any;
 
 
-    onSchoolYearChange() {
-
-      
+onSchoolYearChange() {
   console.log('🟡 SchoolYear Changed:', this.selectedSchoolYearID);
+
+  // Reset previous data immediately
+  this.topTeachers = [];
+  this.allTeachers = [];
+  if (this.chart) this.chart.destroy();
 
   if (this.selectedSchoolYearID) {
     this.loadTop3Teachers();
-    
   } else {
     console.warn("⚠️ No SchoolYear selected");
   }
 }
-
 getSchoolYear() {
   this.sharedService.getSchoolYear().subscribe({
     next: (res) => {
@@ -171,30 +184,49 @@ getSchoolYear() {
     }
   });
 }
-  topTeachers: any[] = []
+ topTeachers: any[] = [];           // First teacher of each top rank
+allTeachers: any[] = [];           // All teachers with scores
+selectedRankGroup: any[] = [];     // Teachers tied on the same score
+showTieModal = false;
+
+// Load top teachers (top 3 ranks, handle ties)
 loadTop3Teachers() {
   this.sharedService.getTop3TeachersByAverage(this.selectedSchoolYearID!).subscribe({
     next: (res) => {
       if (res.status === 'success' && res.top3.length > 0) {
-        this.topTeachers = res.top3.map((t: any) => ({
+        const teachers = res.top3.map((t: any) => ({
           ...t,
-          FinalAvg: Number(parseFloat(t.FinalAvg).toFixed(1))
+          FinalAvg: Number(parseFloat(t.FinalAvg).toFixed(1)),
+          HighestScore: Number(parseFloat(t.HighestScore || t.FinalAvg).toFixed(1)), // fallback
+         HighestCategory: t.HighestCategory 
         }));
 
-        console.log("🏆 Top 3 Teachers:", this.topTeachers);
+        this.allTeachers = teachers;
+        console.log(this.allTeachers)
+        const top3: any[] = [];
+        const seenScores: number[] = [];
+        for (let t of teachers) {
+          if (!seenScores.includes(t.FinalAvg)) {
+            top3.push(t);
+            seenScores.push(t.FinalAvg);
+          }
+          if (top3.length >= 3) break;
+        }
 
-        let completed = 0;
+        this.topTeachers = top3;
 
+        // ✅ Render chart after data is ready
+           let completed = 0;
         this.topTeachers.forEach((teacher: any) => {
           this.sharedService.getHighestCategory(teacher.TeacherID, this.selectedSchoolYearID!).subscribe({
             next: (catRes) => {
               if (catRes.status === 'success') {
-                teacher.HighestCategory = catRes.HighestCategoryName;
-                teacher.HighestScore = Number(catRes.HighestCategoryScore);
+                teacher.HighestCategory = catRes.HighestCategoryName || teacher.TeacherName;
+                teacher.HighestScore = Number(catRes.HighestCategoryScore) || teacher.FinalAvg;
               }
               completed++;
               if (completed === this.topTeachers.length) {
-                // ✅ render the chart only after all API calls are done
+                // ✅ Render chart after all API calls finish
                 this.renderTopTeachersChart();
               }
             },
@@ -207,19 +239,34 @@ loadTop3Teachers() {
             }
           });
         });
+
       } else {
         this.topTeachers = [];
-        this.chart.destroy();
-        console.warn("⚠️ No top teachers found.");
+        this.allTeachers = [];
       }
     },
-    error: (err) => {
-      console.error("❌ Error loading top 3 teachers:", err);
-    }
+    error: (err) => console.error(err)
   });
 }
 
- 
+
+// Check if there are tied teachers (excluding this one)
+hasTie(top: any): boolean {
+  return this.allTeachers.filter(t => t.FinalAvg === top.FinalAvg).length > 1;
+}
+
+// Open modal for tied teachers
+openTieModal(score: number) {
+  this.selectedRankGroup = this.allTeachers.filter(t => t.FinalAvg === score);
+  this.showTieModal = true;
+}
+
+// Close modal
+closeTieModal() {
+  this.showTieModal = false;
+  this.selectedRankGroup = [];
+}
+
     openSidebar() {
       this.isSidebarOpen = true;
     }
@@ -232,12 +279,15 @@ loadTop3Teachers() {
     }
     goToManageUser() {
       this.router.navigate(['/manage-user']);
+      this.sharedService.addaccmod= false;
     }
     goToEvalForm() {
       this.router.navigate(['/eval-form']);
+      this.sharedService.addquesmod= false;
     }
     goToEvalSched() {
       this.router.navigate(['/eval-sced']);
+      this.sharedService.schedmod = false;
     }
     goToGenReport() {
       this.router.navigate(['/gen-report']);
@@ -254,6 +304,52 @@ loadTop3Teachers() {
       });
 
       }
+  goToSchedsWithModal() {
+  this.router.navigate(['/eval-sced'])
+  this.sharedService.schedmod = true;
+}
+  goToManWithModal() {
+  this.router.navigate(['/manage-user'])
+  this.sharedService.addaccmod= true;
+}
+  goToAddQWithModal() {
+  this.router.navigate(['/eval-form'])
+  this.sharedService.addquesmod= true;
+}
+    isNotifOpen: boolean = false;
+      skipAnimation = true;
+    toggleNotif() {
+      this.isNotifOpen = !this.isNotifOpen;
+    }
+
+    closeNotif() {
+      this.isNotifOpen = false;
+    }
+
+  approveStudent(studID: string) {
+    this.sharedService.approveStudent(studID).subscribe((res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = '✅ Student approved successfully';
+        this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+        this.isNotifOpen = false;
+      } else {
+        alert('❌ ' + res.message);
+      }
+    });
+  }
+
+    rejectStudent(studID: string) {
+        this.sharedService.rejectStudent(studID).subscribe((res: any) => {
+          if (res.status === 'success') {
+             this.successMessage = 'Student rejected and deleted';
+            this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+            this.isNotifOpen = false;
+          } else {
+            alert('❌ ' + res.message);
+          }
+        });
+      }
+
 
     openLogoutModal() {
       this.showLogoutModal = true;
@@ -265,16 +361,19 @@ loadTop3Teachers() {
 
    
    chart: any; // to store chart instance
- renderTopTeachersChart() {
+renderTopTeachersChart() {
   if (this.chart) {
     this.chart.destroy();
   }
 
-  const labels = this.topTeachers.map(t => t.TeacherName);
-  const scores = this.topTeachers.map(t => t.HighestScore);
-  
+  // Only use top 3 unique ranks (already in this.topTeachers)
+  const top3 = this.topTeachers.slice(0, 3);
 
-  // ✅ Dynamic color logic
+  // Labels: show HighestCategory if available, fallback to TeacherName
+  const labels = top3.map(t => t.HighestCategory || t.TeacherName);
+  const scores = top3.map(t => t.HighestScore);
+
+  // Dynamic color logic
   const backgroundColors = scores.map((val) => {
     if (val >= 4.0) return '#22c55e'; // green
     if (val >= 3.0) return '#facc15'; // yellow
@@ -295,21 +394,14 @@ loadTop3Teachers() {
         data: scores,
         backgroundColor: backgroundColors,
         borderRadius: 8,
-        barThickness: 'flex', // ✅ flexible bar thickness
+        barThickness: 'flex',
         maxBarThickness: 50
       }]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // ✅ allows the chart to fill container
-      layout: {
-        padding: {
-          top: 10,
-          right: 10,
-          bottom: 10,
-          left: 10
-        }
-      },
+      maintainAspectRatio: false,
+      layout: { padding: { top: 10, right: 10, bottom: 10, left: 10 } },
       plugins: {
         legend: { display: false },
         datalabels: {
@@ -317,10 +409,7 @@ loadTop3Teachers() {
           align: 'start',
           formatter: (value: number) => value.toFixed(1),
           color: '#000',
-          font: {
-            weight: 'bold',
-            size: 12
-          }
+          font: { weight: 'bold', size: 12 }
         },
         tooltip: {
           callbacks: {
@@ -332,38 +421,28 @@ loadTop3Teachers() {
         y: {
           beginAtZero: true,
           max: 5,
-          ticks: {
-            stepSize: 1,
-            color: '#4b5563', // gray-700
-            font: { size: 11 }
-          },
-          grid: {
-            color: '#e5e7eb'
-          }
+          ticks: { stepSize: 1, color: '#4b5563', font: { size: 11 } },
+          grid: { color: '#e5e7eb' }
         },
         x: {
           ticks: {
             maxRotation: 0,
             minRotation: 0,
             autoSkip: false,
-            callback: function (value, index, ticks) {
-              // ✅ truncate long labels with "..."
+            callback: function (value) {
               const label = this.getLabelForValue(value as number);
               return label.length > 12 ? label.substring(0, 12) + '…' : label;
             },
-            font: {
-              size: 11
-            }
+            font: { size: 11 }
           },
-          grid: {
-            display: false
-          }
+          grid: { display: false }
         }
       }
     },
     plugins: [ChartDataLabels]
   });
 }
+
  
 getBarColor(score: number): string {
   if (score >= 4.0) return '#22c55e'; // green

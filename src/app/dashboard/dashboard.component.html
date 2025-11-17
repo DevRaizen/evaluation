@@ -82,7 +82,7 @@
 
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class=" md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow gap-10">
           <!-- Left: Dashboard + Search -->
@@ -95,13 +95,10 @@
           <!-- Right: Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
+            
             <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer" (click)="toggleNotif()">
+              <span *ngIf="pendingList.length > 0" class="absolute top-1 right-1 w-2 h-2 bg-[#8C2224] rounded-full"></span>
               🔔
             </div>
             <img
@@ -150,24 +147,33 @@
         <div class="bg-white rounded-lg shadow border-t-8 border-[#8C2224]">
             <div>
               <p class="col-span-2 text-center p-4 text-lg font-bold">
-                 Total Kemmemem
+                 Evaluation Status
               </p>
             </div>
                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4">
               <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
                 <div class="text-2xl">✅</div>
-                <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Completion<br>{{ ((totalSubCount / totalStudentCount) * 100) | number:'1.0-0' }}%</div>
+                <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Evaluation Progress<br>{{ (totalSubCount === 0 && totalStudentCount === 0) ? 0 : ((totalSubCount / totalStudentCount) * 100 | number:'1.0-0') }}%
+</div>
                 <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
                         hidden group-hover:block bg-gray-800 text-white text-xs 
                         rounded-md px-3 py-1 whitespace-nowrap shadow-lg">
-                        Total number of students enrolled
+                        Completion Status
                 </div>
             
           </div>
-          <div class="grid grid-cols-2  gap-3 items-center bg-white p-4 rounded-lg text-center  ">
-            <div class="text-2xl">⏳</div>
-            <div class="font-bold border-l-2 border-gray-200 sm:text-sm">Time Remaining<br>{{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m</div>
+          <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
+                <div class="text-2xl">⏳</div>
+                <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Time Remaining<br>{{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m
+</div>
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
+                        hidden group-hover:block bg-gray-800 text-white text-xs 
+                        rounded-md px-3 py-1 whitespace-nowrap shadow-lg">
+                        Time Remaining
+                </div>
+            
           </div>
+          
           </div>
         </div>
 
@@ -193,7 +199,7 @@
 
                   <div class="w-full bg-gray-200 rounded h-2">
                     <div class="bg-yellow-400 h-2 rounded"
-                        [style.width.%]="(subGrade7 / countGrade7) * 100">
+                        [style.width.%]="(countGrade7 && subGrade7) ? (subGrade7 / countGrade7) * 100 : 0">
                     </div>
                   </div>
                 </div>
@@ -207,7 +213,7 @@
 
                   <div class="w-full bg-gray-200 rounded h-2">
                     <div class="bg-yellow-400 h-2 rounded"
-                        [style.width.%]="(subGrade8 / countGrade8) * 100">
+                       [style.width.%]="(countGrade8 && subGrade8) ? (subGrade8 / countGrade8) * 100 : 0">
                     </div>
                   </div>
                 </div>
@@ -220,8 +226,9 @@
 
                   <div class="w-full bg-gray-200 rounded h-2">
                     <div class="bg-yellow-400 h-2 rounded"
-                        [style.width.%]="(subGrade9 / countGrade9) * 100">
+                        [style.width.%]="(countGrade9 && subGrade9) ? (subGrade9 / countGrade9) * 100 : 0">
                     </div>
+
                   </div>
                 </div>
             
@@ -233,7 +240,7 @@
 
                   <div class="w-full bg-gray-200 rounded h-2">
                     <div class="bg-yellow-400 h-2 rounded"
-                        [style.width.%]="(subGrade10 / countGrade10) * 100">
+                        [style.width.%]="(countGrade10 && subGrade10) ? (subGrade10 / countGrade10) * 100 : 0">
                     </div>
                   </div>
                 </div>
@@ -242,16 +249,16 @@
           </div>
        
           
-          <div class="grid grid-cols-3 gap-2">
+          <div (click)="goToAddQWithModal()" class="grid grid-cols-3 gap-2">
                   <div class="bg-white p-8 rounded shadow text-center cursor-pointer md:text-lg">
             <div class="font-bold text-sm">Create Form</div>
             <img src="/form.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
-          <div class="bg-white p-8 rounded shadow text-center cursor-pointer">
-            <div class="font-bold text-sm">Set Schedule</div>
+          <div (click)="goToSchedsWithModal()" class="bg-white p-8 rounded shadow text-center cursor-pointer">
+            <div  class="font-bold text-sm">Set Schedule</div>
             <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
-          <div class="bg-white p-8 rounded shadow text-center cursor-pointer">
+          <div (click)="goToManWithModal()" class="bg-white p-8 rounded shadow text-center cursor-pointer">
             <div class="font-bold text-sm">Add Account</div>
             <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
@@ -262,7 +269,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
          
           <div class="flex flex-col gap-2">
-            <div class="bg-white p-3 rounded shadow h-64">
+            <div class="bg-white p-3 rounded shadow h-72">
               <div class="flex items-center justify-between mb-8">
                 <h2 class="font-bold text-sm">Ranked Categories</h2>
                 <p class="text-xs text-gray-500">All the data in percentage (%)</p>
@@ -295,54 +302,49 @@
                 <div class="col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-2">
                   <div class="w-full h-[200px] sm:h-[200px] md:h-[220px] lg:h-[200px]">
                     <canvas id="topTeachersChart" class="w-full h-full"></canvas>
+                    
                   </div>
                 </div>
-            
-              </div>
-              
-              
-            </div>
-      
-            <!-- Insights -->
-            <div class="bg-gray-100 p-2 rounded flex items-start gap-2 shadow text-xs ">
-              <span class="text-xl">🤓</span>
-              <div>
-                <p class="font-semibold">Insights by Nerd AI</p>
-                <p>Most improved: English Department</p>
-                <p>Highest marks for ‘Respectfulness’</p>
-              </div>
-            </div>
-      
-            <div class="bg-gray-100 p-2 rounded flex items-start gap-2 shadow text-xs ">
-              <span class="text-xl">🤓</span>
-              <div>
-                <p class="font-semibold">Insights by Nerd AI</p>
-                <p>Most improved: English Department</p>
-                <p>Highest marks for ‘Respectfulness’</p> 
-              </div>
+              </div> 
             </div>
           </div>
-      
-          <!-- Right Column: Top Scorer with same height as chart section -->
-          <div class="bg-white p-3 rounded shadow flex flex-col justify-between text-xs h-72">
-            <div class="flex justify-between items-center mb-2">
-              <h2 class="font-bold">Top Ratings</h2>
-              <select (change)="onSchoolYearChange()"  [(ngModel)]="selectedSchoolYearID" class="text-xs border rounded-2xl p-1 bg-gray-100">
-               <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option>
-              </select>
-            </div>
-            <div  class="grid grid-cols-3 gap-2 h-60">
-              <div *ngFor="let top of topTeachers; let i = index" class="bg-[#8C2224] text-white p-2 rounded text-center">
-                <img [src]="top.TeacherImage === '/user.png' ? '/user.png' : url + top.TeacherImage" class="mx-auto rounded-full h-32 w-32 mb-1" />
-                <p class="text-lg">{{top.TeacherName}}</p>
-                <p class="text-yellow-300 font-bold text-sm">{{top.FinalAvg}}</p>
-                 <p class="bg-yellow-300 text-black rounded px-1 mt-1 inline-block">
-                  {{ i + 1 }}{{ i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th' }}
-                </p>
-              </div>
-             
+
+        <!-- Top Teachers Horizontal Card -->
+        <div class="bg-white p-3 rounded shadow overflow-x-auto">
+          <div class="flex justify-between items-center mb-2"> 
+            <h2 class="font-bold">Top Ratings</h2>
+            <select (change)="onSchoolYearChange()" [(ngModel)]="selectedSchoolYearID" class="text-xs border rounded-2xl p-1 bg-gray-100">
+              <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }}</option> 
+              </select> 
+          </div>
+          <div class="flex gap-4 justify-center ">
+            <div *ngFor="let top of topTeachers; let i = index" class="bg-[#8C2224] text-white p-2 rounded text-center flex-shrink-0 w-44">
+              <img [src]="top.TeacherImage === '/user.png' ? '/user.png' : url + top.TeacherImage"
+                  class="mx-auto rounded-full h-24 w-24 mb-1 object-cover" />
+              <p class="text-base font-semibold">{{ top.TeacherName }}</p>
+              <p class="text-yellow-300 font-bold text-sm">{{ top.FinalAvg.toFixed(1) }}</p>
+
+              <div class="flex flex-col items-center mt-2 space-y-2">
+                  
+                  <span class="bg-yellow-300 text-black rounded px-2 py-1 text-xs font-semibold">
+                    {{ i + 1 }}{{ i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th' }}
+                  </span>
+
+            <button *ngIf="hasTie(top)"
+            (click)="openTieModal(top.FinalAvg)"
+            class="flex items-center bg-yellow-400 hover:bg-yellow-500 text-black px-2  rounded text-sm font-semibold shadow transition duration-200">
+            <span class="flex items-center justify-center w-4 h-4  text-yellow-400 mr-1 text-xs font-bold">
+              <img src="/group.png">
+            </span>
+            Tied
+            <i class="fas fa-angle-right ml-1"></i>
+            </button>
+
+               </div>      
             </div>
           </div>
+        </div>
+
         </div>
       </main>
     
@@ -376,5 +378,103 @@
       </div>
     </div>
     
+  </div>
+</div>
+
+<!-- Notification Slide Panel -->
+<div 
+[class.no-transition]="skipAnimation"
+  class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col"
+  [ngClass]="{ 'translate-x-0': isNotifOpen, 'translate-x-full': !isNotifOpen }"
+>
+  <!-- Header -->
+  <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+    <h2 class="text-base sm:text-lg font-semibold">Pending Student Approvals</h2>
+    <button 
+      (click)="closeNotif()" 
+      class="text-gray-600 hover:text-black text-2xl sm:text-xl font-bold leading-none focus:outline-none"
+    >
+      ✖
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-4 overflow-y-auto flex-1">
+    <div *ngIf="pendingList.length > 0; else noPending" class="text-sm text-gray-600 space-y-4">
+      <div *ngFor="let student of pendingList" class="border-b pb-3">
+        <p class="font-semibold text-black">Student Registration</p>
+        <p class="text-xs text-gray-400 mb-2">
+          New student: “{{ student.FullName }}”
+        </p>
+        <p class="text-[10px] text-gray-400 mb-2">
+          Grade: {{ student.Grade || 'N/A' }} • Section: {{ student.Section || 'N/A' }}
+        </p>
+         <p class="text-[10px] text-gray-400 mb-2">
+          School Year: {{student.SchoolYear}}
+        </p>
+        <div class="flex space-x-3 mt-2 ">
+          <button 
+            (click)="approveStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-check mr-1"></i> Approve
+          </button>
+          <button 
+            (click)="rejectStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-times mr-1"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- When no pending students -->
+    <ng-template #noPending>
+      <p class="text-xs text-gray-400 text-center">No pending student registrations.</p>
+    </ng-template>
+  </div>
+</div>
+
+
+
+<div *ngIf="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
+      <button (click)="successMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tie Modal -->
+<div *ngIf="showTieModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-5 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+    <h3 class="font-bold text-lg mb-3">
+      Tied Teachers (Score: {{ selectedRankGroup[0]?.FinalAvg }})
+    </h3>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div *ngFor="let t of selectedRankGroup" class="bg-gray-100 p-2 rounded text-center flex flex-col items-center">
+        <img [src]="t.TeacherImage === '/user.png' ? '/user.png' : url + t.TeacherImage"
+             class="h-24 w-24 rounded-full mb-2 object-cover" />
+        <p class="font-semibold text-sm">{{ t.TeacherName }}</p>
+        <p class="text-yellow-600 font-bold text-sm">{{ t.FinalAvg.toFixed(1) }}</p>
+      </div>
+    </div>
+
+    <button (click)="closeTieModal()"
+            class="mt-4 w-full bg-[#8C2224] text-white px-4 py-2 rounded hover:bg-[#a52b2d]">
+      Close
+    </button>
   </div>
 </div>

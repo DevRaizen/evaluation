@@ -54,7 +54,7 @@
           <i class="fas fa-file-alt"></i>
           Evaluation Form
         </a>
-        <a (click)="goToSettings()" class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded">
+        <a (click)="goToSettings()" class="items-center gap-2 px-3 py-2 hover:bg-white/10 rounded flex">
           <i class="fas fa-cog"></i>
           Settings
         </a>
@@ -69,7 +69,7 @@
 
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Dashboard -->
@@ -139,7 +139,8 @@
             <p class="text-sm text-gray-600">Completed Evaluations</p>
           </div>
           <div class="bg-white p-4 rounded-lg border-l-8 border-[#8C2224]">
-            <p class="text-xl font-bold text-black">{{ ((totalSumittedEval / teachermap.length) * 100) | number:'1.0-0' }}%
+            <p class="text-xl font-bold text-black">{{ (teachermap.length === 0) ? 0 : ((totalSumittedEval / teachermap.length) * 100 | number:'1.0-0') }}%
+
 </p>
             <p class="text-sm text-gray-600">Overall Completion</p>
           </div>
@@ -244,6 +245,67 @@
     <div class="p-6 text-center">
       <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
       <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- School Year Selection Modal -->
+<div *ngIf="showSchoolYearModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 text-center">
+    
+    <h2 class="text-xl font-semibold text-[#8C2224] mb-2">New School Year Detected</h2>
+    <p class="text-gray-600 mb-4">Please select your Grade Level and Section to continue.</p>
+
+    <!-- Grade Selection -->
+    <div class="mb-3 text-left">
+      <label class="font-medium text-gray-700">Grade Level</label>
+      <select [(ngModel)]="selectedGrade" (ngModelChange)="onGradeChange()" name="grade" #grade="ngModel" required class="border w-full rounded-md p-2 mt-1">
+        <option value="">Select Grade</option>
+        <option *ngFor="let g of getFilteredGrades()" [value]="g">{{ g }}</option>
+      </select>
+      <div *ngIf="grade.invalid && grade.touched" class="text-red-500 text-sm mt-1">
+        Please select a Grade Level.
+      </div>
+      <div *ngIf="validation" class="text-red-500 text-sm mt-1">
+        Selected Grade Must be Higher than Your Current Grade
+      </div>
+    </div>
+
+    <!-- Section Selection -->
+    <div class="mb-5 text-left">
+      <label class="font-medium text-gray-700">Section</label>
+      <select [(ngModel)]="selectedSection" name="section" #section="ngModel" required class="border w-full rounded-md p-2 mt-1">
+        <option value="">Select Section</option>
+        <option *ngFor="let s of getSectionsForGrade()" [value]="s">{{ s }}</option>
+      </select>
+      <div *ngIf="section.invalid && section.touched" class="text-red-500 text-sm mt-1">
+        Please select a Section.
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center space-x-3">
+      <button class="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400" (click)="logout()">Logout</button>
+      <button class="bg-[#8C2224] text-white px-5 py-2 rounded-lg hover:bg-[#a32b2f]" (click)="confirmSchoolYear(grade, section)">Confirm</button>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
+      <button (click)="logout()" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
         Okay
       </button>
     </div>

@@ -84,7 +84,7 @@
 
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Left: Dashboard + Search -->
@@ -97,13 +97,10 @@
           <!-- Right: Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
+            
             <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+           <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer" (click)="toggleNotif()">
+              <span *ngIf="pendingList.length > 0" class="absolute top-1 right-1 w-2 h-2 bg-[#8C2224] rounded-full"></span>
               🔔
             </div>
             <img
@@ -119,13 +116,13 @@
           <div class="flex justify-between items-center mb-4">
           <select class="border px-3 py-2 rounded w-1/4" [(ngModel)]="selectedQID" (change)="onQIDChange()" >
   <option value="null" disabled selected>Select Questionnaire</option>
-  <option *ngFor="let qid of questionnaireIDs" [value]="qid">
-    Questionnaire #{{ qid }}
+  <option *ngFor="let q of questionnaires" [value]="q.QID">
+    {{ q.QTitle }}
   </option>
 </select>
 
             <div class="space-x-2">
-              <button *ngIf="!isAddingNew" (click)="prepareNewQuestionnaire()" class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">+ Add Questionnaire</button>
+              <button *ngIf="!isAddingNew" (click)="addquestionaire()"  class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">+ Add Questionnaire</button>
               <button (click)="openCategoryModal()" class="bg-gray-300 px-4 py-2 rounded">Manage Categories</button>
             </div>
           </div>
@@ -150,7 +147,8 @@
                     </td>
                     <!-- Question Text -->
                     <td class="px-4 py-2 border" colspan="2">
-                        <input [(ngModel)]="q.text" type="text" class=" rounded px-2 py-1 w-full" disabled />
+                      
+                        <input [(ngModel)]="q.text" type="text" class=" rounded px-2 py-1 w-full" [disabled]="editingQuestionId !== q.QuesID"/>
                     </td>
                     <!-- Question Type Dropdown -->
                     <td class="px-4 py-2 border" >
@@ -161,12 +159,24 @@
 
                      <td class=" text-gray-600 text-center">
                           <div class="flex flex-wrap gap-2 items-center justify-center">
-                            <button  class="text-[#35353A] text-xl" title="Edit">
+                           <ng-container *ngIf="editingQuestionId !== q.QuesID">
+                            <button (click)="editQuestion(q)" class="text-[#35353A] text-xl" title="Edit">
                               <i class="fas fa-edit"></i>
                             </button>
-                            <button  class="text-[#35353A] text-xl" title="Delete">
+                            <button (click)="deleteQuestion(q)" class="text-[#35353A] text-xl" title="Delete">
                               <i class="fas fa-trash-alt"></i>
                             </button>
+                          </ng-container>
+
+                          <!-- When Editing -->
+                          <ng-container *ngIf="editingQuestionId === q.QuesID">
+                            <button (click)="saveEdit(q)" class="text-green-600 text-xl" title="Save">
+                              <i class="fas fa-check"></i>
+                            </button>
+                            <button (click)="cancelEdit()" class="text-red-600 text-xl" title="Cancel">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </ng-container>
                           </div>
                         </td>
 
@@ -215,10 +225,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div *ngIf="isAddingNew" class="flex justify-end mt-4 space-x-2">
-                <button (click)="cancelNewQuestionnaire()" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-                <button (click)="saveQuestionnaire()" class="bg-yellow-400 text-black px-4 py-2 rounded font-semibold">Save</button>
-            </div>
+            
         </section>
       </main>
     
@@ -355,5 +362,261 @@
       </div>
     </div>
     
+  </div>
+</div>
+
+<!-- Notification Slide Panel -->
+<div
+[class.no-transition]="skipAnimation"
+  class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col"
+  [ngClass]="{ 'translate-x-0': isNotifOpen, 'translate-x-full': !isNotifOpen }"
+>
+  <!-- Header -->
+  <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+    <h2 class="text-base sm:text-lg font-semibold">Pending Student Approvals</h2>
+    <button 
+      (click)="closeNotif()" 
+      class="text-gray-600 hover:text-black text-2xl sm:text-xl font-bold leading-none focus:outline-none"
+    >
+      ✖
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-4 overflow-y-auto flex-1">
+    <div *ngIf="pendingList.length > 0; else noPending" class="text-sm text-gray-600 space-y-4">
+      <div *ngFor="let student of pendingList" class="border-b pb-3">
+        <p class="font-semibold text-black">Student Registration</p>
+        <p class="text-xs text-gray-400 mb-2">
+          New student: “{{ student.FullName }}”
+        </p>
+        <p class="text-[10px] text-gray-400 mb-2">
+          Grade: {{ student.Grade || 'N/A' }} • Section: {{ student.Section || 'N/A' }}
+        </p>
+          <p class="text-[10px] text-gray-400 mb-2">
+          School Year: {{student.SchoolYear}}
+        </p>
+        <div class="flex space-x-3 mt-2 ">
+          <button 
+            (click)="approveStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-check mr-1"></i> Approve
+          </button>
+          <button 
+            (click)="rejectStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-times mr-1"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- When no pending students -->
+    <ng-template #noPending>
+      <p class="text-xs text-gray-400 text-center">No pending student registrations.</p>
+    </ng-template>
+  </div>
+</div>
+
+
+<div *ngIf="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
+      <button (click)="successMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Add Questionnaire Modal -->
+<div *ngIf="isAddingNew" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[90vh] flex flex-col relative">
+
+    <!-- 🟥 Sticky Header -->
+    <div class="bg-[#8C2224] text-white px-6 py-3 flex justify-between items-center rounded-t-lg sticky top-0 z-10">
+      <h2 class="font-semibold text-lg">📝 New Questionnaire</h2>
+      <button (click)="cancelAddQuestionnaire()" class="text-white text-2xl font-bold hover:text-gray-300">&times;</button>
+    </div>
+
+    <!-- 🟨 Scrollable Content -->
+    <div class="flex-1 overflow-y-auto px-6 py-4">
+
+      <!-- Title Input -->
+      <div class="mb-4">
+        <input [(ngModel)]="newQuestionnaireTitle"
+              placeholder="Enter Questionnaire Title"
+              class="border rounded px-3 py-2 w-full focus:ring-2 focus:ring-[#8C2224] focus:outline-none" />
+               <div *ngIf="qError" class="text-red-500 text-sm mt-1">
+                  {{qError}}
+              </div>
+      </div>
+
+      <!-- Questions Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm border mb-3 rounded-lg overflow-hidden">
+          <thead class="bg-gray-100 text-left">
+            <tr>
+              <th class="px-4 py-2 border w-1/4">Category</th>
+              <th class="px-4 py-2 border">Question</th>
+              <th class="px-4 py-2 border w-1/4">Type</th>
+              <th class="px-4 py-2 border w-1/12"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let group of getGroupedQuestions(newQuestions)">
+              <tr *ngFor="let q of group.list; let i = index" class="hover:bg-gray-50">
+                <td *ngIf="i === 0" [attr.rowspan]="group.list.length" class="px-4 py-2 border font-semibold text-gray-700">
+                  {{ group.category }}
+                </td>
+                <td class="px-4 py-2 border">{{ q.text }}</td>
+                <td class="px-4 py-2 border text-gray-600">{{ q.type }}</td>
+                <td class="px-4 py-2 text-center">
+                  <button (click)="removeQuestionFromNewQuestionnaire(q)" 
+                          class="text-red-600 text-xl hover:text-red-800 transition">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+
+            <!-- Add Question Form -->
+            <tr *ngIf="showAddFormTemp">
+              <td colspan="4" class="px-4 py-2 border bg-gray-50">
+                <div class="flex flex-col md:flex-row gap-2">
+                  <select [(ngModel)]="newQuestionTemp.category"
+                          class="border px-2 py-1 rounded w-full md:w-1/3 focus:ring-1 focus:ring-[#8C2224]">
+                    <option *ngFor="let cat of categories" [value]="cat.categoryName">{{ cat.categoryName }}</option>
+                  </select>
+                  <input [(ngModel)]="newQuestionTemp.text" 
+                         placeholder="Enter question"
+                         class="border px-2 py-1 rounded w-full md:w-1/2 focus:ring-1 focus:ring-[#8C2224]" />
+                  <select [(ngModel)]="newQuestionTemp.type"
+                          class="border px-2 py-1 rounded w-full md:w-1/4 focus:ring-1 focus:ring-[#8C2224]">
+                    <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
+                  </select>
+                  <button (click)="addQuestionToNewQuestionnaire()" 
+                          class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+                    Add
+                  </button>
+                  <button (click)="showAddFormTemp=false" 
+                          class="bg-gray-300 px-4 py-1 rounded hover:bg-gray-400">
+                    Cancel
+                  </button>
+                </div>
+              </td>
+           
+            </tr>
+            
+            <!-- Add Question Button -->
+            <tr *ngIf="!showAddFormTemp">
+            <td colspan="4" class="px-4 py-2 text-center">
+              <div class="flex flex-col md:flex-row justify-center gap-4">
+                <span 
+                  class="text-[#8C2224] cursor-pointer hover:underline font-semibold"
+                  (click)="showAddFormTemp = true">
+                  + Add a new question
+                </span>
+
+                <!-- 🟦 Choose Existing Question Button -->
+                <span 
+                  class="text-[#8C2224]  cursor-pointer hover:underline font-semibold"
+                  (click)="openExistingQuestionModal()">
+                  + Choose from existing questions
+                </span>
+              </div>
+            </td>
+          </tr>
+            <tr  *ngIf="nError" col-span="4" class="text-red-500 text-sm mt-1">
+                  {{nError}}
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 🟩 Footer (Fixed) -->
+    <div class="flex justify-end space-x-2 bg-gray-100 px-6 py-3 rounded-b-lg sticky bottom-0 z-10">
+      <button (click)="saveNewQuestionnaire()" 
+              class="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700 transition">
+        Save Questionnaire
+      </button>
+      <button (click)="cancelAddQuestionnaire()" 
+              class="bg-gray-300 px-5 py-2 rounded hover:bg-gray-400 transition">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🟨 Existing Questions Modal -->
+<div *ngIf="showExistingModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[80vh] flex flex-col relative">
+
+    <!-- Header -->
+    <div class="bg-[#8C2224] text-white px-6 py-3 flex justify-between items-center rounded-t-lg sticky top-0 z-10">
+      <h2 class="font-semibold text-lg ">📚 Choose Existing Questions</h2>
+      <button (click)="closeExistingModal()" class="text-white text-2xl font-bold hover:text-gray-300">&times;</button>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto px-6 py-4">
+      <div *ngIf="existingQuestions.length > 0; else noQuestions">
+        <table class="min-w-full text-sm border rounded-lg overflow-hidden">
+          <thead class="bg-gray-100 text-left">
+            <tr>
+              <th class="px-4 py-2 border">Category</th>
+              <th class="px-4 py-2 border">Question</th>
+              <th class="px-4 py-2 border text-center">Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let q of existingQuestions;let i = index" class="hover:bg-gray-50">
+                <td *ngIf="i === 0 || q.category !== existingQuestions[i - 1].category; else noBorder" class="px-4 py-2 border">
+                  <!-- Show category only if it's the first item OR different from the previous one -->
+                  {{q.category }}
+                </td>
+                <ng-template #noBorder>
+                  <td class="px-4 py-2 ">
+
+                  </td>
+                </ng-template>
+              <td class="px-4 py-2 border">{{ q.text }}</td>
+              <td class="px-4 py-2 border text-center">
+                <input type="checkbox" [(ngModel)]="q.selected" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noQuestions>
+        <p class="text-gray-500 text-center py-4">No existing questions available.</p>
+      </ng-template>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end space-x-2 bg-gray-100 px-6 py-3 rounded-b-lg sticky bottom-0 z-10">
+      <button (click)="addSelectedQuestions()" 
+              class="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700 transition">
+        Add Selected
+      </button>
+      <button (click)="closeExistingModal()" 
+              class="bg-gray-300 px-5 py-2 rounded hover:bg-gray-400 transition">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>

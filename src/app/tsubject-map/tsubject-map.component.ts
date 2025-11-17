@@ -21,6 +21,7 @@ export class TsubjectMapComponent implements OnInit {
     searchTerm = '';
     avatar = "";
     imagePreview  ="";
+    successMessage = ""
     Teacher: {
     TeacherID?: string;
     AccID?: number;
@@ -83,7 +84,7 @@ removeSection(section: string) {
                   break;
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
-                  this.router.navigate(['/rsubject-map']);
+                  this.router.navigate(['/tsubject-map']);
                   this.Teacher = this.sharedService.CurrentTeacher; 
                   break;
                 case 'Principal':
@@ -282,9 +283,12 @@ selectedSchoolYearID: any;
       this.sharedService.saveSubjectMapping(payload).subscribe({
       next: (res) => {
         if (res.status === 'success') {
+          this.addedSections = [];
           this.errorMessage = 'Mapping saved successfully!';
           this.getMapping();
+
         } else {
+          this.addedSections = [];
           this.errorMessage = res.message; // Conflict error (e.g., another teacher already assigned)
         }
       },
@@ -293,9 +297,13 @@ selectedSchoolYearID: any;
         console.log(err);
       }
     });
-  
+    
   }
 
+  cancelAddMap(){
+    this.addmap = false;
+    this.addedSections = [];
+  }
     openSidebar() {
         this.isSidebarOpen = true;
     }
@@ -344,4 +352,60 @@ selectedSchoolYearID: any;
       a.SectionName.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
+
+  showDeleteModal = false;
+deleteDescription = '';
+deleteTeacherID: string | null = null;
+deleteSubjectID: number | null = null;
+deleteSectionName: string | null = null;
+deleteSchoolYearID: number | null = null;
+
+openDeleteModal(mapping: any) {
+  this.deleteTeacherID = this.Teacher.TeacherID!;
+  this.deleteSubjectID = mapping.SubjectID;
+  this.deleteSectionName = mapping.SectionName;
+  this.deleteSchoolYearID = mapping.SchoolYearID;
+  
+  this.deleteDescription = `Are you sure you want to delete the mapping of "${mapping.SubjectName}" for section "${mapping.SectionName}"?`;
+  this.showDeleteModal = true;
+}
+
+closeDeleteModal() {
+  this.showDeleteModal = false;
+  this.deleteDescription = '';
+  this.deleteTeacherID = null;
+  this.deleteSubjectID = null;
+  this.deleteSectionName = null;
+  this.deleteSchoolYearID = null;
+}
+
+confirmDelete() {
+  console.log("deleting una")
+
+
+  const payload = {
+    teacherID: this.deleteTeacherID,
+    subjectID: this.deleteSubjectID,
+    sectionName: this.deleteSectionName,
+    schoolYearID: this.deleteSchoolYearID,
+    
+  };
+  console.log("deleting")
+  this.sharedService.deleteSubjectMapping(payload).subscribe({
+    next: (res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = res.message;
+        this.teacherMappings = this.teacherMappings.filter(
+          t => !(t.SubjectID === this.deleteSubjectID && t.SectionName === this.deleteSectionName)
+        );
+        this.closeDeleteModal();
+      } else {
+        this.closeDeleteModal()
+        this.errorMessage = res.message
+      }
+    },
+    error: (err) => console.error(err)
+  });
+}
+
 }

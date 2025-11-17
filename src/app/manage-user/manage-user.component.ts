@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '../shared.service';
 import { NgForm } from '@angular/forms';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-manage-user',
@@ -43,8 +46,9 @@ export class ManageUserComponent implements OnInit{
   selectedUser: any = {};
 
   
-    constructor(private sharedService: SharedService ,private router: Router){
+    constructor(private sharedService: SharedService ,private router: Router, private sanitizer: DomSanitizer){
       this.avatar = this.sharedService.defaultAvatar;
+      
       this.url = this.sharedService.burl;
        const storedUser = sessionStorage.getItem("user") || localStorage.getItem("user");
 
@@ -61,6 +65,7 @@ export class ManageUserComponent implements OnInit{
                 case 'Admin':
                   this.sharedService.CurrentAdmin = parsedUser;
                   this.router.navigate(['/manage-user']);
+                  this.AisModalOpen = this.sharedService.addaccmod;
                   break;
                 case 'Teacher':
                   this.sharedService.CurrentTeacher = parsedUser;
@@ -81,17 +86,26 @@ export class ManageUserComponent implements OnInit{
               this.router.navigate(['/login']);
             }
           } else {
-            // No user found
+            
             this.router.navigate(['/login']);
           }
     }
 
     ngOnInit(): void {
+      setTimeout(() => this.sharedService.addaccmod = false,200);
       this.sharedService.getAccount().subscribe(res => {
         if(res.status === "success"){
           this.userAccount = res.account;
         }
       });
+      this.sharedService.getPendingStudents().subscribe((res: any) => {
+            if (res.status === 'success') {
+              this.pendingList = res.data;
+              console.log(this.pendingList)
+            }
+          });
+           this.getYearSection()
+      setTimeout(() => this.skipAnimation = false);
 
     }
 
@@ -109,13 +123,31 @@ export class ManageUserComponent implements OnInit{
           );
         });
       }
-      
-        allSections: { [key: string]: string[] } = {
-        '7': ['St. Peter', 'St. Paul'],
-        '8': ['St. John', 'St. Agnes'],
-        '9': ['St. Therese', 'St. Monica'],
-        '10': ['St. Joseph', 'St. Veronica']
-      };
+
+        getYearSection(){
+          this.sharedService.getYearSec().subscribe({
+            next: (res) =>{
+              if(res.status === "success"){
+                const data = res.yearsec;
+
+                data.forEach((item:any)=>{
+                  const grade = item.YearLevel;
+                  const section = item.SectionName
+
+                  if(!this.allSections[grade]){
+                    this.allSections[grade] = [];
+                  }
+                  this.allSections[grade].push(section);
+                  console.log(this.allSections);
+                })
+              }
+            },
+            error: (err) => {
+            }
+          });
+    }
+        
+        allSections: { [key: string]: string[] } = {};
 
       getSectionsForGrade(grade:string): string[] {
         return this.allSections[grade] || [];
@@ -313,7 +345,11 @@ export class ManageUserComponent implements OnInit{
         const edited = this.selectedUser;
         const email = edited.email?.trim().toLowerCase();
         const isGmail = email?.endsWith('@gmail.com');
-
+        if(edited.status === "Active"){
+          edited.status = 1
+        }else{
+          edited.status = 0
+        }
         if (!isGmail) {
           this.errorMessage = 'Only @gmail.com addresses are allowed.';
           return;
@@ -338,8 +374,8 @@ export class ManageUserComponent implements OnInit{
           return;
         }
 
-        if (edited.role === 'Tdmin' && !edited.ID.startsWith('A')) {
-          this.errorMessage = 'Admin ID must start with "A".';
+        if (edited.role === 'Principal' && !edited.ID.startsWith('P')) {
+          this.errorMessage = 'Principal ID must start with "P".';
           return;
         }
 
@@ -351,6 +387,7 @@ export class ManageUserComponent implements OnInit{
           Mname: edited.Mname,
           Lname: edited.Lname,
           Grade: edited.grade,
+          Status: edited.status,
           Section: edited.section,
           Email: edited.email,
           AccID: edited.accid,
@@ -360,11 +397,12 @@ export class ManageUserComponent implements OnInit{
         console.log('Sending updateStudent request:', this.sharedService.Student);
         this.sharedService.updateStudent().subscribe({
             next: (res) => {
+              console.log("nakuha ang update")
               if (res.status === 'success') {
                 this.errorMessage = res.message;
                 setTimeout(() => {
               window.location.reload();
-            }, 1000); 
+            }, 1000);
               } else {
                 this.errorMessage = res.message || "Failed to fetch year/section";
               }
@@ -380,6 +418,7 @@ export class ManageUserComponent implements OnInit{
           Mname: edited.Mname,
           Lname: edited.Lname,
           PhoneNumber: edited.phone,
+          Status: edited.status,
           Email: edited.email,
           AccID: edited.accid,
           UserType: 'Teacher',
@@ -401,21 +440,77 @@ export class ManageUserComponent implements OnInit{
               this.errorMessage = "An error occurred while fetching data";
             }
           });
-        } else if (edited.role === 'Admin') {
-          this.sharedService.Admin = {
-          AdminID: edited.id,
-          Fname: edited.fname,
-          Mname: edited.mname,
-          Lname: edited.lname,
+        } else if (edited.role === 'Principal') {
+          this.sharedService.Principal = {
+          PrincipalID: edited.ID,
+          Fname: edited.Fname,
+          Mname: edited.Mname,
+          Lname: edited.Lname,
           Email: edited.email,
+          Status: edited.status,
           AccID: edited.accid,
-          UserType: 'Admin',
+          UserType: 'Principal',
           Password: this.Password
         };
+
+        console.log(this.sharedService.Principal)
+        this.sharedService.updatePrincipal().subscribe({
+            next: (res) => {
+              if (res.status === 'success') {
+                this.errorMessage = res.message; 
+                setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+              } else {
+                this.errorMessage = res.message || "Failed to fetch year/section";
+              }
+            },
+            error: (err) => {
+              this.errorMessage = "An error occurred while fetching data";
+            }
+          });
+
         }
 
         
       }
+      showDeleteModal = false;
+      deleteDescription = ""
+      deleteableUser: any = null;
+      deleteUser(user: any){
+      this.showDeleteModal = true;
+      this.deleteableUser = user;
+      this.deleteDescription = `Are you sure you  want  to delete this user Account?`
+      }
+
+      closeDeleteModal() {
+          this.showDeleteModal = false;
+          this.deleteableUser = null;
+        }
+
+    confirmDelete() {
+  if (!this.deleteableUser) return;
+   this.showDeleteModal = false;
+  this.sharedService.deleteAccount(this.deleteableUser.accid).subscribe({
+    next: (res) => {
+      if (res.status === "success") {
+       
+        this.successMessage = "User account has been deactivated successfully.";
+       
+
+        // 🔁 Refresh your data after deletion
+        this.ngOnInit(); // or whatever method loads your users
+      } else {
+        this.successMessage = "Failed to deactivate user.";
+      }
+    },
+    error: (err) => {
+      console.error('Error:', err);
+      this.successMessage = "Server error. Please try again later.";
+    }
+  });
+}
+
 
     openSidebar() {
       this.isSidebarOpen = true;
@@ -451,6 +546,43 @@ export class ManageUserComponent implements OnInit{
     this.showconPassword = !this.showconPassword;
     
   }
+
+
+    successMessage =""
+    pendingList: any[] = [];
+    isNotifOpen: boolean = false;
+    skipAnimation = true;
+    toggleNotif() {
+      this.isNotifOpen = !this.isNotifOpen;
+    }
+
+    closeNotif() {
+      this.isNotifOpen = false;
+    }
+
+  approveStudent(studID: string) {
+    this.sharedService.approveStudent(studID).subscribe((res: any) => {
+      if (res.status === 'success') {
+        this.successMessage = '✅ Student approved successfully';
+        this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+        this.isNotifOpen = false;
+      } else {
+        alert('❌ ' + res.message);
+      }
+    });
+  }
+
+    rejectStudent(studID: string) {
+        this.sharedService.rejectStudent(studID).subscribe((res: any) => {
+          if (res.status === 'success') {
+             this.successMessage = 'Student rejected and deleted';
+            this.pendingList = this.pendingList.filter(s => s.StudID !== studID);
+            this.isNotifOpen = false;
+          } else {
+            alert('❌ ' + res.message);
+          }
+        });
+      }
 
   // Router
       goToDashboard(){
@@ -490,5 +622,106 @@ export class ManageUserComponent implements OnInit{
     }
 
 
+pdfBlobUrl: SafeResourceUrl | null = null;
+showPDFPreview = false;
+downloadPDFReport() {
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  // === HEADER BAR ===
+  doc.setFillColor(140, 34, 36);
+  doc.rect(0, 0, pageWidth, 30, 'F');
+
+  // === LOGO ===
+  const logoPath = '/stroselogo.png';
+  try {
+    doc.addImage(logoPath, 'PNG', 30, 5, 40, 20);
+  } catch (e) {
+    console.warn('Logo not found or not loaded yet.');
+  }
+
+  // === SCHOOL NAME ===
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('times', 'bold');
+  doc.setFontSize(17);
+  doc.text('Saint Rose of Lima Catholic School', pageWidth / 2 + 10, 15, { align: 'center' });
+
+  // === REPORT TITLE ===
+  doc.setFont('times', 'italic');
+  doc.setFontSize(13);
+  doc.text('User Account Summary Report', pageWidth / 2 + 10, 23, { align: 'center' });
+
+  // === METADATA SECTION ===
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('times', 'normal');
+  doc.setFontSize(12);
+
+  const generatedDate = new Date().toLocaleString();
+  let y = 45;
+
+  doc.text('Generated On:', 14, y);
+  doc.text(generatedDate, 60, y);
+  y += 10;
+
+  doc.setDrawColor(140, 34, 36);
+  doc.line(14, y, pageWidth - 14, y);
+  y += 10;
+
+  // === USER ACCOUNT TABLE ===
+  const tableBody = (this.userAccount ?? []).map((u: any, index: number) => [
+    index + 1,
+    `${u.Fname || ''} ${u.Mname || ''} ${u.Lname || ''}`.trim(),
+    u.ID || 'N/A',
+    u.email || 'N/A',
+    u.role || 'N/A',
+    u.status || 'N/A'
+  ]);
+
+  autoTable(doc, {
+    startY: y,
+    head: [['#', 'Full Name', 'School ID', 'Email', 'Role', 'Status']],
+    body: tableBody,
+    theme: 'striped',
+    styles: { font: 'times', fontSize: 10, halign: 'center', valign: 'middle' },
+    headStyles: { fillColor: [140, 34, 36], textColor: [255, 255, 255] },
+    margin: { left: 14, right: 14 },
+  });
+
+  // === FOOTER ===
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFont('times', 'italic');
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(
+      `Generated by EvalOn • ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+      pageWidth / 2,
+      290,
+      { align: 'center' }
+    );
+  }
+
+  // === PREVIEW ===
+  const blob = doc.output('blob');
+  const blobUrl = URL.createObjectURL(blob);
+  this.pdfBlobUrl = this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
+  this.showPDFPreview = true;
+}
+
+
+closePDFPreview() {
+  this.showPDFPreview = false;
+  this.pdfBlobUrl = null;
+}
+
+confirmDownload() {
+  if (this.pdfBlobUrl) {
+    const a = document.createElement('a');
+    a.href = (this.pdfBlobUrl as string);
+    a.download = 'User_Account_Report.pdf';
+    a.click();
+  }
+}
 
 }

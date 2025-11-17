@@ -84,7 +84,7 @@
 
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Left: Dashboard + Search -->
@@ -97,13 +97,10 @@
           <!-- Right: Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
+            
             <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+           <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer" (click)="toggleNotif()">
+              <span *ngIf="pendingList.length > 0" class="absolute top-1 right-1 w-2 h-2 bg-[#8C2224] rounded-full"></span>
               🔔
             </div>
             <img
@@ -131,6 +128,7 @@
           <th class="px-4 py-3">End Date</th>
           <th class="px-4 py-3">Status</th>
           <th class="px-4 py-3">Target Group</th>
+          <th class="px-4 py-3">School Year</th>
           <th class="px-4 py-3">Actions</th>
         </tr>
       </thead>
@@ -159,6 +157,9 @@
     
           <td class="px-4 py-2">
             <span class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-xs">{{set.TargetGrade}}</span>
+          </td>
+          <td class="px-4 py-2">
+            <span class="bg-cyan-100 text-cyan-800 px-2 py-1 rounded text-xs">{{set.SchoolYear}}</span>
           </td>
           <td class="px-4 py-2 flex gap-2">
             <ng-container *ngIf="editingRowId !== set.ESetID">
@@ -228,9 +229,9 @@
         <select class="w-full px-4 py-2 mt-1 rounded border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
         [(ngModel)]="selectedQID" name="questionnaire" #questionnaire="ngModel" required>
           <option value="null" disabled selected>Select Questionnaire</option>
-          <option *ngFor="let qid of questionnaireIDs" [value]="qid">
-            Questionnaire #{{ qid }}
-          </option>
+          <option *ngFor="let q of questionnaires" [value]="q.QID">
+          {{ q.QTitle }}
+        </option>
         </select>
          <div *ngIf="questionnaire.invalid && questionnaire.touched" class="text-red-500 text-sm mt-1">
                   Questionnaire is required.
@@ -369,5 +370,108 @@
       </div>
     </div>
     
+  </div>
+</div>
+
+
+<!-- Notification Slide Panel -->
+<div
+[class.no-transition]="skipAnimation"
+  class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col"
+  [ngClass]="{ 'translate-x-0': isNotifOpen, 'translate-x-full': !isNotifOpen }"
+>
+  <!-- Header -->
+  <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+    <h2 class="text-base sm:text-lg font-semibold">Pending Student Approvals</h2>
+    <button 
+      (click)="closeNotif()" 
+      class="text-gray-600 hover:text-black text-2xl sm:text-xl font-bold leading-none focus:outline-none"
+    >
+      ✖
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-4 overflow-y-auto flex-1">
+    <div *ngIf="pendingList.length > 0; else noPending" class="text-sm text-gray-600 space-y-4">
+      <div *ngFor="let student of pendingList" class="border-b pb-3">
+        <p class="font-semibold text-black">Student Registration</p>
+        <p class="text-xs text-gray-400 mb-2">
+          New student: “{{ student.FullName }}”
+        </p>
+        <p class="text-[10px] text-gray-400 mb-2">
+          Grade: {{ student.Grade || 'N/A' }} • Section: {{ student.Section || 'N/A' }}
+        </p>
+        <p class="text-[10px] text-gray-400 mb-2">
+          School Year: {{student.SchoolYear}}
+        </p>
+        <div class="flex space-x-3 mt-2 ">
+          <button 
+            (click)="approveStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-check mr-1"></i> Approve
+          </button>
+          <button 
+            (click)="rejectStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-times mr-1"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- When no pending students -->
+    <ng-template #noPending>
+      <p class="text-xs text-gray-400 text-center">No pending student registrations.</p>
+    </ng-template>
+  </div>
+</div>
+
+
+
+<div *ngIf="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
+      <button (click)="successMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+<!-- 📄 PDF Preview Modal -->
+<div
+  *ngIf="showPDFPreview"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-2xl shadow-lg w-[90%] h-[90%] relative p-4">
+    <button
+      class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700"
+      (click)="closePDFPreview()"
+    >
+      ✕ Close
+    </button>
+
+    <h2 class="text-xl font-semibold mb-3 text-gray-700 text-center">
+      📘 Evaluation Schedule Preview
+    </h2>
+
+    <!-- 🧾 PDF Preview Frame -->
+    <iframe
+      *ngIf="pdfBlobUrl"
+      [src]="pdfBlobUrl"
+      width="100%"
+      height="100%"
+      class="border rounded-lg shadow-inner"
+    ></iframe>
   </div>
 </div>

@@ -67,14 +67,14 @@
         </a>
         <a (click)="goToSettings()" class="flex items-center justify-between bg-yellow-400 text-black px-3 py-2 rounded font-semibold">
           <div class="flex items-center gap-2">
-            <i class="fas facog"></i>
+            <i class="fas fa-cog"></i>
             Settings
           </div>
           <i class="fas fa-angle-right"></i>
         </a>
       </nav>
         <div class="p-4 mt-16">
-          <button class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
+          <button (click)="openLogoutModal()" class="bg-[#6A1321] text-center px-3 py-2 rounded hover:bg-white/10 w-[100%]">
             Log Out
           </button>
         </div>
@@ -82,7 +82,7 @@
     </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-3 text-sm">
+      <main class="md:ml-60 flex-1 p-4 space-y-3 text-sm">
         <!-- Top Bar -->
         <div class="flex justify-between items-center bg-white p-4 rounded shadow gap-10">
           <!-- Left: Dashboard + Search -->
@@ -95,17 +95,14 @@
           <!-- Right: Icons -->
           <div class="flex items-center space-x-4">
             <!-- Message Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
-              ✉️
-            </div>
+           
             <!-- Notification Icon -->
-            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer">
-              <span class="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full"></span>
+            <div class="relative bg-gray-100 p-2 rounded-full hover:bg-gray-200 cursor-pointer" (click)="toggleNotif()">
+              <span *ngIf="pendingList.length > 0" class="absolute top-1 right-1 w-2 h-2 bg-[#8C2224] rounded-full"></span>
               🔔
             </div>
             <img
-              src="https://via.placeholder.com/40"  
+              [src]="avatar"   
               alt="Profile"
               class="w-10 h-10 rounded-full object-cover cursor-pointer"
             />
@@ -117,72 +114,101 @@
             <div>
                 <div class="bg-white rounded shadow mb-4 p-2 px-6">
                     <h1 class="text-xl font-bold">School Settings</h1>
+  
                     <hr class="mt-2">
+                     <div class="flex justify-between pt-4 pb-2">
+                        <p  class="text-lg"><b>Active School Year: </b>{{ActiveSchoolYear.SchoolYear}}</p>
+                        
+                         
+                    </div>
                     <div class="flex justify-between pt-4 pb-2">
                         <p class="text-lg">Set as Active School Year</p>
-                         <label class="relative inline-block w-14 h-8 ">
-                            <input type="checkbox" class="sr-only peer"  >
-                            <div
-                            class="w-full h-full bg-gray-300 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"
-                            ></div>
-                            <div
-                            class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transform transition-transform duration-300"
-                            ></div>
-                        </label>
-                    </div>
-                    <div class="mb-2">
-                        <select class="border border-gray-300 rounded px-3 py-2 w-full ">
-                            <option>2024-2025</option>
-                            <option>2023-2024</option>
-                        </select>
+                        
+                          <div class="mb-2 px-2 ">
+                          <select  (change)="onSchoolYearChange()" [(ngModel)]="selectedSchoolYearID" class="border border-gray-300 rounded px-3 py-2 w-52">
+                            <option *ngFor="let sy of SchoolYear" [value]="sy.SchoolYearID">{{ sy.SchoolYear }} {{'(' + sy.Status + ')'}}</option>
+                          </select>
                         <i class="fas fa-angle-bottommm"></i>
                     </div>
+
+                     <button (click)="openConfirmModal()" class="bg-yellow-500 hover:bg-yellow-400 rounded-xl px-3 h-10">Set Active</button>
+                        
+                    </div>
+                    
+            
                     <div class="flex justify-between mb-4">
-                        <button class="bg-yellow-400 rounded-lg p-2">Add New School Year</button>
-                        <button class="bg-yellow-400 rounded-lg p-2">Archive School Year</button>
+                        <button (click)="openAddSchoolYearModal()" class="bg-yellow-500  hover:bg-yellow-400 rounded-lg p-2">Add New School Year</button>
+                        <button class="bg-yellow-400 rounded-lg p-2 hidden">Archive School Year</button>
                     </div>
                 </div>
-                 <div class="bg-white rounded shadow p-2 px-6">
-                    <h1 class="text-xl font-bold">Evaluation Configuration</h1>
-                    <hr class="mt-2">
-                    <div class="grid grid-rows-5">
-                        <div class="flex justify-between p-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Minimum completetion ratee to generate report</label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>100%</option>
-                                <option>80%</option>
-                            </select>
-                        </div>
-                        <div class="flex justify-between p-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Questionaire</label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>100%</option>
-                                <option>80%</option>
-                            </select>
-                        </div>
-                        <div class="flex justify-between p-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Start Date</label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>1 Month</option>
-                                <option>2 Months</option>
-                            </select>
-                        </div>
-                        <div class="flex justify-between p-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Default End Date</label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>1 Month</option>
-                                <option>2 Months</option>
-                            </select>
-                        </div>
-                        <div class="flex justify-between p-2 ">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Release </label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>Immediately</option>
-                                <option>80%</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <div class="p-4 bg-gray-50 min-h-80">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <h1 class="text-xl font-bold text-gray-800">Section Management</h1>
+      <p class="text-gray-500 text-sm">Section List Below:</p>
+    </div>
+    <button
+      (click)="openAddModal()"
+      class="bg-yellow-500  hover:bg-yellow-400 text-black px-5 py-2 rounded-lg transition"
+    >
+      + Add Section
+    </button>
+  </div>
+
+  <!-- Grade + Sections List -->
+<div class="overflow-x-auto w-full max-h-[70vh] relative">
+  <table class="min-w-full text-left border-collapse">
+    <thead
+      class=" text-black text-sm uppercase sticky top-0 z-10"
+    >
+      <tr>
+        <th class="px-6 py-3 font-semibold">Grade Level</th>
+        <th class="px-6 py-3 font-semibold">Sections</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let grade of Grade"
+        class="border-t hover:bg-gray-50 transition"
+      >
+        <!-- Grade -->
+        <td class="px-6 py-2 font-medium text-gray-800 whitespace-nowrap">
+          Grade {{ grade }}
+        </td>
+
+        <!-- Sections (scrollable horizontally) -->
+        <td class="px-6 py-3">
+          <div
+            class="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 rounded-md"
+            style="scrollbar-width: thin; -webkit-overflow-scrolling: touch; max-width: 100%;"
+          >
+            <ng-container *ngIf="allSections[grade].length > 0; else noSection">
+              <span
+                *ngFor="let section of allSections[grade]"
+                class="flex-shrink-0 text-black px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+              >
+                {{ section }}
+              </span>
+            </ng-container>
+            <ng-template #noSection>
+              <span class="text-gray-400 italic text-sm">No sections</span>
+            </ng-template>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+  <!-- Optional Empty State -->
+  <div *ngIf="Grade.length === 0" class="text-center text-gray-500 italic mt-10">
+    No grade levels found.
+  </div>
+</div>
+
             </div>
 
             <!-- right -->
@@ -193,91 +219,85 @@
                     <div class="grid grid-rows-3 space-y-2">
                         <div class="flex justify-between">
                             <label class="text-lg">Name</label>
-                            <label class="text-lg text-gray-600">Admin1</label>
+                            <label class="text-lg text-gray-600">{{Admin.Fname}} {{Admin.Mname}} {{Admin.Lname}}</label>
                         </div>
                         <div class="flex justify-between">
                             <label class="text-lg">Email</label>
                             <div>
-                                <input type="text" value="Sh*******gmaiil.com" >
-                                <button class="bg-yellow-500 rounded-lg px-2 ml-2">Change</button>
+                              <input 
+                                type="text" 
+                                class="border rounded px-2 py-1"
+                                [readonly]="!editingEmail"
+                                [(ngModel)]="Admin.Email">
+                              
+                              <ng-container *ngIf="!editingEmail; else emailActions">
+                                <button (click)="toggleEmailEdit()" class="bg-yellow-500 hover:bg-yellow-400 rounded-lg px-2 ml-2 text-black">Change</button>
+                              </ng-container>
+
+                              <ng-template #emailActions>
+                                <button (click)="saveEmail()" class="bg-yellow-500 rounded-lg px-2 ml-2 text-black">Save</button>
+                                <button (click)="cancelEmailEdit()" class="bg-gray-400 rounded-lg px-2 ml-1 text-white">Cancel</button>
+                              </ng-template>
                             </div>
                         </div>
                         <div class="flex justify-between">
                             <label class="text-lg">Password</label>
                             <div>
-                                <input type="text" value="************" >
-                                <button class="bg-yellow-500 rounded-lg px-2 ml-2">Change</button>
-                            </div>
+                            <input 
+                              [type]="showPassword ? 'text' : 'password'"
+                              class="border rounded px-2 py-1"
+                              [readonly]="!editingPassword"
+                              [(ngModel)]="newPassword">
+
+                            <ng-container *ngIf="!editingPassword; else passwordActions">
+                              <button (click)="togglePasswordEdit()" class="bg-yellow-500 rounded-lg hover:bg-yellow-400 px-2 ml-2 text-black">Change</button>
+                            </ng-container>
+
+                            <ng-template #passwordActions>
+                              <button (click)="savePassword()" class="bg-yellow-500 rounded-lg px-2 ml-2 text-white">Save</button>
+                              <button (click)="cancelPasswordEdit()" class="bg-gray-400 rounded-lg px-2 ml-1 text-white">Cancel</button>
+                            </ng-template>
+                          </div>
                         </div>
                     </div>
                     
                 </div>
+                <div class="p-6 bg-gray-50">
+                  <div  class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-4">Activity Logs</h2>
+                       <button (click)=" openDownloadModal()" class="bg-yellow-500  hover:bg-yellow-400 rounded p-2">Download Activity Logs</button>
+                   </div>
 
-                 <div class="bg-white rounded shadow mb-4 h-40 p-2 px-6">
-                    <h1 class="text-xl font-bold">Notification Settings</h1>
-                    <hr class="mt-2">
-                <div class="grid grid-rows-2 space-y-2">
-                        <div >
-                            <label class="text-lg">Enable email reminders</label>
-                        </div>
-                        <div class="flex justify-between">
-                            <label class="text-lg">Set reminder frequency</label>
-                            <div class="inline-flex rounded-lg shadow overflow-hidden border border-gray-300">
-                                <button
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
-                                    [class.bg-yellow-400]="selected === 'weekly'"
-                                    (click)="selected = 'weekly'"
-                                >
-                                    Weekly
-                                </button>
-                                <button
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
-                                    [class.bg-yellow-400]="selected === 'monthly'"
-                                    (click)="selected = 'monthly'"
-                                >
-                                    Monthly
-                                </button>
-                                <button
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-yellow-100 focus:bg-yellow-300 focus:outline-none"
-                                    [class.bg-yellow-400]="selected === 'custom'"
-                                    (click)="selected = 'custom'"
-                                >
-                                    Custom
-                                </button>
-                            </div>
-                        </div>   
-                    </div>
-                </div>
+  <!-- 📋 Logs Table -->
+  <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+    <div class="overflow-y-auto max-h-[40vh]">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-xs sticky top-0 z-10">
+          <tr>
+            
+            <th class="px-4 py-2 border-b">Name</th>
+            <th class="px-4 py-2 border-b">Activity</th>
+            <th class="px-4 py-2 border-b">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of filteredLogs" class="hover:bg-gray-50">
+            <td class="px-4 py-2 border-b">{{ log.Name }}</td>
+            <td class="px-4 py-2 border-b">{{ log.Activity }}</td>
+            <td class="px-4 py-2 border-b">{{ log.TimeStamp | date:'medium' }}</td>
+          </tr>
 
-                <div class="bg-white rounded shadow h-40 p-2 px-6">
-                    <h1 class="text-xl font-bold">Security</h1>
-                    <hr class="mt-2">
-                    <div class="flex justify-between p-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Set Log Out Timer</label>
-                            <select class="border border-gray-300 rounded px-3 py-2 w-52">
-                                <option>1 Month</option>
-                                <option>2 Months</option>
-                            </select>
-                    </div>
-                    <div class="flex justify-between p-2">
-                        <p class="text-sm">Two Factor Authentication</p>
-                         <label class="relative inline-block w-14 h-8 ">
-                            <input type="checkbox" class="sr-only peer"  >
-                            <div
-                            class="w-full h-full bg-gray-300 rounded-full peer-checked:bg-yellow-400 transition-colors duration-300"
-                            ></div>
-                            <div
-                            class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow peer-checked:translate-x-6 transform transition-transform duration-300"
-                            ></div>
-                        </label>
-                    </div>
-                    
-                </div>
+          <!-- 🕳️ Empty State -->
+          <tr *ngIf="filteredLogs.length === 0">
+            <td colspan="4" class="text-center py-4 text-gray-500">No logs found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
                  
-                <div class="grid grid-cols-2 gap-4 mt-2">
-                    <button class="bg-white rounded p-2">Download Activity Logs</button>
-                    <button class="bg-yellow-500 rounded p-2">Save Changes</button>
-                </div>
             </div>
         </div>
         
@@ -286,3 +306,330 @@
     </div>
   </body>
 </html>
+
+
+
+<!-- Notification Slide Panel -->
+<div 
+[class.no-transition]="skipAnimation"
+  class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 flex flex-col"
+  [ngClass]="{ 'translate-x-0': isNotifOpen, 'translate-x-full': !isNotifOpen }"
+>
+  <!-- Header -->
+  <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
+    <h2 class="text-base sm:text-lg font-semibold">Pending Student Approvals</h2>
+    <button 
+      (click)="closeNotif()" 
+      class="text-gray-600 hover:text-black text-2xl sm:text-xl font-bold leading-none focus:outline-none"
+    >
+      ✖
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-4 overflow-y-auto flex-1">
+    <div *ngIf="pendingList.length > 0; else noPending" class="text-sm text-gray-600 space-y-4">
+      <div *ngFor="let student of pendingList" class="border-b pb-3">
+        <p class="font-semibold text-black">Student Registration</p>
+        <p class="text-xs text-gray-400 mb-2">
+          New student: “{{ student.FullName }}”
+        </p>
+        <p class="text-[10px] text-gray-400 mb-2">
+          Grade: {{ student.Grade || 'N/A' }} • Section: {{ student.Section || 'N/A' }}
+        </p>
+
+        <div class="flex space-x-3 mt-2 ">
+          <button 
+            (click)="approveStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-check mr-1"></i> Approve
+          </button>
+          <button 
+            (click)="rejectStudent(student.StudID)" 
+            class="flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs transition"
+          >
+            <i class="fas fa-times mr-1"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- When no pending students -->
+    <ng-template #noPending>
+      <p class="text-xs text-gray-400 text-center">No pending student registrations.</p>
+    </ng-template>
+  </div>
+</div>
+
+
+
+<div *ngIf="successMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
+      <button (click)="successMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🟡 Confirmation Modal -->
+<div *ngIf="showAddModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">Confirmation</h3>
+      <button (click)="closeAddModal()" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">
+        Do you want to add <span class="text-[#8C2224]">{{ nextSchoolYear }}</span> as a new school year?
+      </p>
+
+      <div class="flex justify-center gap-4">
+        <button 
+          (click)="closeAddModal()" 
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-5 py-2 rounded shadow">
+          Cancel
+        </button>
+
+        <button 
+          (click)="confirmAddSchoolYear()" 
+          class="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-5 py-2 rounded shadow">
+          Yes
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 🟢 Confirmation Modal -->
+<div *ngIf="showConfirmModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚙️ Confirm Action</h3>
+      <button (click)="closeConfirmModal()" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">
+        Do you want to set <span class="text-[#8C2224]">{{ getSelectedSchoolYearName() }}</span> as the active school year?
+      </p>
+
+      <div class="flex justify-center gap-4">
+        <button (click)="closeConfirmModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800  px-6 py-2 rounded shadow">
+          No
+        </button>
+        <button (click)="confirmSetActive()" class="bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-2 rounded shadow">
+          Yes
+        </button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 🪟 MODAL -->
+<div
+  *ngIf="showModal"
+  class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50"
+>
+  <div class="bg-white rounded-lg p-6 w-80 shadow-lg">
+    <h3 class="text-lg font-bold text-gray-700 mb-4">Download Logs as PDF</h3>
+
+    <div class="space-y-3">
+      <div>
+        <label class="block text-sm text-gray-600 mb-1">Start Date</label>
+        <input
+          type="date"
+          class="w-full border rounded px-3 py-2"
+          [(ngModel)]="startDate"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm text-gray-600 mb-1">End Date</label>
+        <input
+          type="date"
+          class="w-full border rounded px-3 py-2"
+          [(ngModel)]="endDate"
+        />
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-5">
+      <button
+        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+        (click)="closeModal()"
+      >
+        Cancel
+      </button>
+      <button
+        class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+       (click)="downloadPDFReport()"
+      >
+        Download
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 📄 PDF Preview Modal -->
+<div
+  *ngIf="showPDFPreview"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div class="bg-white rounded-2xl shadow-lg w-[90%] h-[90%] relative p-4">
+    <button
+      class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700"
+      (click)="closePDFPreview()"
+    >
+      ✕ Close
+    </button>
+
+    <h2 class="text-xl font-semibold mb-3 text-gray-700 text-center">
+      📘 Logs Report Preview
+    </h2>
+
+    <!-- 🧾 PDF Preview Frame -->
+    <iframe
+      *ngIf="pdfBlobUrl"
+      [src]="pdfBlobUrl"
+      width="100%"
+      height="100%"
+      class="border rounded-lg shadow-inner"
+    ></iframe>
+  </div>
+</div>
+
+<!-- Add Section Modal -->
+<div
+  *ngIf="showAddModalSec"
+  class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white w-[90%] sm:w-[400px] rounded-2xl shadow-2xl p-6 animate-fade-in"
+  >
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">
+        Add New Section
+        <span *ngIf="selectedGrade" class="text-gray-500 text-sm"
+          >for Grade {{ selectedGrade }}</span
+        >
+      </h3>
+      <button (click)="closeaddModal()" class="text-gray-400 hover:text-gray-700">
+        ✕
+      </button>
+    </div>
+
+    <!-- Select Grade (Optional) -->
+    <div class="mb-4" >
+      <label class="block text-sm text-gray-600 mb-1">Select Grade</label>
+      <select
+        [(ngModel)]="selectedGrade"
+        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[rgb(140,34,36)]"
+      >
+        <option value="">Select Grade</option>
+                <option *ngFor="let g of Grade" [value]="g">{{g}}</option>
+      </select>
+       <div *ngIf="errorGrade" class="text-red-500 text-sm mt-1">
+                  Please Select Grade Level.
+              </div>
+    </div>
+
+    <div class="mb-5">
+      <label class="block text-sm text-gray-600 mb-1">Section Name</label>
+      <input
+        type="text"
+        placeholder="e.g. St. Matthew"
+        [(ngModel)]="newSectionName"
+        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[rgb(140,34,36)]"
+      />
+     <div *ngIf="errorSec" class="text-red-500 text-sm mt-1">
+                  Section Name Required
+              </div>
+    </div>
+
+    <div class="flex justify-end gap-3">
+      <button
+        (click)="closeaddModal()"
+        class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="addSection()"
+        class="px-4 py-2 bg-[rgb(140,34,36)] text-white rounded-lg hover:bg-red-800 transition"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="errorMessage" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">⚠️ Warning</h3>
+      <button (click)="errorMessage = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ errorMessage }}</p>
+      <button (click)="errorMessage = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+
+ <!-- Overlay -->
+<div *ngIf="showLogoutModal" class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+  <!-- Modal Container -->
+  <div class="bg-gray-100 w-[450px] rounded-lg shadow-lg overflow-hidden">
+    
+    <!-- Header -->
+    <div class="bg-[#8C2224] px-5 py-3 flex justify-between items-center">
+      <h2 class="text-white font-semibold">Log Out</h2>
+      <button (click)="closeLogoutModal()" class="text-white text-xl font-bold hover:text-gray-300">&times;</button>
+    </div>
+    
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <h3 class="text-lg font-semibold mb-6">Do you want to log out?</h3>
+      <div class="flex justify-center gap-4">
+        <button (click)="closeLogoutModal()"
+                class="bg-white border  text-gray-700 px-6 py-2 rounded hover:bg-gray-200">
+          No
+        </button>
+        <button (click)="logout()"
+                class="bg-yellow-400 text-white font-medium px-6 py-2 rounded hover:bg-yellow-500">
+          Yes
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
