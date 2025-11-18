@@ -106,7 +106,7 @@
                     />
                     <i class="fas fa-search absolute top-2.5 left-3 text-gray-400"></i>
                 </div>
-                <button (click)="openModal()" class="bg-yellow-400 text-black md:px-4 md:py-2 py-2 rounded font-semibold hover:bg-yellow-300">
+                <button (click)="openModal()" class="bg-yellow-400 text-black md:px-4 md:py-2 py-2 rounded font-semibold hover:bg-yellow-500">
                     View All Mapping
                 </button>
                 </div>
@@ -145,7 +145,7 @@
         
         <button type="button" *ngFor="let grade of grades"
         class="py-2 rounded sm:text-sm sm:text-center text-black"
-        [ngClass]="selectedGrade === grade? 'bg-yellow-400 text-black font-semibold': 'bg-slate-100'"
+        [ngClass]="selectedGrade === grade? 'bg-yellow-400 hover:bg-yellow-500 text-black font-semibold': 'bg-slate-100'"
         (click)="getSubPerYear(grade)">Grade 
         {{grade}}
         </button>        
@@ -185,7 +185,7 @@
             </div>
           </div>
           <div *ngIf="addmap"  class="block mt-6 font-medium text-black">
-             <button type="button" (click)="addSection()" class="bg-yellow-400 text-black px-4 py-2 rounded">
+             <button type="button" (click)="addSection()" class="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded">
                 Add
               </button>
           </div>
@@ -205,7 +205,7 @@
      
       <!-- Action Buttons -->
         <div *ngIf="!addmap" class="flex justify-end gap-2 pt-4">
-        <button type="button" (click)="addmap = true" class="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300 font-semibold">
+        <button type="button" (click)="addmap = true" class="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 font-semibold">
           Start Mapping
         </button>
       </div>

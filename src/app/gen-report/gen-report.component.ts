@@ -436,7 +436,7 @@ loadSubmissionCounts() {
       datasets: [
         {
           data: [formattedAvg, remaining],
-          backgroundColor: ['#FACC15', '#E5E7EB'], // yellow for avg, gray for remainin
+          backgroundColor: ['#eab308', '#E5E7EB'], // yellow for avg, gray for remainin
           borderWidth: 0
         }
       ]
@@ -488,7 +488,7 @@ loadSubmissionCounts() {
           backgroundColor: 'rgba(250, 204, 21, 0.3)',
           tension: 0.8,
           pointRadius: 4,
-          pointBackgroundColor: '#facc15'
+          pointBackgroundColor: '#eab308'
         }
       ]
     },

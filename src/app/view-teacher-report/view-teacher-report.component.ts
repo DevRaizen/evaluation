@@ -438,7 +438,7 @@ renderChart(labels: string[], values: number[]) {
           // ✅ dynamic colors per bar based on value
           backgroundColor: values.map((val) => {
             if (val >= 4.0) return '#22c55e'; // green
-            if (val >= 3.0) return '#facc15'; // yellow
+            if (val >= 3.0) return '#eab308'; // yellow
             return '#ef4444'; // red
           }),
           borderRadius: 5,
@@ -518,7 +518,7 @@ renderChart(labels: string[], values: number[]) {
       datasets: [
         {
           data: [avg, remaining],
-          backgroundColor: ['#FACC15', '#E5E7EB'],
+          backgroundColor: ['#eab308', '#E5E7EB'],
           borderWidth: 0
         }
       ]

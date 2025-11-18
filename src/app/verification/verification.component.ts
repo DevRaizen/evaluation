@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class VerificationComponent {
 errorMessage?: string;
+successMessage =""
 Email?: string;
 Otp1?: string;
 Otp2?: string;
@@ -46,12 +47,11 @@ verifyOtp() {
   }
 
   if (enteredCode === storedCode) {
-    this.errorMessage = "✅ Code verified!";
      localStorage.clear();
     this.sharedService.sendUserInfoToDB().subscribe({
       next: (res)=>{
-        alert('✅ User data saved to database!');
-        this.router.navigate(['/login']);
+        this.successMessage = "✅ Code Verified!";
+        
       },
       error: (err) =>{
         console.error('❌ Failed to save:', err);

@@ -202,6 +202,20 @@ loadTop3Teachers() {
         }));
 
         this.allTeachers = teachers;
+        this.allTeachers = teachers
+  .sort((a: any, b: any) => b.FinalAvg - a.FinalAvg)  // Descending
+  .map((t: any, index: number, arr: any[]) => {
+    if (index === 0) {
+      t.rank = 1;
+    } else {
+      const prev = arr[index - 1];
+      t.rank = (t.FinalAvg === prev.FinalAvg) ? prev.rank : prev.rank + arr.filter(x => x.rank === prev.rank).length;
+    }
+    return t;
+  });
+
+
+
         console.log(this.allTeachers)
         const top3: any[] = [];
         const seenScores: number[] = [];
@@ -247,6 +261,26 @@ loadTop3Teachers() {
     },
     error: (err) => console.error(err)
   });
+}
+
+getRank(index: number, teachers: any[]): number {
+  if (index === 0) return 1;
+
+  let rank = 1;
+
+  for (let i = 1; i <= index; i++) {
+    if (teachers[i].FinalAvg < teachers[i - 1].FinalAvg) {
+      rank = i + 1;
+    }
+  }
+
+  return rank;
+}
+
+ordinal(n: number): string {
+  if (n % 100 >= 11 && n % 100 <= 13) return `${n}th`;
+  const last = n % 10;
+  return `${n}${last === 1 ? 'st' : last === 2 ? 'nd' : last === 3 ? 'rd' : 'th'}`;
 }
 
 

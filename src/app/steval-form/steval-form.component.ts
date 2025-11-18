@@ -53,7 +53,7 @@ nextCategory() {
   const answered = this.getAnsweredCountForCategory(this.currentCategoryIndex);
 
   if (answered < totalQuestions) {
-    this.errorMessage = "Sagutan mo lahat bago mag next!"
+    this.errorMessage = "You need to complete all the answers!"
   } else {
     if (this.currentCategoryIndex < this.questions.length - 1) {
       this.currentCategoryIndex++;

@@ -131,14 +131,14 @@
                         <i class="fas fa-angle-bottommm"></i>
                     </div>
 
-                     <button (click)="openConfirmModal()" class="bg-yellow-500 hover:bg-yellow-400 rounded-xl px-3 h-10">Set Active</button>
+                     <button (click)="openConfirmModal()" class="bg-yellow-400 hover:bg-yellow-500 rounded-xl px-3 h-10">Set Active</button>
                         
                     </div>
                     
             
                     <div class="flex justify-between mb-4">
-                        <button (click)="openAddSchoolYearModal()" class="bg-yellow-500  hover:bg-yellow-400 rounded-lg p-2">Add New School Year</button>
-                        <button class="bg-yellow-400 rounded-lg p-2 hidden">Archive School Year</button>
+                        <button (click)="openAddSchoolYearModal()" class="bg-yellow-400  hover:bg-yellow-500 rounded-lg p-2">Add New School Year</button>
+                        <button class="bg-yellow-400 hover:bg-yellow-500  rounded-lg p-2 hidden">Archive School Year</button>
                     </div>
                 </div>
                 <div class="p-4 bg-gray-50 min-h-80">
@@ -150,7 +150,7 @@
     </div>
     <button
       (click)="openAddModal()"
-      class="bg-yellow-500  hover:bg-yellow-400 text-black px-5 py-2 rounded-lg transition"
+      class="bg-yellow-400  hover:bg-yellow-500 text-black px-5 py-2 rounded-lg transition"
     >
       + Add Section
     </button>
@@ -231,11 +231,11 @@
                                 [(ngModel)]="Admin.Email">
                               
                               <ng-container *ngIf="!editingEmail; else emailActions">
-                                <button (click)="toggleEmailEdit()" class="bg-yellow-500 hover:bg-yellow-400 rounded-lg px-2 ml-2 text-black">Change</button>
+                                <button (click)="toggleEmailEdit()" class="bg-yellow-400 hover:bg-yellow-500 rounded-lg px-2 ml-2 text-black">Change</button>
                               </ng-container>
 
                               <ng-template #emailActions>
-                                <button (click)="saveEmail()" class="bg-yellow-500 rounded-lg px-2 ml-2 text-black">Save</button>
+                                <button (click)="saveEmail()" class="bg-yellow-400  hover:bg-yellow-500  rounded-lg px-2 ml-2 text-black">Save</button>
                                 <button (click)="cancelEmailEdit()" class="bg-gray-400 rounded-lg px-2 ml-1 text-white">Cancel</button>
                               </ng-template>
                             </div>
@@ -250,11 +250,11 @@
                               [(ngModel)]="newPassword">
 
                             <ng-container *ngIf="!editingPassword; else passwordActions">
-                              <button (click)="togglePasswordEdit()" class="bg-yellow-500 rounded-lg hover:bg-yellow-400 px-2 ml-2 text-black">Change</button>
+                              <button (click)="togglePasswordEdit()" class="bg-yellow-400 rounded-lg hover:bg-yellow-500 px-2 ml-2 text-black">Change</button>
                             </ng-container>
 
                             <ng-template #passwordActions>
-                              <button (click)="savePassword()" class="bg-yellow-500 rounded-lg px-2 ml-2 text-white">Save</button>
+                              <button (click)="savePassword()" class="bg-yellow-400 hover:bg-yellow-500  rounded-lg px-2 ml-2 text-white">Save</button>
                               <button (click)="cancelPasswordEdit()" class="bg-gray-400 rounded-lg px-2 ml-1 text-white">Cancel</button>
                             </ng-template>
                           </div>
@@ -265,7 +265,7 @@
                 <div class="p-6 bg-gray-50">
                   <div  class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                         <h2 class="text-2xl font-bold text-gray-700 mb-4">Activity Logs</h2>
-                       <button (click)=" openDownloadModal()" class="bg-yellow-500  hover:bg-yellow-400 rounded p-2">Download Activity Logs</button>
+                       <button (click)=" openDownloadModal()" class="bg-yellow-400  hover:bg-yellow-500 rounded p-2">Download Activity Logs</button>
                    </div>
 
   <!-- 📋 Logs Table -->

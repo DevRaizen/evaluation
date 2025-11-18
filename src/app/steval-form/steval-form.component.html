@@ -114,15 +114,15 @@
             Progress:{{ getAnsweredCountForCategory(currentCategoryIndex) }} out of {{questions[currentCategoryIndex].list.length }} Questions
         </div>
         <div class="w-full bg-gray-200 rounded h-2">
-            <div class="bg-yellow-400 h-2 rounded" [style.width.%]="(getAnsweredCountForCategory(currentCategoryIndex)  / questions[currentCategoryIndex].list.length) * 100"></div>
+            <div class="bg-yellow-500 h-2 rounded" [style.width.%]="(getAnsweredCountForCategory(currentCategoryIndex)  / questions[currentCategoryIndex].list.length) * 100"></div>
         </div>
         </div>
     </div>
 
     <!-- Directions -->
     <p class="text-sm text-gray-700 bg-white py-4 rounded shadow">
-        <span class="font-semibold">Direction:</span>
-        Evaluate your subject teachers objectively using the following descriptors as 4 being the highest score and 1 being the lowest.
+        <span class="font-semibold ml-2">Direction:</span>
+        Evaluate your subject teachers objectively using the following descriptors as Strongly Agree being the highest score and Strongly Disagree being the lowest.
     </p>
 <div class="overflow-x-auto max-h-80 ">
   <div class="rounded-lg shadow-sm bg-white border border-gray-300">
@@ -199,7 +199,7 @@
 
     <button
      *ngIf="currentCategoryIndex != questions.length - 1"
-      class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50 "
+      class="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded disabled:opacity-50 "
       (click)="nextCategory()"
       [disabled]="currentCategoryIndex === questions.length - 1"
     >
@@ -209,7 +209,7 @@
     <button 
   *ngIf="currentCategoryIndex === questions.length - 1" 
   (click)="submitAnswers()" 
-  class="bg-yellow-400 px-4 py-2 rounded disabled:opacity-50"
+  class="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded disabled:opacity-50"
 >
   Submit
 </button>

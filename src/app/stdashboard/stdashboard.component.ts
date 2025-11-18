@@ -15,6 +15,7 @@ export class StdashboardComponent implements OnInit {
   imgurl = "";
   errorMessage = "";
   successMessage = "";
+  successMessage1 = "";
   Student: {
   Fname?: string;
   Mname?: string;
@@ -155,7 +156,7 @@ export class StdashboardComponent implements OnInit {
     next: (response) => {
       if (response.status === 'success') {
         console.log('Profile image saved successfully!');
-        this.errorMessage = "Profile image saved successfully!";
+        this.successMessage1= "Profile image saved successfully!";
         // Optionally update avatar image if you have one
         // this.avatar = 'path-to-new-image';
       } else {

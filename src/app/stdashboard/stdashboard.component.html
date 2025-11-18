@@ -159,7 +159,7 @@
               <img [src]="map.image === '/user.png' ? '/user.png' : imgurl + map.image" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
               <h4 class="font-bold text-black">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
               <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
-              <button (click)="startEval(map)" class="bg-yellow-400 mt-2 px-4 py-1 rounded font-semibold">Start</button>
+              <button (click)="startEval(map)" class="bg-yellow-400 hover:bg-yellow-500 mt-2 px-4 py-1 rounded font-semibold">Start</button>
               <p class="text-xs text-black mt-1">Due {{ActiveEvalutaion.EndDate}}</p>
             </div>
 
@@ -299,13 +299,29 @@
     <!-- Header -->
     <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
       <h3 class="text-white font-semibold text-lg">✅  Success</h3>
-      <button (click)="successMessage = ''" class="text-white text-lg font-bold">&times;</button>
+      <button (click)="logout()" class="text-white text-lg font-bold">&times;</button>
     </div>
-
     <!-- Body -->
     <div class="p-6 text-center">
       <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage}}</p>
       <button (click)="logout()" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
+        Okay
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="successMessage1" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+  <div class="bg-white w-full max-w-md rounded-lg shadow-lg  ">
+    <!-- Header -->
+    <div class="px-4 py-2 bg-[#8C2224] rounded-t-lg flex justify-between items-center">
+      <h3 class="text-white font-semibold text-lg">✅  Success</h3>
+      <button (click)="successMessage1 = ''" class="text-white text-lg font-bold">&times;</button>
+    </div>
+    <!-- Body -->
+    <div class="p-6 text-center">
+      <p class="text-lg text-gray-800 font-semibold mb-6">{{ successMessage1}}</p>
+      <button (click)="successMessage1 = ''" class="bg-yellow-400 hover:bg-yellow-600 text-white px-6 py-2 rounded shadow">
         Okay
       </button>
     </div>

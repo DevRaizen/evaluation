@@ -152,7 +152,9 @@
             </div>
                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4">
               <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
-                <div class="text-2xl">✅</div>
+                <div class="text-2xl">
+                  <img src="/checked.png" alt="" class="w-8 h-8 mx-auto" />
+                </div>
                 <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Evaluation Progress<br>{{ (totalSubCount === 0 && totalStudentCount === 0) ? 0 : ((totalSubCount / totalStudentCount) * 100 | number:'1.0-0') }}%
 </div>
                 <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
@@ -163,7 +165,9 @@
             
           </div>
           <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
-                <div class="text-2xl">⏳</div>
+                <div class="text-2xl">
+                  <img src="/timeglass.png" alt="" class="w-8 h-8 mx-auto" />
+                </div>
                 <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Time Remaining<br>{{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m
 </div>
                 <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 
@@ -322,12 +326,13 @@
               <img [src]="top.TeacherImage === '/user.png' ? '/user.png' : url + top.TeacherImage"
                   class="mx-auto rounded-full h-24 w-24 mb-1 object-cover" />
               <p class="text-base font-semibold">{{ top.TeacherName }}</p>
-              <p class="text-yellow-300 font-bold text-sm">{{ top.FinalAvg.toFixed(1) }}</p>
+              <p class="text-yellow-400 font-bold text-sm">{{ top.FinalAvg.toFixed(1) }}</p>
 
               <div class="flex flex-col items-center mt-2 space-y-2">
                   
-                  <span class="bg-yellow-300 text-black rounded px-2 py-1 text-xs font-semibold">
-                    {{ i + 1 }}{{ i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th' }}
+                  <span class="bg-yellow-400 text-black rounded px-2 py-1 text-xs font-semibold">
+                    {{ ordinal((top.rank)) }}
+
                   </span>
 
             <button *ngIf="hasTie(top)"
