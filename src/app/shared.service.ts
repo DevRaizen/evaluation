@@ -1037,6 +1037,31 @@ deleteSubjectMapping(mapping: any) {
   return this.http.post<any>(url, payload);
 }
 
+getAllTeacherMapping(schoolYearID: any) {
+  const url = `${this.burl}tsubjectmap.php`;
+
+  const payload = {
+    action: 'getTeacherSubjectMap',
+    schoolYearID: schoolYearID
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+checkIfEvaluated(teacherID: any, subjectID: any, schoolYearID: any) {
+  const url = `${this.burl}evaluation.php`;
+
+  const payload = {
+    action: 'checkIfEvaluated',
+    teacherID: teacherID,
+    subjectID: subjectID,
+    schoolYearID: schoolYearID
+  };
+
+  return this.http.post<any>(url, payload);
+}
+
+
 
 }
 

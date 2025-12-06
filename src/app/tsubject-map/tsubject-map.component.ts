@@ -42,6 +42,7 @@ export class TsubjectMapComponent implements OnInit {
   selectedSection: string | null = null;
 addedSections: string[] = [];
 
+
 addSection() {
    if (!this.selectedSection) {
     this.errorMessage = "Please select a section first.";
@@ -215,22 +216,32 @@ selectedSchoolYearID: any;
   });
 }
 
-  getMapping(){
-    this.sharedService.getTeacherSubjectMappings(this.Teacher.TeacherID!).subscribe({
+ getMapping() {
+  this.sharedService.getTeacherSubjectMappings(this.Teacher.TeacherID!).subscribe({
     next: (res) => {
       if (res.status === 'success') {
-        this.teacherMappings = res.mappings;
-        
-        console.log(this.teacherMappings);
-        
+
+        // 🔥 Ensure every row has evaluated = false initially
+        this.teacherMappings = res.mappings.map((m: any) => ({
+          ...m,
+          evaluated: false
+        }));
+
+        // 🔥 Now the async update will work perfectly
+        for (let m of this.teacherMappings) {
+          this.sharedService
+            .checkIfEvaluated(this.Teacher.TeacherID!, m.SubjectID, m.SchoolYearID)
+            .subscribe(result => {
+              m.evaluated = result.evaluated; 
+            });
+        }
+
+        console.log(this.teacherMappings, "Mapppinga")
       }
-    },
-    error: (err) => {
-      console.error('Failed to fetch mappings:', err);
     }
   });
+}
 
-  }
 
  
 

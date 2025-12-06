@@ -98,14 +98,7 @@
             <div class="flex justify-between items-center mt-4">
                 <div class="md:text-lg sm:text-sm text-lg font-semibold text-black">Subject Mapping</div>
                 <div class="flex items-center gap-2">
-                <div class="relative">
-                    <input
-                    type="text"
-                    placeholder="Search"
-                    class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 w-44"
-                    />
-                    <i class="fas fa-search absolute top-2.5 left-3 text-gray-400"></i>
-                </div>
+               
                 <button (click)="openModal()" class="bg-yellow-400 text-black md:px-4 md:py-2 py-2 rounded font-semibold hover:bg-yellow-500">
                     View All Mapping
                 </button>
@@ -269,9 +262,15 @@
                 <i class="fas fa-pen"></i>
               </button>
               <!-- Delete button -->
-              <button  (click)="openDeleteModal(assignment)" class="bg-red-500 px-2 py-1 rounded text-sm text-white hover:bg-red-600">
+              <button  
+                (click)="!assignment.evaluated && openDeleteModal(assignment)"
+                [disabled]="assignment.evaluated"
+                class="px-2 py-1 rounded text-sm text-white"
+                [ngClass]="assignment.evaluated ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#8C2224]'"
+              >
                 <i class="fas fa-trash"></i>
               </button>
+
               
             </td>
           </tr>

@@ -350,6 +350,9 @@ closeTieModal() {
   this.router.navigate(['/eval-form'])
   this.sharedService.addquesmod= true;
 }
+goToSubjectMap(){
+  this.router.navigate(['/subject-map']);
+}
     isNotifOpen: boolean = false;
       skipAnimation = true;
     toggleNotif() {

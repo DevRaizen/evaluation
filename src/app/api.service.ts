@@ -6,23 +6,11 @@ import { catchError, Observable, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost/teacher-evaluation-backend/api.php';  
-  private nlpUrl = "http://127.0.0.1:5000";
+  private nlpUrl = "https://flask-sentiments-p26kj3e0s-devraizens-projects.vercel.app/";
   constructor(private http: HttpClient) {}
 
-
-  logoutUser(): Observable<any> {
-    const body = { action: 'logout' }; // Adding logout action
-    return this.http.post<any>(this.apiUrl, body).pipe(
-      catchError((error) => {
-        const errorMessage = error?.error?.message || 'Something went wrong';
-        return throwError(() => new Error(errorMessage));
-      })
-    );
-  }
-
   analyzeText(feedbacks: string[]) {
-    return this.http.post<any>(`${this.nlpUrl}/analyze`, { feedbacks});
+    return this.http.post<any>(`${this.nlpUrl}analyze`, { feedbacks});
   }
   
 }
