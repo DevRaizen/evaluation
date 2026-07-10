@@ -419,7 +419,6 @@ confirmSchoolYear(gradeRef: any, sectionRef: any) {
   if (!this.selectedGrade || !this.selectedSection) return;
 
   // Custom validation: selected grade must be < current grade
- 
 
   console.log(' Proceed: Grade', this.selectedGrade, 'Section', this.selectedSection);
 
@@ -440,10 +439,8 @@ confirmSchoolYear(gradeRef: any, sectionRef: any) {
 getFilteredGrades(): String[] {
   const currentGrade = String(this.Student.Grade);
 
-
   const currentIndex = this.Grade.indexOf(currentGrade);
   if (currentIndex === -1) return [];
-
 
   const filtered = [this.Grade[currentIndex]];
   if (this.Grade[currentIndex + 1]) {

@@ -6,109 +6,110 @@ import { Injectable } from '@angular/core';
 })
 export class SharedService {
   defaultAvatar = "/user.png";
- Student: {
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  StudId?: string;
-  Grade?: string;
-  Status?: string;
-  AccID?: number;
-  Section?: string;
-  Email?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
 
-Admin: {
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  AdminID?: string;
-  Status?: string;
-  AccID?: number;
-  Email?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
+  Student: {
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    StudId?: string;
+    Grade?: string;
+    Status?: string;
+    AccID?: number;
+    Section?: string;
+    Email?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
 
-Teacher: {
-  TeacherID?: string;
-  AccID?: number;
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  Email?: string;
-  Status?: string;
-  PhoneNumber?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
+  Admin: {
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    AdminID?: string;
+    Status?: string;
+    AccID?: number;
+    Email?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
 
-Principal: {
-  PrincipalID?: string;
-  AccID?: number;
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  Email?: string;
-  Status?: string;
-  PhoneNumber?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
+  Teacher: {
+    TeacherID?: string;
+    AccID?: number;
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    Email?: string;
+    Status?: string;
+    PhoneNumber?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
 
-CurrentAdmin: {
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  AdminID?: string;
-  AccID?: number;
-  Email?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
-schedmod: boolean = false;
-addaccmod: boolean = false;
-addquesmod: boolean = false;
- CurrentStudent: {
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  StudID?: string;
-  Grade?: string;
-  AccID?: number;
-  Section?: string;
-  PhoneNumber?: string;
-  Email?: string;
-  Password?: string;
-  UserType?: string;
-  SchoolYearID?: number;
-} = {};
+  Principal: {
+    PrincipalID?: string;
+    AccID?: number;
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    Email?: string;
+    Status?: string;
+    PhoneNumber?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
 
-CurrentTeacher: {
-  TeacherID?: string;
-  AccID?: number;
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  Email?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
+  CurrentAdmin: {
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    AdminID?: string;
+    AccID?: number;
+    Email?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
+  schedmod: boolean = false;
+  addaccmod: boolean = false;
+  addquesmod: boolean = false;
+  CurrentStudent: {
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    StudID?: string;
+    Grade?: string;
+    AccID?: number;
+    Section?: string;
+    PhoneNumber?: string;
+    Email?: string;
+    Password?: string;
+    UserType?: string;
+    SchoolYearID?: number;
+  } = {};
 
-CurrentPrincipal: {
-  PrincipalID?: string;
-  AccID?: number;
-  Fname?: string;
-  Mname?: string;
-  Lname?: string;
-  Email?: string;
-  Status?: string;
-  PhoneNumber?: string;
-  Password?: string;
-  UserType?: string;
-} = {};
+  CurrentTeacher: {
+    TeacherID?: string;
+    AccID?: number;
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    Email?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
+
+  CurrentPrincipal: {
+    PrincipalID?: string;
+    AccID?: number;
+    Fname?: string;
+    Mname?: string;
+    Lname?: string;
+    Email?: string;
+    Status?: string;
+    PhoneNumber?: string;
+    Password?: string;
+    UserType?: string;
+  } = {};
 
  getWithExpiry(key: string) {
   const itemStr = sessionStorage.getItem(key);

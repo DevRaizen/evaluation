@@ -258,6 +258,7 @@ export class ManageUserComponent implements OnInit{
                     next: (res)=>{
                           this.errorMessage = "Teacher registered successfully"
                           this.AisModalOpen = false;
+                          this.ngOnInit();
                     },
                     error: (err)=>{
                           this.errorMessage = "Database Error"
