@@ -132,7 +132,7 @@ export class SharedService {
 }
 
   //burl = 'https://61rr1xns-80.asse.devtunnels.ms/teacher-evaluation-backend/'
-  burl = 'http://localhost/teacher-evaluation-backend/';
+  burl = 'https://evaluationbackend-production-afcd.up.railway.app/';
   constructor(private http: HttpClient) { }
 
   sendVerificationEmail(email:string, code: string){

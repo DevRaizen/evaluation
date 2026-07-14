@@ -74,6 +74,7 @@ export class LoginComponent {
   }
 
   onSubmit(form: NgForm) {
+        
         if (form.invalid) {
           Object.values(form.controls).forEach(control => {
             control.markAsTouched();
@@ -82,6 +83,7 @@ export class LoginComponent {
         }
          this.sharedService.loginUser(this.Email, this.Password,this.rememberMe).subscribe(
             (response) => {
+              console.log("theycalld")
               if (response.status === 'success') {
                 const userType = response.accountInfo.UserType;
                 const userData = response.accountInfo;
