@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class SharedService {
-  defaultAvatar = "/user.png";
+  defaultAvatar = "user.png";
 
   Student: {
     Fname?: string;

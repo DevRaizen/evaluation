@@ -37,7 +37,7 @@
       </svg>      
     </button> <!-- Close button -->
     <div class="p-10 pt-4 border-b border-white/20 text-center">
-      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <img src="stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
       <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
     </div>
 
@@ -121,7 +121,7 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4 ">
           <!-- Students -->
           <div class="grid grid-cols-2 gap-2 items-center bg-white p-4 text-center relative group">
-            <img src="/student.png" alt="" class="w-8 h-8 mx-auto" />
+            <img src="student.png" alt="" class="w-8 h-8 mx-auto" />
             <div class="font-bold border-l-2 border-gray-200 sm:text-sm">
               Students<br>{{studentcount}}
             </div>
@@ -134,7 +134,7 @@
           </div>
           <!-- Teachers -->
           <div class="grid grid-cols-2 gap-2 items-center bg-white p-4 text-center relative group">
-            <img src="/teacher.png" alt="" class="w-8 h-8 mx-auto" />
+            <img src="teacher.png" alt="" class="w-8 h-8 mx-auto" />
             <div class="font-bold border-l-2 border-gray-200  ">
               Teachers<br>{{teachercount}}
             </div>
@@ -157,7 +157,7 @@
                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4">
               <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
                 <div class="text-2xl">
-                  <img src="/checked.png" alt="" class="w-8 h-8 mx-auto" />
+                  <img src="checked.png" alt="" class="w-8 h-8 mx-auto" />
                 </div>
                 <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Evaluation Progress<br>{{ (totalSubCount === 0 && totalStudentCount === 0) ? 0 : ((totalSubCount / totalStudentCount) * 100 | number:'1.0-0') }}%
 </div>
@@ -170,7 +170,7 @@
           </div>
           <div class="grid grid-cols-2  gap-2 items-center bg-white p-4 rounded-lg text-center relative group">
                 <div class="text-2xl">
-                  <img src="/timeglass.png" alt="" class="w-8 h-8 mx-auto" />
+                  <img src="timeglass.png" alt="" class="w-8 h-8 mx-auto" />
                 </div>
                 <div class="font-bold border-l-2 border-gray-200 sm:text-sm" >Time Remaining<br>{{ duration.days }}d {{ duration.hours }}h {{ duration.mins }}m
 </div>
@@ -260,15 +260,15 @@
           <div (click)="goToAddQWithModal()" class="grid grid-cols-3 gap-2">
                   <div class="bg-white p-8 rounded shadow text-center cursor-pointer md:text-lg">
             <div class="font-bold text-sm">Create Form</div>
-            <img src="/form.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+            <img src="form.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
           <div (click)="goToSchedsWithModal()" class="bg-white p-8 rounded shadow text-center cursor-pointer">
             <div  class="font-bold text-sm">Set Schedule</div>
-            <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+            <img src="sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
           <div (click)="goToManWithModal()" class="bg-white p-8 rounded shadow text-center cursor-pointer">
             <div class="font-bold text-sm">Add Account</div>
-            <img src="/sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
+            <img src="sched.png" alt="" class="w-12 h-10 mx-auto mt-4" />
           </div>
           </div>
         
