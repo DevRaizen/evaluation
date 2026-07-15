@@ -327,7 +327,7 @@
           </div>
           <div class="flex gap-4 justify-center ">
             <div *ngFor="let top of topTeachers; let i = index" class="bg-[#8C2224] text-white p-2 rounded text-center flex-shrink-0 w-44">
-              <img [src]="top.TeacherImage === '/user.png' ? '/user.png' : url + top.TeacherImage"
+              <img [src]="top.TeacherImage === '/user.png' ? 'user.png' : url + top.TeacherImage"
                   class="mx-auto rounded-full h-24 w-24 mb-1 object-cover" />
               <p class="text-base font-semibold">{{ top.TeacherName }}</p>
               <p class="text-yellow-400 font-bold text-sm">{{ top.FinalAvg.toFixed(1) }}</p>
@@ -343,7 +343,7 @@
             (click)="openTieModal(top.FinalAvg)"
             class="flex items-center bg-yellow-400 hover:bg-yellow-500 text-black px-2  rounded text-sm font-semibold shadow transition duration-200">
             <span class="flex items-center justify-center w-4 h-4  text-yellow-400 mr-1 text-xs font-bold">
-              <img src="/group.png">
+              <img src="group.png">
             </span>
             Tied
             <i class="fas fa-angle-right ml-1"></i>
@@ -474,7 +474,7 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div *ngFor="let t of selectedRankGroup" class="bg-gray-100 p-2 rounded text-center flex flex-col items-center">
-        <img [src]="t.TeacherImage === '/user.png' ? '/user.png' : url + t.TeacherImage"
+        <img [src]="t.TeacherImage === '/user.png' ? 'user.png' : url + t.TeacherImage"
              class="h-24 w-24 rounded-full mb-2 object-cover" />
         <p class="font-semibold text-sm">{{ t.TeacherName }}</p>
         <p class="text-yellow-600 font-bold text-sm">{{ t.FinalAvg.toFixed(1) }}</p>
