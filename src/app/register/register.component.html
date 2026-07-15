@@ -45,7 +45,7 @@
                     (click)="togglePasswordVisibility()"
                     >
                     <img
-                        [src]="showPassword ? '/hidden.png' : '/eye.png'"
+                        [src]="showPassword ? 'hidden.png' : 'eye.png'"
                         alt="Toggle Password"
                         class="inline-block mb-1 w-6 h-6"
                     />
@@ -65,7 +65,7 @@
             <div class="relative mt-1">
               <input name="conpassword" [(ngModel)]="conPassword" #conpassword="ngModel" required class="w-full text-base px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500" [type]="showconPassword ? 'text' : 'password'" placeholder="***********" />
               <div class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
-                <img src="/padlock.png" alt="Logo" class="inline-block mb-1">
+                <img src="padlock.png" alt="Logo" class="inline-block mb-1">
                 <span style="border: 1px solid #CFD9E0; display: inline;margin-left: 3px; margin-top: 10px;"></span>
               </div>
               <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 mt-1">
@@ -75,7 +75,7 @@
                     (click)="toggleconPasswordVisibility()"
                     >
                     <img
-                        [src]="showconPassword ? '/hidden.png' : '/eye.png'"
+                        [src]="showconPassword ? 'hidden.png' : 'eye.png'"
                         alt="Toggle Password"
                         class="inline-block mb-1 w-6 h-6"
                     />
