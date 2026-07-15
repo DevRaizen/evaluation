@@ -291,7 +291,7 @@ onSubmit(form: NgForm) {
     doc.rect(0, 0, pageWidth, 30, 'F');
 
     // === LOGO ===
-    const logoPath = '/stroselogo.png';
+    const logoPath = 'stroselogo.png';
     try {
       doc.addImage(logoPath, 'PNG', 30, 5, 40, 20);
     } catch (e) {

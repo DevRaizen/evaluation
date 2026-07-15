@@ -195,7 +195,7 @@ loadTeacher(){
   doc.rect(0, 0, pageWidth, 30, 'F');
 
   // === LOGO ===
-  const logoPath = '/stroselogo.png';
+  const logoPath = 'stroselogo.png';
   try {
     doc.addImage(logoPath, 'PNG', 20, 5, 25, 20);
   } catch {

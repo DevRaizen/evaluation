@@ -36,7 +36,7 @@
       </svg>      
     </button> <!-- Close button -->
     <div class="p-10 pt-4 border-b border-white/20 text-center">
-      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <img src="stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
       <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
     </div>
 
@@ -123,7 +123,7 @@
 <!-- Example Teacher Cards -->
  <div *ngFor="let teacher of teachers" class="bg-white rounded-xl shadow-lg p-5 hover:shadow-2xl transition-shadow duration-300">
   <div class="flex items-center gap-4">
-    <img [src]="teacher.TeacherImage === '/user.png' ? '/user.png' : url + teacher.TeacherImage" alt="{{teacher.TeacherName}}" class="w-16 h-16 rounded-full object-cover" />
+    <img [src]="teacher.TeacherImage === '/user.png' ? 'user.png' : url + teacher.TeacherImage" alt="{{teacher.TeacherName}}" class="w-16 h-16 rounded-full object-cover" />
     <div>
       <p class="text-lg font-semibold text-gray-800">{{ teacher.TeacherName }}</p>
       <p class="text-sm text-gray-500">{{ teacher.role || 'Teacher' }}</p>
