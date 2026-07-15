@@ -37,7 +37,7 @@
       </svg>      
     </button> <!-- Close button -->
     <div class="p-10 pt-4 border-b border-white/20 text-center">
-      <img src="/stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
+      <img src="stroselogo.png" alt="School Logo" class="mx-auto w-32 h-20 mb-2" />
       <p class="text-sm font-semibold leading-tight">Saint Rose of Lima<br />Catholic School</p>
     </div>
 
@@ -156,7 +156,7 @@
           <div  *ngIf="unevalteacher.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Card Example -->
             <div *ngFor="let map of unevalteacher" class="bg-white rounded-lg shadow p-4 text-center">
-              <img [src]="map.image === '/user.png' ? '/user.png' : imgurl + map.image" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
+              <img [src]="map.image === '/user.png' ? 'user.png' : imgurl + map.image" alt="Vin Bautista" class="w-20 h-20 mx-auto rounded-full object-cover mb-2">
               <h4 class="font-bold text-black">{{map.Fname}} {{map.Mname}} {{map.Lname}}</h4>
               <p class="text-sm text-gray-500">{{map.SubjectName}}</p>
               <button (click)="startEval(map)" class="bg-yellow-400 hover:bg-yellow-500 mt-2 px-4 py-1 rounded font-semibold">Start</button>
@@ -166,7 +166,7 @@
           </div>
            <div *ngIf="unevalteacher.length === 0" class="mt-2">
           <div>
-            <img src="/elepanty.png" alt="" class="h-48 w-6/12 block m-auto p-auto">
+            <img src="elepanty.png" alt="" class="h-48 w-6/12 block m-auto p-auto">
           </div>
             <h3 class="text-2xl font-semibold mb-4 text-black text-center">You Already Completed The Evaluation</h3>  
           </div>
@@ -174,7 +174,7 @@
 
          <div *ngIf="!ActiveEvalutaion" class="mt-2">
           <div>
-            <img src="/elepanty.png" alt="" class="h-60 w-6/12 block m-auto p-auto">
+            <img src="elepanty.png" alt="" class="h-60 w-6/12 block m-auto p-auto">
           </div>
             <h3 class="text-2xl font-semibold mb-4 text-black text-center">No Evaluation</h3>  
           </div>
